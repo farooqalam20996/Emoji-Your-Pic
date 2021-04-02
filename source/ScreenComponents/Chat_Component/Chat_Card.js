@@ -1,0 +1,199 @@
+import React, { Component } from 'react';
+import { 
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ScrollView,
+    Image,
+    TouchableWithoutFeedback,
+    LogBox
+ } from 'react-native';
+// import Swipeable from "react-native-swipeable";
+import { SwipeListView } from 'react-native-swipe-list-view';
+
+LogBox.ignoreLogs([
+    'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.'
+])
+
+export default class Chat_Card extends Component {
+
+    state={
+        listViewData: Array(10)
+        .fill("")
+        .map((_, i) => ({ key: `${i}`, text: ` ${i}` }))
+    };
+
+
+     Tareekh = new Date().getHours()+ ":"+ new Date().getSeconds()
+
+    Left_Side(){
+        <View style={styles.Unread_main} >
+            <TouchableOpacity style={styles.Unread_Style} >
+                <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
+                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.Unread_Style,{backgroundColor:"#FFB81A", borderColor:"#000000"}]} >
+                <Image source={require('../../Imagess/star.png')} style={{ width:15 , height:15 }} />
+                <Text style={[styles.Unread_Txt, {color:"#0C1326"}]} >Pin fav.</Text>
+            </TouchableOpacity>
+        </View>
+    }
+
+    
+    Right_Side(){
+        <View style={styles.Unread_main} >
+            <TouchableOpacity style={styles.Unread_Style} >
+                <Image source={require('../../Imagess/archive.png')} style={{ width:15 , height:15 }} />
+                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Archive</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.Unread_Style} >
+                <Image source={require('../../Imagess/delete.png')} style={{ width:15 , height:15 }} />
+                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Delete</Text>
+            </TouchableOpacity>
+        </View>
+    }
+
+     render() {
+        return (
+                // <View style={{ flexDirection:"row" , alignItems:"center", justifyContent:"space-between" }} >
+                //     {/* {this.Left_Side()} */}
+                //     {/* <TouchableOpacity style={styles.main} > 
+                //         <View style={{ flexDirection:'row' }} >
+                //             <Image source={require("../../Imagess/chat_profile.png")} style={{ width:60 , height:60 , borderRadius:100 }} />
+                //             <View style={{ marginLeft:"3%", justifyContent:"space-around", alignItems:"flex-start" }} >
+                //                 <Text style={styles.Profile_Name}>{this.props.Profile_Name} </Text>
+                //                 <Text style={styles.Profile_msg}>{this.props.Profile_msg}</Text>
+                //             </View>
+                //         </View>
+                //         <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
+                //             <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {this.Tareekh} </Text>
+                //             <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520"  }} >
+                //                 <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >1</Text>
+                //             </View>
+                //         </View>
+                //     </TouchableOpacity> */}
+                //     {/* {this.Left_Side()} */}
+                // </View>
+
+                // <Swipeable leftContent={this.Left_Side()} rightButtons={this.Right_Side()}>
+                //     <Text style={{color:"white"}} >My swipeable content</Text>
+                // </Swipeable>
+
+                <SwipeListView
+                data={this.state.listViewData}
+                renderItem={ (data, rowMap) => (
+
+                            <TouchableWithoutFeedback style={styles.main} onPress={this.props.onpress} > 
+                                <View style={styles.Under_main} >
+                                    <View style={{ flexDirection:'row' }} >
+                                        <Image source={require("../../Imagess/chat_profile.png")} style={{ width:60 , height:60 , borderRadius:100 }} />
+                                        <View style={{ marginLeft:"3%", justifyContent:"space-around", alignItems:"flex-start" }} >
+                                            <Text style={styles.Profile_Name}>{this.props.Profile_Name} </Text>
+                                            <Text style={styles.Profile_msg}>{this.props.Profile_msg}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
+                                        <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {this.Tareekh} </Text>
+                                        <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520"  }} >
+                                            <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >{data.item.text}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback> 
+
+                    // <View style={{backgroundColor:"white", height:100}}>
+                    //     <Text style={{color:"red"}} >I am {data.item.text} in a SwipeListView</Text>
+                    // </View>
+                )}
+                renderHiddenItem={ (data, rowMap) => (
+                    <View style={{ flexDirection:"row" , alignItems:"center" , justifyContent:"space-between",padding:"5%" }} >
+                        <View style={{flexDirection:"row"}} >
+                            <TouchableOpacity style={styles.Unread_Style} >
+                                <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
+                                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.Unread_Style,{backgroundColor:"#FFB81A", borderColor:"#000000"}]} >
+                                <Image source={require('../../Imagess/star.png')} style={{ width:15 , height:15 }} />
+                                <Text style={[styles.Unread_Txt, {color:"#0C1326"}]} >Pin fav.</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{flexDirection:"row"}} >
+                            <TouchableOpacity style={styles.Unread_Style} >
+                                <Image source={require('../../Imagess/archive.png')} style={{ width:15 , height:15 }} />
+                                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Archive</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.Unread_Style} >
+                                <Image source={require('../../Imagess/delete.png')} style={{ width:15 , height:15 }} />
+                                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Delete</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )}
+                leftOpenValue={110}
+                rightOpenValue={-110}
+            />
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    
+    main:{
+        width:"100%",
+        height:80,
+        // padding:"5%",
+        // flexDirection:"row",
+        // alignItems:'center',
+        // justifyContent:"space-between",
+        // backgroundColor:"#0C1326",
+        // borderRadius:12,
+        // borderColor:"#273253",
+        // borderWidth:1,
+        // marginTop:"3%"
+    },
+    Under_main:{
+        padding:"5%",
+        flexDirection:"row",
+        alignItems:'center',
+        justifyContent:"space-between",
+        backgroundColor:"#0C1326",
+        borderRadius:12,
+        borderColor:"#273253",
+        borderWidth:1,
+        marginTop:"3%",
+    },
+    Profile_Name:{
+        fontSize:16,
+        lineHeight:17,
+        fontFamily:"Regular",
+        color:'#FFB81A', 
+        textAlign:"left"
+    },
+    Profile_msg:{
+        fontSize:13,
+        lineHeight:14,
+        fontFamily:"Medium",
+        color:'#5B6C9F', 
+        textAlign:"left"
+    },
+    Unread_Style:{
+        width:45,
+        height:70,
+        padding:"5%",
+        // flexDirection:"row",
+        alignItems:'center',
+        justifyContent:"center",
+        backgroundColor:"#FF3B30",
+        borderRadius:12,
+        borderColor:"#00000000",
+        borderWidth:1,
+        marginTop:"3%"
+    },
+    Unread_Txt:{
+        fontSize:9,
+        lineHeight:13,
+        fontFamily:"Light", 
+        textAlign:"center"
+    }
+})
