@@ -1,7 +1,6 @@
 import { User_SignUp, User_SignUp_Success, User_SignUp_Failed, User_Name, Full_Name,Email, Password, Confirm_Password, Phone_Number, Image_Uri } from "../Constants";
 
 const initialState={
-    id:0,
     username:"",
     fullname:"",
     email:"",

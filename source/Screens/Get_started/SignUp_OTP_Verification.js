@@ -21,7 +21,7 @@ class SignUp_OTP_Verification extends Component {
         // num3:"",
         // num4:"",
         // xyz:"polo",
-        code:"",
+        code:null,
         time:"0:50",
         visible:false,
         loader:false,
@@ -33,6 +33,7 @@ class SignUp_OTP_Verification extends Component {
         // Email = AsyncStorage.getItem('email', (err, data)=>{
         //     that.props._Email = data
         // })    
+        alert(that.props._Email)
     }
 
 
@@ -48,24 +49,26 @@ class SignUp_OTP_Verification extends Component {
 
         var config = {
         method: 'post',
-        url: API+'projects/salvador-app/public/api/check-code-email',
+        // url: API+'projects/salvador-app/public/api/check-code-email',
+        url: API+'salvador_app/public/api/check-code-email',
         data : data
         };
  
         axios(config)
         .then(function (response) {
             if(response.data.success){
+                // alert(response.data.data.id)
+                AsyncStorage.setItem('id', JSON.stringify(response.data.data.id) , (err)=>err? true:false)
                 console.log(JSON.stringify(response.data));
                 that.setState({loader: false})
-                // that.props.navigation.navigate("SignUp_Success", {userID: response.data});
+                that.props.navigation.navigate("SignUp_Success", {userID: response.data});
                 // that.props.navigation.navigate("SignUp_Success");
-                that.state.Failed
             }
             else{
                 console.log(response.data.message)
                 that.setState({loader: false})
                 that.setState({Failed: true})
-                that.props.navigation.navigate("SignUp_Success", {userID: response.data});
+                // that.props.navigation.navigate("SignUp_Success", {userID: response.data});
                 // that.props.navigation.navigate("SignUp_Success");
             }
         })
@@ -110,6 +113,7 @@ class SignUp_OTP_Verification extends Component {
                                 onSubmitEditing={()=> this.onresult()}
                                 codeInputStyle={{borderWidth:1, borderRadius:6, borderColor:"#273253"}}
                                 /> */}
+                                 
                                 <TextInput  
                                     value={this.state.code} 
                                     onChangeText={(text)=> this.setState({code: text})} 

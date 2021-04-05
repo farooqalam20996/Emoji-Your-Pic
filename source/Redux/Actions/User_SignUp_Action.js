@@ -14,16 +14,21 @@ import {
 import { Platform } from "react-native";
 import { API } from "../../Routes_Navigation/MainURL";
 import { navigate } from "../../Routes_Navigation/Navigator";
+import AsyncStorage from "@react-native-community/async-storage";
 
 
-export const Update_Profile = (id, username, fullname, email, phone_number, password, ImageUri) => {
-    console.log(id, username, fullname, email, phone_number, password, ImageUri)
-        return (dispatch)=>{
+export const Update_Profile = (username, fullname, email, phone_number, password, ImageUri) => {
+    // console.log(id, username, fullname, email, phone_number, password, ImageUri)
+        return async (dispatch)=>{
             dispatch({type: User_SignUp})
             var axios = require('axios');
             var FormData = require('form-data');
             var data = new FormData();
-            
+            var id;
+            await AsyncStorage.getItem('id' , (err, data)=>{
+               alert(data);
+                id = data
+            })
             data.append('username', username);
             data.append('full_name', fullname);
             data.append('email', email);
@@ -32,12 +37,13 @@ export const Update_Profile = (id, username, fullname, email, phone_number, pass
             data.append("image", {
                         name: "image.jpg",
                         type: "image/jpeg",
-                        uri: Platform.OS == 'android'? ImageUri.uri : ImageUri.uri.replace("file://", "")
+                        uri: Platform.OS === "android" ? ImageUri.uri : ImageUri.uri.replace("file://", "")
                     })
                     console.log(JSON.stringify(data))
             var config = {
                 method: 'post',
-                url: API+'projects/salvador-app/public/api/update-user-profile/'+id,
+                // url: API+'projects/salvador-app/public/api/update-user-profile/'+id,
+                url:API+'salvador_app/public/api/update-user-profile/'+id,
                 data : data
             };
             axios(config)

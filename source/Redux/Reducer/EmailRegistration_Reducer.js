@@ -15,7 +15,7 @@ export default( state=initialState , action )=>{
             return{ ...state, Loader:true }
         
         case Email_Success:
-            return {...state, ...initialState , Loader:false}
+            return {...state , Loader:false}
     
         case Email_Failed:
             return{ ...state, ...initialState ,Loader:false}

@@ -27,7 +27,7 @@ import {
          borderColor:"#273253",
          borderWidth:1,
          alignItems:"flex-start",
-         marginBottom:"3%"
+         marginBottom:"5%"
      },
      Txts:{
         fontSize:14,

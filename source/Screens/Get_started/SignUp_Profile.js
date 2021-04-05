@@ -20,7 +20,7 @@ import { Username, Fullname , Email_Address , User_Password, User_ConfirmPasswor
 class SignUp_Profile extends Component {
 
      state = { 
-        id:this.props.route.params.id,
+        // id:this.props.route.params.id,
         spinner:false,
         IsModalVisible:false,
       }
@@ -60,7 +60,7 @@ class SignUp_Profile extends Component {
 
       result = () => {
             this.props._Update_Profile(
-                this.props.userID,
+                // this.props.userID,
                 this.props.user_name,
                 this.props.full_name,
                 this.props.Email,
@@ -75,7 +75,7 @@ class SignUp_Profile extends Component {
     }
 
      render() {
-         this.props.userID == this.state.id
+        //  this.props.userID == this.state.id
          return (
             <View style={styles.main} >
                 
@@ -215,7 +215,7 @@ class SignUp_Profile extends Component {
 
  function mapStateToProps(state) {
     return{
-        userID: state.SignUp_Reducer.id,
+        // userID: state.SignUp_Reducer.id,
         user_name: state.SignUp_Reducer.username,
         full_name:state.SignUp_Reducer.fullname,
         Email: state.EmailVerify.email,
@@ -236,8 +236,8 @@ function mapDispatchToProps(dispatch) {
         _Password: (text)=>dispatch(User_Password(text)),
         _C_Password: (text)=>dispatch(User_ConfirmPassword(text)),
         _PhoneNumber: (text)=>dispatch(PhoneNumber(text)),
-        _Image_Uri: (text)=>dispatch(ImageURI(text)),
-        _Update_Profile: (id, username, fullname,email, phone_number, password, ImageUri)=>dispatch(Update_Profile(id, username, fullname,email, phone_number, password, ImageUri)),
+        _Image_Uri: (imguri)=>dispatch(ImageURI(imguri)),
+        _Update_Profile: (username, fullname,email, phone_number, password, ImageUri)=>dispatch(Update_Profile(username, fullname,email, phone_number, password, ImageUri)),
     }
 }
 
@@ -249,7 +249,7 @@ function mapDispatchToProps(dispatch) {
         backgroundColor:"#060A16",
         padding:'6%',
         paddingTop:"10%",
-        paddingBottom:"10%"
+        paddingBottom:"1%"
      },
      Image_Container:{
         // flex:1,

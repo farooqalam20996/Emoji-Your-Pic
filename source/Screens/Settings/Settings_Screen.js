@@ -35,7 +35,7 @@ class Settings_Screen extends Component {
         // AsyncStorage.getItem('user', (err, data)=>{
             
         // })
-        // alert(this.props.token)
+        // alert(this.props.token) 
     }
 
      render() {
@@ -46,13 +46,13 @@ class Settings_Screen extends Component {
                     <TouchableOpacity style={styles.Image_Container} onPress={() => this.setState({isVisible: true})} >
                         <Image source={{uri: this.props.user_name.image}} style={{width:55 , height:55, borderRadius:100}} />
                     </TouchableOpacity>
-                    <Text style={styles.Profile_Name} > 
+                    <Text style={styles.Profile_Name} adjustsFontSizeToFit={true} > 
                             {/* Jason Parker */}
                             {this.props.user_name.full_name}
                     </Text>
                 </View>
                 <View style={{ width:"100%" ,height:2 , backgroundColor:"#273253", marginBottom:"8%" }} />
-                {/* <ScrollView> */}
+                <ScrollView>
                     <Setting_Card Txt="Chats" Press={() => this.props.navigation.navigate("ChatSetting")} />
                     <Setting_Card Txt="Account Settings" Press={()=> this.props.navigation.navigate("AccountSetting")} />
                     <Setting_Card Txt="Notifications" Press={() => alert("Press")} />
@@ -60,7 +60,7 @@ class Settings_Screen extends Component {
                     <Setting_Card Txt="Help" Press={() => alert("Press")} />
                     <Setting_Card Txt="Tell a Friend" Press={() => alert("Press")} />
                     <Setting_Card Txt="Log out" Press={() => this.LogOut()} />
-                {/* </ScrollView> */}
+                </ScrollView>
 
                <Modal
                     onRequestClose={()=>this.setState({isVisible:false})}

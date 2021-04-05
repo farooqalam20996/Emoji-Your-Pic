@@ -15,7 +15,7 @@ export default class SignUp_Success extends Component {
         // const User_ID = navigation.getParam('userID','26')
 
         // const userid = navigation.getParam('userID')
-        const userid = this.props.route.params.userID
+        // const userid = this.props.route.params.userID
         
         return ( 
             <View style={styles.main}>
@@ -23,11 +23,11 @@ export default class SignUp_Success extends Component {
                     <Image source={require('../../Imagess/done.png')} style={{ width:100 , height:100 }} />
                 </View>
                 <View style={styles.second}>
-                    <TouchableOpacity style={styles.Next_btn} onPress={() => this.props.navigation.navigate("SignUp_Profile" ,{id:JSON.stringify(userid)}) }  >
-                    {/* <TouchableOpacity style={styles.Next_btn} onPress={() => this.props.navigation.navigate("SignUp_Profile")}  > */}
+                    {/* <TouchableOpacity style={styles.Next_btn} onPress={() => this.props.navigation.navigate("SignUp_Profile" ,{id:JSON.stringify(userid)}) }  > */}
+                    <TouchableOpacity style={styles.Next_btn} onPress={() => this.props.navigation.navigate("SignUp_Profile")}  >
                         <Text style={styles.Txt} > Next </Text>
                     </TouchableOpacity>
-                    <Text style={{ color:"yellow" }} > USer ID: {JSON.stringify(userid)} </Text>
+                    <Text style={{ color:"yellow" }} >  </Text>
                 </View>
             </View>
         ); 

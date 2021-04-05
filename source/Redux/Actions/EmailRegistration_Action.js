@@ -11,9 +11,10 @@ export const EmailVerification=(Email)=>{
         data.append('email', Email);
 
         var config = {
-        method: 'post',
-        url: API+'projects/salvador-app/public/api/email-registration',
-        data : data
+            method: 'post',
+            // url: API+'projects/salvador-app/public/api/email-registration',
+            url:API+'salvador_app/public/api/email-registration',
+            data : data
         };
 
         axios(config)
@@ -22,12 +23,12 @@ export const EmailVerification=(Email)=>{
                 console.log("polo")
                 dispatch({type:Email_Success , error:''})
                 console.log(JSON.stringify(response.data));
-                // navigate("SignUp_OTP_Verification")
+                navigate("SignUp_OTP_Verification")
             }
             else{
                 dispatch({type: Email_Failed, error:response.data.message})
                 alert(response.data.message)
-                navigate("SignUp_OTP_Verification")
+                // navigate("SignUp_OTP_Verification")
             }
         })
         .catch(function (error) {
