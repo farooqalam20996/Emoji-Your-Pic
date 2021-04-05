@@ -16,7 +16,7 @@ export const ChangeLogin = (email,password,context) =>{
         var config = {
           method: 'post',
           // url: API+'projects/salvador-app/public/api/login',
-          url:API+"salvador_app/public/api/login",
+          url:"http://projects.paragonlogo.com/salvador_app/public/api/login",
           headers: { 
             'Content-Type': 'application/json'
           },
