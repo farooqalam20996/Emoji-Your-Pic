@@ -105,6 +105,15 @@ const styles = StyleSheet.create({
     main:{
         width:"100%",
         height:80,
+        // padding:"5%",
+        // flexDirection:"row",
+        // alignItems:'center',
+        // justifyContent:"space-between",
+        // backgroundColor:"#0C1326",
+        // borderRadius:12,
+        // borderColor:"#273253",
+        // borderWidth:1,
+        // marginTop:"3%"
     },
     Under_main:{
         padding:"5%",

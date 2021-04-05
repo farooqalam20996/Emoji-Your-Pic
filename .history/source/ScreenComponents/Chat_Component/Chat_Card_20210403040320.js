@@ -16,39 +16,91 @@ LogBox.ignoreLogs([
     'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.'
 ])
 
-const listViewData= [
-    {
-        id:1,
-    },
-    {
-        id:2,
-    }
-    ,{
-        id:3,
-    }
-    ,{
-        id:4,
-    }
-    ,{
-        id:5,
-    }
-    ,
-    {
-        id:6,
-    },
-
-]
 export default class Chat_Card extends Component {
 
     state={
-        
+        listViewData: [
+            {
+                id:1,
+            },
+            {
+                id:2,
+            }
+            ,{
+                id:3,
+            }
+            ,{
+                id:4,
+            }
+            ,{
+                id:5,
+            }
+            ,
+            {
+                id:6,
+            },
+
+        ]
     };
+
+
      Tareekh = new Date().getHours()+ ":"+ new Date().getSeconds()
+
+    // Left_Side(){
+    //     <View style={styles.Unread_main} >
+    //         <TouchableOpacity style={styles.Unread_Style} >
+    //             <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
+    //             <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
+    //         </TouchableOpacity>
+    //         <TouchableOpacity style={[styles.Unread_Style,{backgroundColor:"#FFB81A", borderColor:"#000000"}]} >
+    //             <Image source={require('../../Imagess/star.png')} style={{ width:15 , height:15 }} />
+    //             <Text style={[styles.Unread_Txt, {color:"#0C1326"}]} >Pin fav.</Text>
+    //         </TouchableOpacity>
+    //     </View>
+    // }
+
+    
+    // Right_Side(){
+    //     <View style={styles.Unread_main} >
+    //         <TouchableOpacity style={styles.Unread_Style} >
+    //             <Image source={require('../../Imagess/archive.png')} style={{ width:15 , height:15 }} />
+    //             <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Archive</Text>
+    //         </TouchableOpacity>
+    //         <TouchableOpacity style={styles.Unread_Style} >
+    //             <Image source={require('../../Imagess/delete.png')} style={{ width:15 , height:15 }} />
+    //             <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Delete</Text>
+    //         </TouchableOpacity>
+    //     </View>
+    // }
 
      render() {
         return (
+                // <View style={{ flexDirection:"row" , alignItems:"center", justifyContent:"space-between" }} >
+                //     {/* {this.Left_Side()} */}
+                //     {/* <TouchableOpacity style={styles.main} > 
+                //         <View style={{ flexDirection:'row' }} >
+                //             <Image source={require("../../Imagess/chat_profile.png")} style={{ width:60 , height:60 , borderRadius:100 }} />
+                //             <View style={{ marginLeft:"3%", justifyContent:"space-around", alignItems:"flex-start" }} >
+                //                 <Text style={styles.Profile_Name}>{this.props.Profile_Name} </Text>
+                //                 <Text style={styles.Profile_msg}>{this.props.Profile_msg}</Text>
+                //             </View>
+                //         </View>
+                //         <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
+                //             <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {this.Tareekh} </Text>
+                //             <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520"  }} >
+                //                 <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >1</Text>
+                //             </View>
+                //         </View>
+                //     </TouchableOpacity> */}
+                //     {/* {this.Left_Side()} */}
+                // </View>
+
+                // <Swipeable leftContent={this.Left_Side()} rightButtons={this.Right_Side()}>
+                //     <Text style={{color:"white"}} >My swipeable content</Text>
+                // </Swipeable>
+
                 <SwipeListView
-                data={listViewData}
+                data={this.state.listViewData}
                 renderItem={ (data, rowMap) => (
 
                             <TouchableWithoutFeedback style={styles.main} onPress={this.props.onpress} > 
@@ -68,6 +120,10 @@ export default class Chat_Card extends Component {
                                     </View>
                                 </View>
                             </TouchableWithoutFeedback> 
+
+                    // <View style={{backgroundColor:"white", height:100}}>
+                    //     <Text style={{color:"red"}} >I am {data.item.text} in a SwipeListView</Text>
+                    // </View>
                 )}
                 renderHiddenItem={ (data, rowMap) => (
                     <View style={{ flexDirection:"row" , alignItems:"center" , justifyContent:"space-between",padding:"5%" }} >
@@ -105,6 +161,15 @@ const styles = StyleSheet.create({
     main:{
         width:"100%",
         height:80,
+        // padding:"5%",
+        // flexDirection:"row",
+        // alignItems:'center',
+        // justifyContent:"space-between",
+        // backgroundColor:"#0C1326",
+        // borderRadius:12,
+        // borderColor:"#273253",
+        // borderWidth:1,
+        // marginTop:"3%"
     },
     Under_main:{
         padding:"5%",
