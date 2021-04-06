@@ -14,13 +14,13 @@ import Modal from "react-native-modal";
 import { Feather , AntDesign} from '@expo/vector-icons'; 
 import { connect } from "react-redux";
 import { Username, Fullname , Email_Address , User_Password, User_ConfirmPassword, PhoneNumber, ImageURI, Update_Profile } from "../../Redux/Actions/User_SignUp_Action";
+import AsyncStorage from '@react-native-community/async-storage';
 // import { EmailVerification } from "../../Redux/Actions/EmailRegistration_Action";
 
 
 class SignUp_Profile extends Component {
 
      state = { 
-        // id:this.props.route.params.id,
         spinner:false,
         IsModalVisible:false,
       }
@@ -59,15 +59,19 @@ class SignUp_Profile extends Component {
 
 
       result = () => {
-            this.props._Update_Profile(
-                // this.props.userID,
-                this.props.user_name,
-                this.props.full_name,
-                this.props.Email,
-                this.props.phoneNumber,
-                this.props.password,
-                this.props.Image_uri
-            ) 
+          AsyncStorage.getItem('fid',(err,data)=>{
+              
+              this.props._Update_Profile(
+                  // this.props.userID,
+                  this.props.user_name,
+                  this.props.full_name,
+                  this.props.Email,
+                  this.props.phoneNumber,
+                  this.props.password,
+                  this.props.Image_uri,
+                  JSON.parse(data),
+              ) 
+          })
       }
 
       toggleModal = () => {
@@ -237,7 +241,7 @@ function mapDispatchToProps(dispatch) {
         _C_Password: (text)=>dispatch(User_ConfirmPassword(text)),
         _PhoneNumber: (text)=>dispatch(PhoneNumber(text)),
         _Image_Uri: (imguri)=>dispatch(ImageURI(imguri)),
-        _Update_Profile: (username, fullname,email, phone_number, password, ImageUri)=>dispatch(Update_Profile(username, fullname,email, phone_number, password, ImageUri)),
+        _Update_Profile: (username, fullname,email, phone_number, password, ImageUri,fid)=>dispatch(Update_Profile(username, fullname,email, phone_number, password, ImageUri,fid)),
     }
 }
 

@@ -15,18 +15,18 @@ import { Platform } from "react-native";
 import { API } from "../../Routes_Navigation/MainURL";
 import { navigate } from "../../Routes_Navigation/Navigator";
 import AsyncStorage from "@react-native-community/async-storage";
+import firebase from "../../firebase";
+var axios = require('axios');
+var FormData = require('form-data');
 
-
-export const Update_Profile = (username, fullname, email, phone_number, password, ImageUri) => {
+export const Update_Profile = (username, fullname, email, phone_number, password, ImageUri,fid) => {
     // console.log(id, username, fullname, email, phone_number, password, ImageUri)
         return async (dispatch)=>{
             dispatch({type: User_SignUp})
-            var axios = require('axios');
-            var FormData = require('form-data');
+            
             var data = new FormData();
             var id;
             await AsyncStorage.getItem('id' , (err, data)=>{
-               alert(data);
                 id = data
             })
             data.append('username', username);
@@ -34,6 +34,7 @@ export const Update_Profile = (username, fullname, email, phone_number, password
             data.append('email', email);
             data.append('phone_number', phone_number);
             data.append('password', password);
+            data.append('firebase_id', fid);
             data.append("image", {
                         name: "image.jpg",
                         type: "image/jpeg",
@@ -49,9 +50,25 @@ export const Update_Profile = (username, fullname, email, phone_number, password
             axios(config)
             .then(function (response) {
                 if(response.data.success){
-                    dispatch({type: User_SignUp_Success});
-                    console.log(JSON.stringify(response.data));
-                    navigate("Login_SignUp")
+                    firebase.auth.signInWithEmailAndPassword(email,'123123')
+                    .then(()=>{
+                        firebase.auth.currentUser.updatePassword(password)
+                        .then(()=>{
+                            firebase.firestore.collection('users')
+                            .doc(fid).set({
+                                uid:fid,
+                                phone: phone_number,
+                                email: email,
+                                name: fullname,
+                            }).then(()=>{
+                                dispatch({type: User_SignUp_Success});
+                                console.log(JSON.stringify(response.data));
+                                navigate("Login_SignUp")
+                            }).catch((err)=>{
+                                console.log(err)
+                            })
+                        })
+                    })
                 }
                 else{
                     dispatch({type: User_SignUp_Failed, error:response.data.message});

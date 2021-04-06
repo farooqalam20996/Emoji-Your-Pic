@@ -1,12 +1,13 @@
 import { API } from "../../Routes_Navigation/MainURL";
 import {Email, Email_Registration , Email_Success, Email_Failed} from "../Constants";
 import { navigate } from "../../Routes_Navigation/Navigator";
+import AsyncStorage from "@react-native-community/async-storage";
+var axios = require('axios');
+var FormData = require('form-data');
 
 export const EmailVerification=(Email)=>{
     return(dispatch)=>{
         dispatch({type: Email_Registration})
-        var axios = require('axios');
-        var FormData = require('form-data');
         var data = new FormData();
         data.append('email', Email);
 
@@ -20,7 +21,7 @@ export const EmailVerification=(Email)=>{
         axios(config)
         .then(function (response) {
             if(response.data.success){
-                console.log("polo")
+                AsyncStorage.setItem('verified',JSON.stringify({email:Email, verified: false}),(err)=>err? true : false);
                 dispatch({type:Email_Success , error:''})
                 console.log(JSON.stringify(response.data));
                 navigate("SignUp_OTP_Verification")

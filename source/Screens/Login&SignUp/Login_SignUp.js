@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, { Component } from 'react';
 import { 
     View,
@@ -8,8 +9,17 @@ import {
  } from 'react-native';
 
  export default class Login_SignUp extends Component {
-     state = { 
-         
+     
+      componentDidMount(){
+            AsyncStorage.getItem('verified',(err,data)=>{
+                // alert(typeof data)
+                const verify = JSON.parse(data);
+                if(verify){
+                    if(!verify.verified){
+                        this.props.navigation.navigate('SignUp_OTP_Verification')
+                    }
+                }
+            })
       }
      render() {
          return (

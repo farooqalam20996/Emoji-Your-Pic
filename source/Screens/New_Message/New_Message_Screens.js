@@ -12,17 +12,20 @@ import * as Contacts from "expo-contacts";
 
  import Message_Cards from "../../ScreenComponents/NewMessage_Component/Message_Card";
 import Contacts_Screen from "../Contacts/Contacts_Screen";
+import firebase from '../../firebase';
 
  export default class Message_Screen extends Component {
      
       state={
         contact_list:[],
         image: null,
-        Search:""
+        Search:"",
+        contacts:[],
     }
 
     componentDidMount(){
         this.contacts_Permission()
+        firebase.firestore.doc().get().then((res)=>console.log(res.data()))
     }
 
     contacts_Permission = async ()=> {

@@ -10,7 +10,10 @@ import {
  } from 'react-native';
 import CodeInput from "react-native-confirmation-code-input";
 import { connect } from "react-redux";
+import firebase from '../../firebase';
 import { API } from '../../Routes_Navigation/MainURL';
+var axios = require('axios');
+var FormData = require('form-data');
 
 var that;
 
@@ -26,6 +29,7 @@ class SignUp_OTP_Verification extends Component {
         visible:false,
         loader:false,
         Failed:false,
+        email:'',
      }
 
      componentDidMount(){
@@ -33,7 +37,11 @@ class SignUp_OTP_Verification extends Component {
         // Email = AsyncStorage.getItem('email', (err, data)=>{
         //     that.props._Email = data
         // })    
-        alert(that.props._Email)
+        AsyncStorage.getItem('verified',(err,data)=>{
+            const newData = JSON.parse(data);
+            const email = newData.email ? newData.email : that.props._Email
+            this.setState({email: email})
+        })
     }
 
 
@@ -41,10 +49,9 @@ class SignUp_OTP_Verification extends Component {
      onresult=() =>{
         // this.props.navigation.navigate('SignUp_Success')
         that.setState({loader: true})
-        var axios = require('axios');
-        var FormData = require('form-data');
+        
         var data = new FormData();
-        data.append('email', that.props._Email);
+        data.append('email', that.state.email);
         data.append('code', that.state.code);
 
         var config = {
@@ -57,11 +64,18 @@ class SignUp_OTP_Verification extends Component {
         axios(config)
         .then(function (response) {
             if(response.data.success){
-                // alert(response.data.data.id)
                 AsyncStorage.setItem('id', JSON.stringify(response.data.data.id) , (err)=>err? true:false)
-                console.log(JSON.stringify(response.data));
-                that.setState({loader: false})
-                that.props.navigation.navigate("SignUp_Success", {userID: response.data});
+                AsyncStorage.removeItem('verified')
+                firebase.auth.createUserWithEmailAndPassword(that.state.email,'123123')
+                .then((res)=>{
+                    console.log(JSON.stringify(response.data));
+                    AsyncStorage.setItem('fid',JSON.stringify(res.user.uid),(err)=>err?true:false)
+                    that.setState({loader: false})
+                    that.props.navigation.navigate("SignUp_Success");
+                }).catch((err)=>{
+                    console.log(err)
+                })
+                
                 // that.props.navigation.navigate("SignUp_Success");
             }
             else{
@@ -86,12 +100,14 @@ class SignUp_OTP_Verification extends Component {
                 
                 <View style={styles.container} >
                     <Text style={styles.Heading_Txt} >
-                        Verify Your Number
+                        Verify Your Email
                     </Text>
                     <Text style={styles.Paragraph} >
-                        Insert the 4-digit OTP code that has been sent to your device for verification.
+                        Insert the 4-digit OTP code that has been sent to your Email for verification.
                     </Text>
-
+                    <Text style={[styles.Paragraph,{color:'#FFB81A'}]} >
+                        {this.state.email}
+                    </Text>
                     <View style={{ alignItems:"center", justifyContent:"center" , flexDirection:"row" , marginTop:"10%" }} >
                         {/* <CodeInput
                                 value={this.state.code}

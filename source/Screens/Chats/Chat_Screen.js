@@ -9,7 +9,6 @@ import Top_Header from "../../ScreenComponents/Header_Component/Header";
 import { AntDesign } from "@expo/vector-icons";
 import Chat_Card from "../../ScreenComponents/Chat_Component/Chat_Card";
 
-
  export default class Chats_Screen extends Component {
      
      render() {

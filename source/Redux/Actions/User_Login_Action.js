@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-community/async-storage";
+import firebase from "../../firebase";
 import { API } from "../../Routes_Navigation/MainURL";
 import { User_Login, Login_Success, Login_Failed, User_Data, User_Token } from "../Constants";
 
@@ -26,11 +27,19 @@ export const ChangeLogin = (email,password,context) =>{
         axios(config)
         .then(function (response) {
           if(response.data.success){
-            dispatch({type: Login_Success})
-            console.log(JSON.stringify(response.data));
-            AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false )
-            AsyncStorage.setItem('token',JSON.stringify(response.data.token), (err)=> err? true:false )
-            context.updateState()
+            firebase.auth.signInWithEmailAndPassword(email,password)
+            .then(()=>{
+              dispatch({type: Login_Success})
+              console.log(JSON.stringify(response.data));
+              AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false )
+              AsyncStorage.setItem('token',JSON.stringify(response.data.token), (err)=> err? true:false )
+              AsyncStorage.removeItem('fid');
+              context.updateState()
+            }).catch((err)=>{
+              dispatch({type: Login_Failed, error:"Can't Login"})
+              console.log(err)
+            })
+            
           }
           else{
             // alert(JSON.stringify(response.data))
