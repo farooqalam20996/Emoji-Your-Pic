@@ -12,6 +12,8 @@ import CodeInput from "react-native-confirmation-code-input";
 import { connect } from "react-redux";
 import firebase from '../../firebase';
 import { API } from '../../Routes_Navigation/MainURL';
+import { Snackbar } from "react-native-paper";
+
 var axios = require('axios');
 var FormData = require('form-data');
 
@@ -30,6 +32,7 @@ class SignUp_OTP_Verification extends Component {
         loader:false,
         Failed:false,
         email:'',
+        err:''
      }
 
      componentDidMount(){
@@ -49,7 +52,6 @@ class SignUp_OTP_Verification extends Component {
      onresult=() =>{
         // this.props.navigation.navigate('SignUp_Success')
         that.setState({loader: true})
-        
         var data = new FormData();
         data.append('email', that.state.email);
         data.append('code', that.state.code);
@@ -80,10 +82,7 @@ class SignUp_OTP_Verification extends Component {
             }
             else{
                 console.log(response.data.message)
-                that.setState({loader: false})
-                that.setState({Failed: true})
-                // that.props.navigation.navigate("SignUp_Success", {userID: response.data});
-                // that.props.navigation.navigate("SignUp_Success");
+                that.setState({loader: false, Failed:true , /*visible:true , */  err:response.data.message})
             }
         })
         .catch(function (error) {
@@ -93,11 +92,16 @@ class SignUp_OTP_Verification extends Component {
         });
      }
 
+     onDismissSnackBar = () =>{
+         this.setState({visible: true})
+     }
 
     render() {
         return (
             <View style={styles.main} >
-                
+                {/* <Snackbar visible={this.state.visible} duration={5000} onDismiss={this.onDismissSnackBar} style={{marginLeft:"10%"}} >
+                    {this.state.err}
+                </Snackbar>  */}
                 <View style={styles.container} >
                     <Text style={styles.Heading_Txt} >
                         Verify Your Email
@@ -109,42 +113,28 @@ class SignUp_OTP_Verification extends Component {
                         {this.state.email}
                     </Text>
                     <View style={{ alignItems:"center", justifyContent:"center" , flexDirection:"row" , marginTop:"10%" }} >
-                        {/* <CodeInput
-                                value={this.state.code}
-                                onChangeText={(text) => this.setState({code: text})}
-                                ref="codeInputRef1"
-                                // secureTextEntry
-                                className="border-b"
-                                codeLength={4}
-                                inputPosition="center"
-                                cellBorderWidth={2}
-                                inactiveColor="#2E8BFF"
-                                activeColor="#B9C9DE"
-                                space={5}   
-                                size={45}
-                                inputPosition='center'
-                                onFulfill={(code) => this.setState({visible: true}) }
-                                keyboardType="number-pad"
-                                autoFocus={true}
-                                onSubmitEditing={()=> this.onresult()}
-                                codeInputStyle={{borderWidth:1, borderRadius:6, borderColor:"#273253"}}
-                                /> */}
-                                 
-                                <TextInput  
-                                    value={this.state.code} 
-                                    onChangeText={(text)=> this.setState({code: text})} 
-                                    style={styles.Input_Style} 
-                                    maxLength={4}
-                                />
+                        <TextInput  
+                            value={this.state.code} 
+                            onChangeText={(text)=> this.setState({code: text})} 
+                            style={styles.Input_Style} 
+                            maxLength={4}
+                            onSubmitEditing={() => this.onresult()}
+                        />
                     </View>
                     <Text style={[styles.Paragraph,{marginTop:'5%'}]} >
                         {this.state.time}
                     </Text>
+                    {
+                        this.state.Failed ? 
+                        <Text style={{color:"yellow" ,alignSelf:"center"}} >Invalid Code</Text>
+                        :
+                        null
+                    }
                     
                     {
-                        true ?
+                        this.state.Failed ?
                         <Text style={styles.Paragraph} >
-                        Didn't receive the code?
+                            Didn't receive the code?
                         </Text>
                         :
                         null
@@ -154,25 +144,21 @@ class SignUp_OTP_Verification extends Component {
                             Resend OTP
                         </Text>
                     </TouchableOpacity>
+                    
 
-                    <TouchableOpacity style={styles.Verify_btn} onPress={() => this.onresult()} >
+                    
                        {
                            this.state.loader ?
-                           <ActivityIndicator size={30} color="white" />
+                            <View style={styles.Verify_btn} onPress={() => this.onresult()} >
+                                <ActivityIndicator size={30} color="white" />
+                            </View>
                            :
-                           <Text style={[styles.Txt,{color:"#FFFFFF"}]} > Verify </Text>
+                           <TouchableOpacity style={styles.Verify_btn} onPress={() => this.onresult()} >
+                                <Text style={[styles.Txt,{color:"#FFFFFF"}]} > Verify </Text>
+                           </TouchableOpacity>
                        }
-                    </TouchableOpacity>
-                    {
-                        this.state.Failed ? 
-                        <Text style={{color:"yellow"}} >Invalid Code</Text>
-                        :
-                        null
-                    }
                     
-                </View>
-                {/* <View style={{ width:'35%', height:3 , backgroundColor:"#FFFFFF" , borderRadius:100, alignSelf:"center" }} /> */}
-                  
+                </View>                  
             </View>    
         );
     }
@@ -240,43 +226,3 @@ const styles = StyleSheet.create({
         marginTop:"25%"
      }
 })
-
-{/* <TextInput
-                            value={this.state.num1}
-                            onChangeText={(text)=> this.setState({num1: text}) }
-                            style={styles.Input_Style}
-                            blurOnSubmit={false}
-                            maxLength={1}
-                            onSubmitEditing={() => this.NextInput.focus()}
-                            keyboardType="number-pad"
-                        />
-                        <TextInput
-                            ref={ref => { this.NextInput = ref; }}
-                            value={this.state.num2}
-                            onChangeText={(text)=> this.setState({num2: text}) }
-                            style={styles.Input_Style}
-                            maxLength={1}
-                            blurOnSubmit={false}
-                            onSubmitEditing={() => this.NextInput1.focus()}
-                            keyboardType="number-pad"
-                        />
-                        <TextInput
-                            ref={ref => { this.NextInput1 = ref; }}
-                            value={this.state.num3}
-                            onChangeText={(text)=> this.setState({num3: text}) }
-                            style={styles.Input_Style}
-                            blurOnSubmit={false}
-                            maxLength={1}
-                            onSubmitEditing={() => this.NextInput2.focus()}
-                            keyboardType="number-pad"
-                        />
-                        <TextInput
-                            ref={ref => { this.NextInput2 = ref; }}
-                            value={this.state.num4}
-                            onChangeText={(text)=> this.setState({num4: text}) }
-                            style={styles.Input_Style}
-                            blurOnSubmit={false}
-                            maxLength={1}
-                            onSubmitEditing={() => this.onresult() }
-                            keyboardType="number-pad"
-                        /> */}

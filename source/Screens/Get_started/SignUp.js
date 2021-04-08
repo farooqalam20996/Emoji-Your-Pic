@@ -11,22 +11,27 @@ import { TextInput } from 'react-native-gesture-handler';
 import { Fontisto } from '@expo/vector-icons'; 
 import { connect } from "react-redux";
 import { EmailVerification, Email_Register } from "../../Redux/Actions/EmailRegistration_Action";
+import {Snackbar } from "react-native-paper";
 
 class SignUp_Page extends Component {
-    //  state = { 
-    //     email:"",
-    //   }
-
-      Verify=()=>{
-        if(this.props.failed){
-            alert('failed')
-        }
-        else{
-            Keyboard.dismiss()
-            this.props.Verification(this.props.Email)
-        }   
+     state = { 
+        Show_error:false,
       }
 
+      validateEmail(email) {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+      Verify=()=>{
+        Keyboard.dismiss()
+        if(this.validateEmail(this.props.Email)){
+            this.props.Verification(this.props.Email)
+        }
+        else{
+            this.setState({Show_error: true})
+        }   
+      }
 
      render() {
          return (
@@ -44,8 +49,6 @@ class SignUp_Page extends Component {
                         </View>
                         <TextInput
                             style={styles.Input_Style}
-                            // value={this.state.email}
-                            // onChangeText={(text) => this.setState({email: text})}
                             value={this.props.Email}
                             onChangeText={(text)=>this.props._Email(text)}
                             blurOnSubmit={false}
@@ -62,7 +65,12 @@ class SignUp_Page extends Component {
                             <Text style={[styles.Txt,{color:"#FFFFFF"}]} > Sign Up With Email </Text>
                          </TouchableOpacity>
                     }
-                    
+                    {
+                        this.props.failed ?
+                            <Text style={[styles.Txt,{color:"#FFB81A" ,  lineHeight:14 , marginBottom:0 , marginTop:4}]} > {this.props.err} </Text>
+                            :
+                            null
+                    }
                 </View>
                 <View style={styles.OtherSignUp_Container} >
                     <TouchableOpacity style={[styles.SignUp_btn,{backgroundColor:"#FFB81A"}]} >
@@ -80,6 +88,20 @@ class SignUp_Page extends Component {
                             <Text style={styles.Pol_Txt} > Terms Of Use </Text>
                     </TouchableOpacity>
                 </View> 
+                <Snackbar 
+                    visible={this.state.Show_error}
+                    onDismiss={()=> this.setState({Show_error: false})}
+                    duration={5000}
+                    style={{ marginLeft:"10%" , width:"100%" }}
+                    action={{
+                        label: 'ok',
+                        onPress: () => {
+                            this.setState({Show_error: false})
+                        },
+                    }}
+                >
+                    Email is not formatted
+                </Snackbar>
             </View>    
          );
      }
@@ -90,6 +112,7 @@ class SignUp_Page extends Component {
         Email:state.EmailVerify.email,
         loader:state.EmailVerify.Loader,
         failed:state.EmailVerify.Failed,
+        err:state.EmailVerify.error,
      }
  }
 
@@ -186,8 +209,6 @@ class SignUp_Page extends Component {
          borderRadius:12
      },
      Input_Style:{
-        // width:wp('80%'),
-        // height:hp('6%'),
         width:"80%",
         height:45,
         backgroundColor:"#0C1326",

@@ -2,6 +2,7 @@ export const Email = "Email";
 export const Email_Success = "Email_Success"
 export const Email_Failed = "Email_Failed"
 export const Email_Registration = "Email_Registration"
+export const Email_Registration_Completed = "Email_Registration_Completed"
 
 //SignUp Scenario!
 export const User_SignUp = "User_SignUp";

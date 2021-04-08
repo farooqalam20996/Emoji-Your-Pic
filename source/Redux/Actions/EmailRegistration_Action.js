@@ -13,7 +13,6 @@ export const EmailVerification=(Email)=>{
 
         var config = {
             method: 'post',
-            // url: API+'projects/salvador-app/public/api/email-registration',
             url:API+'salvador_app/public/api/email-registration',
             data : data
         };
@@ -28,8 +27,6 @@ export const EmailVerification=(Email)=>{
             }
             else{
                 dispatch({type: Email_Failed, error:response.data.message})
-                alert(response.data.message)
-                // navigate("SignUp_OTP_Verification")
             }
         })
         .catch(function (error) {

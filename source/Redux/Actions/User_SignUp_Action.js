@@ -8,7 +8,8 @@ import {
     Password, 
     Confirm_Password, 
     Phone_Number,
-    Image_Uri
+    Image_Uri,
+    Email_Registration_Completed
 } from "../Constants";
 
 import { Platform } from "react-native";
@@ -62,6 +63,7 @@ export const Update_Profile = (username, fullname, email, phone_number, password
                                 name: fullname,
                             }).then(()=>{
                                 dispatch({type: User_SignUp_Success});
+                                dispatch({type: Email_Registration_Completed});
                                 console.log(JSON.stringify(response.data));
                                 navigate("Login_SignUp")
                             }).catch((err)=>{

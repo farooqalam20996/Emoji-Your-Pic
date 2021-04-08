@@ -16,6 +16,8 @@ import { connect } from "react-redux";
 import { Username, Fullname , Email_Address , User_Password, User_ConfirmPassword, PhoneNumber, ImageURI, Update_Profile } from "../../Redux/Actions/User_SignUp_Action";
 import AsyncStorage from '@react-native-community/async-storage';
 // import { EmailVerification } from "../../Redux/Actions/EmailRegistration_Action";
+// import PhoneInput from "react-phone-number-input/react-native-input";
+import { Snackbar } from "react-native-paper";
 
 
 class SignUp_Profile extends Component {
@@ -23,6 +25,8 @@ class SignUp_Profile extends Component {
      state = { 
         spinner:false,
         IsModalVisible:false,
+        visible:false,
+        show:false
       }
 
       requestPermision = async () => {
@@ -59,19 +63,35 @@ class SignUp_Profile extends Component {
 
 
       result = () => {
-          AsyncStorage.getItem('fid',(err,data)=>{
+          if( 
+              this.props.user_name == "",
+              this.props.full_name == "",
+              this.props.Email == "",
+              this.props.phoneNumber == "",
+              this.props.password == "",
+              this.props.Image_uri == ""
+            )
+          {
+            this.setState({visible: true})
+          }
+          else{
+            this.props.password !== this.props.C_Password ?
+            this.setState({show: true})
+            :
+            AsyncStorage.getItem('fid',(err,data)=>{
               
-              this.props._Update_Profile(
-                  // this.props.userID,
-                  this.props.user_name,
-                  this.props.full_name,
-                  this.props.Email,
-                  this.props.phoneNumber,
-                  this.props.password,
-                  this.props.Image_uri,
-                  JSON.parse(data),
-              ) 
-          })
+                this.props._Update_Profile(
+                    // this.props.userID,
+                    this.props.user_name,
+                    this.props.full_name,
+                    this.props.Email,
+                    this.props.phoneNumber,
+                    this.props.password,
+                    this.props.Image_uri,
+                    JSON.parse(data),
+                ) 
+            })
+          }
       }
 
       toggleModal = () => {
@@ -82,7 +102,22 @@ class SignUp_Profile extends Component {
         //  this.props.userID == this.state.id
          return (
             <View style={styles.main} >
-                
+                <Snackbar 
+                        duration={3000} 
+                        style={{ marginLeft:"10%", marginBottom:"25%" }}
+                        visible={this.state.show} 
+                        onDismiss={()=> this.setState({show: false})} 
+                        action={{ label: 'Ok',  onPress:()=>{this.setState({show: false})}, }} >
+                        Password miss match
+                </Snackbar>
+                <Snackbar 
+                        duration={3000} 
+                        style={{ marginLeft:"10%", marginBottom:"25%" }}
+                        visible={this.state.visible} 
+                        onDismiss={()=> this.setState({visible: false})} 
+                        action={{ label: 'Ok',  onPress:()=>{this.setState({visible: false})}, }} >
+                        Please fill all fields
+                </Snackbar>
                     <View style={styles.Image_Container} >
                         <View style={styles.Image_Circle} >
                             {
@@ -151,13 +186,13 @@ class SignUp_Profile extends Component {
                         }
                         <Text style={styles.Txt} >Add number</Text>
                         <View style={{flexDirection:'row' , alignItems:"center"}} >
-                            <View style={styles.uni_num} >
+                            {/* <View style={styles.uni_num} >
                                 <Image source={require('../../Imagess/flag.png')} style={{ width:28, height:28 , borderRadius:5 }} />
                                 <Text style={{color:'#FFFFFF' , fontFamily:"Regular", fontSize:13}} >+1</Text>
-                            </View>
+                            </View> */}
                             <TextInput
                                 ref={ref => { this.NextInput3 = ref; }}
-                                style={[styles.Input_Style,{width:"78%"}]}
+                                style={[styles.Input_Style,{width:"100%"}]}
                                 value={this.props.phoneNumber}
                                 onChangeText={(text) => this.props._PhoneNumber(text)}
                                 blurOnSubmit={false}
@@ -165,6 +200,16 @@ class SignUp_Profile extends Component {
                                 keyboardType="phone-pad"
                             />
                         </View>
+
+                        {/* <PhoneInput 
+                            ref={ref => { this.NextInput3 = ref; }}
+                            style={[styles.Input_Style,{width:"78%"}]}
+                            value={this.props.phoneNumber}
+                            onChange={(text) => this.props._PhoneNumber(text)}
+                            country="US"
+                            onSubmit={()=> this.result()}
+                        /> */}
+
                         {
                             this.props._failed ?
                             <Text style={{ color:"yellow" }} > Profile not Updated </Text>

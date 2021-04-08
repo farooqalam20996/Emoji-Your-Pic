@@ -41,7 +41,7 @@ class Login extends Component {
                             Login to your account
                         </Text>
                         <View style={{marginTop:"7%"}} >
-                            <Text style={styles.Txt} >username</Text>
+                            <Text style={styles.Txt} >email</Text>
                             <TextInput 
                                 style={styles.Input_Style}
                                 value={this.state.username}

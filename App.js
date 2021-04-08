@@ -15,7 +15,7 @@ export default function App() {
               "Poppins_BlackItalic":require('./assets/fonts/Poppins/Poppins-BlackItalic.ttf'),
               "Bold":require('./assets/fonts/Poppins/Poppins-Bold.ttf'),
               "BoldItalic":require('./assets/fonts/Poppins/Poppins-BoldItalic.ttf'),
-              "ExtraBold":require('./assets/fonts/Poppins/Poppins-ExtraBold.ttf'),
+              "ExtraBold":require('./assets/fonts/Poppins/Poppins-ExtraBold.ttf'),  
               "ExtraBoldItalic":require('./assets/fonts/Poppins/Poppins-ExtraBoldItalic.ttf'),
               "ExtraLight":require('./assets/fonts/Poppins/Poppins-ExtraLight.ttf'),
               "ExtraLightItalic":require('./assets/fonts/Poppins/Poppins-ExtraLightItalic.ttf'),
