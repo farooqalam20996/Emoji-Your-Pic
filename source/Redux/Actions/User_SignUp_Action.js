@@ -58,6 +58,7 @@ export const Update_Profile = (username, fullname, email, phone_number, password
                             .doc(fid).set({
                                 uid:fid,
                                 phone: phone_number,
+                                image: response.data.data.image,
                                 email: email,
                                 name: fullname,
                             }).then(()=>{

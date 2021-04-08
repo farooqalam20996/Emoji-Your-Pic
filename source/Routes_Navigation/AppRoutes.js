@@ -30,19 +30,19 @@ function Tab_Navigator(){
                 backBehavior
                 tabBarOptions={{
                     labelPosition:"below-icon",
-                    labelStyle:{marginBottom:20 , fontFamily:'SemiBold' },
+                    labelStyle:{marginBottom:5 , marginTop:18, fontFamily:'SemiBold' },
                     activeTintColor:"#FFB81A",
                     keyboardHidesTabBar:true, 
                     style:{
                         width:'100%',
-                        height:80,
+                        height:55,
                         // borderTopRightRadius:8,
                         // borderTopLeftRadius:8,  
                         backgroundColor:'#0C1326',
-                        shadowColor:'#273253',
-                        shadowOffset:{width:0 , height: -3},
-                        shadowRadius:23,
-                        elevation:23,
+                        // shadowColor:'#273253',
+                        // shadowOffset:{width:0 , height: -3},
+                        // shadowRadius:23,
+                        // elevation:23,
                         borderTopColor:"#0C1326"
                     }
                 }}     
@@ -50,12 +50,11 @@ function Tab_Navigator(){
                  <Tab.Screen name="Chat" component={ChatScreen} 
                     options={{
                         tabBarIcon:({focused}) => (
-                              
-                                focused ?
-                                <Ionicons name="chatbubble-ellipses-sharp" size={20} color="#FFB81A" style={{ marginBottom:'-20%' }} />
-                                :
-                                <Ionicons name="chatbubble-ellipses-sharp" size={20} color="#273253" style={{ marginBottom:'-20%' }} />                                
-                            )   
+                            focused ?
+                            <Ionicons name="chatbubble-ellipses-sharp" size={22} color="#FFB81A" style={{ marginBottom:'-20%' }} />
+                            :
+                            <Ionicons name="chatbubble-ellipses-sharp" size={22} color="#273253" style={{ marginBottom:'-20%' }} />                                
+                        )   
                     }} 
                  />
                  {/* <Tab.Screen name="Calls" component={Calls_Screen} 
@@ -71,22 +70,23 @@ function Tab_Navigator(){
                  /> */}
                  <Tab.Screen name="New" component={New_Message_Screens}  
                          options={{
+                            tabBarLabel : ()=>null,
                             tabBarIcon:({focused}) => (
                                 <View
                                     style={{ 
                                             marginBottom:25,
-                                            width:60, 
-                                            height:60, 
+                                            width:62, 
+                                            height:62, 
                                             borderRadius:100,
                                             alignItems:'center' , 
                                             backgroundColor:'#FFB81A',
                                             justifyContent:'center',
-                                            shadowColor:'#2E8BFF80',
-                                            shadowOffset:{width:0 , height: 3},
-                                            shadowRadius:15,
-                                            elevation:15
+                                            // shadowColor:'#2E8BFF80',
+                                            // shadowOffset:{width:0 , height: 3},
+                                            // shadowRadius:15,
+                                            // elevation:15
                                         }} >
-                                        <Image source={require('../Imagess/msg.png')} style={{ width:15 , height:15 }} />
+                                        <Image source={require('../Imagess/msg.png')} style={{ width:17 , height:17 }} />
                                 </View>
                             )
                          }}
@@ -109,9 +109,9 @@ function Tab_Navigator(){
                         tabBarIcon:({focused}) => (
                               
                                 focused ?
-                                <Fontisto name="player-settings" size={20} color="#FFB81A" style={{ marginBottom:'-20%' }} />
+                                <Fontisto name="player-settings" size={22} color="#FFB81A" style={{ marginBottom:'-20%' }} />
                                 :
-                                <Fontisto name="player-settings" size={20} color="#273253" style={{ marginBottom:'-20%' }} />
+                                <Fontisto name="player-settings" size={22} color="#273253" style={{ marginBottom:'-20%' }} />
                             )   
                     }} 
                  />
