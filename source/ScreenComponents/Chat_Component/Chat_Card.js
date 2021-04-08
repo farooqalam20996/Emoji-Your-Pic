@@ -15,91 +15,76 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 LogBox.ignoreLogs([
     'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.'
 ])
+const Chat_Card = (props) => {
 
-const listViewData= [
-    {
-        id:1,
-    },
-    {
-        id:2,
-    }
-    ,{
-        id:3,
-    }
-    ,{
-        id:4,
-    }
-    ,{
-        id:5,
-    }
-    ,
-    {
-        id:6,
-    },
-
-]
-export default class Chat_Card extends Component {
-
-    state={
-        
-    };
-     Tareekh = new Date().getHours()+ ":"+ new Date().getSeconds()
-
-     render() {
-        return (
-                <SwipeListView
-                data={listViewData}
-                renderItem={ (data, rowMap) => (
-
-                            <TouchableWithoutFeedback style={styles.main} onPress={this.props.onpress} > 
-                                <View style={styles.Under_main} >
-                                    <View style={{ flexDirection:'row' }} >
-                                        <Image source={require("../../Imagess/chat_profile.png")} style={{ width:60 , height:60 , borderRadius:100 }} />
-                                        <View style={{ marginLeft:"3%", justifyContent:"space-around", alignItems:"flex-start" }} >
-                                            <Text style={styles.Profile_Name}>{this.props.Profile_Name} </Text>
-                                            <Text style={styles.Profile_msg}>{this.props.Profile_msg}</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
-                                        <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {this.Tareekh} </Text>
-                                        <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520"  }} >
-                                            <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >{data.item.id}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </TouchableWithoutFeedback> 
-                )}
-                renderHiddenItem={ (data, rowMap) => (
-                    <View style={{ flexDirection:"row" , alignItems:"center" , justifyContent:"space-between",padding:"5%" }} >
-                        <View style={{flexDirection:"row"}} >
-                            <TouchableOpacity style={styles.Unread_Style} >
-                                <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
-                                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.Unread_Style,{backgroundColor:"#FFB81A", borderColor:"#000000"}]} >
-                                <Image source={require('../../Imagess/star.png')} style={{ width:15 , height:15 }} />
-                                <Text style={[styles.Unread_Txt, {color:"#0C1326"}]} >Pin fav.</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{flexDirection:"row"}} >
-                            <TouchableOpacity style={styles.Unread_Style} >
-                                <Image source={require('../../Imagess/archive.png')} style={{ width:15 , height:15 }} />
-                                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Archive</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.Unread_Style} >
-                                <Image source={require('../../Imagess/delete.png')} style={{ width:15 , height:15 }} />
-                                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Delete</Text>
-                            </TouchableOpacity>
+    
+    const Tareekh = new Date().getHours()+ ":"+ new Date().getSeconds()
+    const Chat = (chat) => {
+        console.log(chat)
+        var name = chat.data.toName
+        var idUser = chat.data.toSqlID
+        var Photo = chat.data.toPhoto
+        if(chat.data.toID == props.id){
+            name = chat.data.fromName;
+            // image = chat.data.fromPhoto;
+            idUser = chat.data.fromSqlID;
+            Photo = props.image;
+        }
+        return(
+            <TouchableWithoutFeedback style={styles.main} onPress={props.onpress} > 
+                <View style={styles.Under_main} >
+                    <View style={{ flexDirection:'row' }} >
+                        <Image source={{uri:Photo}} style={{ width:60 , height:60 , borderRadius:100 }} />
+                        <View style={{ marginLeft:"3%", justifyContent:"space-around", alignItems:"flex-start" }} >
+                            <Text style={styles.Profile_Name}>{name}</Text>
+                            <Text style={styles.Profile_msg}>{chat.data.lastMessageText}</Text>
                         </View>
                     </View>
-                )}
-                leftOpenValue={110}
-                rightOpenValue={-110}
-            />
-        );
+                    <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
+                        <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {Tareekh} </Text>
+                        <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520"  }} >
+                            <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text>
+                        </View>
+                    </View>
+                </View>
+            </TouchableWithoutFeedback> 
+        )
     }
-}
 
+    return (
+        <SwipeListView
+        data={props.chats}
+        renderItem={ ({item}, rowMap) => Chat(item)}
+        renderHiddenItem={ (data, rowMap) => (
+            <View style={{ flexDirection:"row" , alignItems:"center" , justifyContent:"space-between",padding:"5%" }} >
+                <View style={{flexDirection:"row"}} >
+                    <TouchableOpacity style={styles.Unread_Style} >
+                        <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
+                        <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.Unread_Style,{backgroundColor:"#FFB81A", borderColor:"#000000"}]} >
+                        <Image source={require('../../Imagess/star.png')} style={{ width:15 , height:15 }} />
+                        <Text style={[styles.Unread_Txt, {color:"#0C1326"}]} >Pin fav.</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{flexDirection:"row"}} >
+                    <TouchableOpacity style={styles.Unread_Style} >
+                        <Image source={require('../../Imagess/archive.png')} style={{ width:15 , height:15 }} />
+                        <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Archive</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.Unread_Style} >
+                        <Image source={require('../../Imagess/delete.png')} style={{ width:15 , height:15 }} />
+                        <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Delete</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        )}
+        leftOpenValue={110}
+        rightOpenValue={-110}
+    />
+    );
+}
+export default Chat_Card
 const styles = StyleSheet.create({
     
     main:{

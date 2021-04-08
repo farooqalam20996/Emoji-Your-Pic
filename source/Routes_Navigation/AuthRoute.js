@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { 
     View,
-    Text
+    Text,
+    Image
  } from 'react-native';
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -49,6 +50,13 @@ class AuthRoute extends Component {
      }
 
     render() {
+        if(this.state.isLoggedin === null){
+            return (
+                <View style={{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'black'}}>
+                    <Image style={{height:200,width:200}} source={require('../Imagess/logo.png')}/>
+                </View>
+            )
+        }
         return(
             <AuthContext.Provider value={{ updateState:this.checkToken}} >
                 <View style={{flex:1, backgroundColor:'black'}} >
