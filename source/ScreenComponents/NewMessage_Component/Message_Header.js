@@ -8,20 +8,17 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
- export default class MEssage_Header extends Component {
-     state = { 
-
-      }
-     render() {
+const MEssage_Header = (props) => {
+     
          return (
             <View style={styles.main} >
                 <View style={styles.Frist} >
-                    <TouchableOpacity style={styles.Back_Btn} onPress={this.props.onpress} >
+                    <TouchableOpacity style={styles.Back_Btn} onPress={props.onpress} >
                         <Ionicons name="md-arrow-back" size={18} color="black" />
                     </TouchableOpacity>
                     <Image source={require("../../Imagess/chat_profile.png")} style={{ width:35 , height:35 ,borderRadius:100, marginRight:"5%" }} />
                     <View>
-                        <Text style={styles.Profile_Name} >Scarlett Brooks</Text>
+                        <Text style={styles.Profile_Name} >{props.name}</Text>
                         {
                             true ?
                             <Text style={styles.status_txt} >
@@ -44,9 +41,8 @@ import { Ionicons } from '@expo/vector-icons';
                 </View>
             </View>    
          );
-     }
  }
-
+export default MEssage_Header;
  const styles = StyleSheet.create({
      main:{
         width:"100%",
