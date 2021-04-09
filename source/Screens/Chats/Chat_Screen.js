@@ -39,7 +39,6 @@ class Chats_Screen extends Component {
         .collection('chats')
         .where('toID','==',id)
         .orderBy('lastMessage',"desc")
-       
         .onSnapshot((querySnapshot)=>{
             querySnapshot.docs.map((documentSnapshot)=>{
                 const chats = this.state.chats.filter(chat=>chat.id!==documentSnapshot.id)
@@ -57,7 +56,7 @@ class Chats_Screen extends Component {
                         id={this.state.user.firebase_id}
                         image={this.state.user.image}
                         chats={this.state.chats}
-                        onpress={()=> this.props.navigation.navigate("Main_Chat_Screen")} />
+                        navigation={this.props.navigation} />
                 </ScrollView>
             </View>
 

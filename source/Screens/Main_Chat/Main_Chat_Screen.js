@@ -1,4 +1,3 @@
-// import React, { useState } from 'react';
 import React, { Component } from 'react';
 import { 
     View,
@@ -8,117 +7,149 @@ import {
     StyleSheet,
     TextInput,
     ScrollView,
-    KeyboardAvoidingView,
-    Dimensions
+    FlatList,
  } from 'react-native';
+import { connect } from 'react-redux';
+import firebase from '../../firebase';
  
-import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import Message_Header from "../../ScreenComponents/NewMessage_Component/Message_Header";
+import Message from './Message';
 
-const chat = [];
-
-export default class Chatting extends Component {
-    state = { 
-        Name:"Erica Richter",
-        InputTxt:"",
-        demo:false,
-        Show_Reviews:false,
-        Review_To:"Adam L.",
-        Review_Val:0,
-        Review_Text:"",
-        Review_From:"Erica Jim",
-        Review_change:true,
-        keyboardSpace:0
-     } 
+var chatID;
+class Chatting extends Component {
+    constructor(props){
+        super(props);
+        this.state = { 
+            InputTxt:"",
+            msgs:[]
+        } 
+    }
 
     hrs = new Date().getHours();
     min = new Date().getMinutes();
 
-    chatReply = () => {
-        chat.push({
-            id:"1",
-            comment:this.state.InputTxt
-        });
-        this.setState({ demo: !this.state.demo })
-    };
+    componentDidMount(){
+        chatID = null;
+        this.fetchMessages()
+    }
+    fetchMessages = async () => {
 
+        const {firebase_id} = this.props.user;
+        const {id} = this.props.route.params.person;
+        
+        
+        await firebase.firestore.collection('chats').doc(`${firebase_id}_${id}`)
+        .get().then((chat)=>{
+            if(chat.exists){
+                chatID = `${firebase_id}_${id}`
+            }
+        })
+        await firebase.firestore.collection('chats').doc(`${id}_${firebase_id}`)
+        .get().then((chat)=>{
+            if(chat.exists){
+                chatID = `${id}_${firebase_id}`
+            }
+        })
+
+        //to get chat messages
+       firebase.firestore.collection('chats')
+       .doc(chatID)
+       .collection('messages')
+       .orderBy("createdAt","desc")
+       .onSnapshot((snapshot)=>{
+           const messages = snapshot.docs.map(doc=>{
+               const data = {
+                   id:doc.id,
+                   data:doc.data(),
+               }
+               return data;
+           });
+           this.setState({msgs:messages})
+       })
+    }
+    onSend = async () => {
+        this.input.clear();
+        const fromID = this.props.user.firebase_id;
+        const toID = this.props.route.params.person.id
+
+        // alert(toID)
+
+        firebase.firestore.collection('chats').
+        doc(chatID)
+        .collection('messages')
+        .add(
+            {
+                text: this.state.InputTxt,
+                createdAt: new Date().getTime(),
+                fromID: fromID,
+                toID: toID,
+            }
+        ).then(()=>this.setState({InputTxt:''})).catch((err)=>console.log(err))
+
+        await firebase.firestore.collection('chats')
+        .doc(chatID)
+        .set(
+            {
+                lastMessage: new Date().getTime(),
+                lastMessageText: this.state.InputTxt,
+                // fromID: fromID,
+                // fromName: this.state.user.name,
+                // toID: 'qJm6HqhfHmbKnsKhQFmqi9332BF2',
+                // toName: 'asad',
+            },
+            {
+                merge:true
+            }
+        ).then((res)=>console.log(res)).catch((err)=>console.log(err))
+    }
+    
     render() {
         return (
             <>
                 <View style={styles.Chat_Head} >
-                    <Message_Header onpress={()=> this.props.navigation.goBack()} />
+                    <Message_Header name={this.props.route.params.person.name} onpress={()=> this.props.navigation.goBack()} />
                 </View>
                     <View style={styles.main} >
-                    <View style={styles.First} >
-                    <ScrollView showsVerticalScrollIndicator={true}>
-                        <View style={styles.Reciever} >
-                            <Text>Image</Text>
-                            <View style={{ width:'100%',height:'auto',}} >
-                                <View style={styles.Msg_Container_Reciever} >
-                                    <Text style={[styles.Txt_Message,{color:"#000000"}]} >
-                                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.
-                                    </Text>
-                                </View>
-                                <View style={{alignSelf:"flex-end"}} >
-                                    <Text style={{fontFamily:"Regular"}} > {this.hrs}:{this.min} </Text>
-                                </View>
-                            </View>
-                           
-                            {/* <AntDesign name="down" size={14} color="white" style={{ marginTop:'1.5%', position:"absolute", marginLeft:'85%'}} >
-                            </AntDesign> */}
-                        </View>
-                        
-    
-                        {
-                            chat.map((c) => (
-                                <View style={styles.Sender} key={c.id} >
-                                <View style={{ width:'100%',height:'auto',}}>
-                                  <View style={styles.Msg_Container_Sender} >
-                                          <Text style={[styles.Txt_Message,{color:"#000000"}]}  >
-                                                  {c.comment}
-                                          </Text>
-                                      </View>    
-                                      <View style={{alignSelf:"flex-start"}} >
-                                              <Text style={{fontFamily:"Regular"}}> {this.hrs}:{this.min} </Text>
-                                      </View>
-                                </View>
-                                    <Text>image</Text>
-                                  {/* <AntDesign name="down" size={14} color="black" style={{ marginTop:'1%', marginLeft:'1.5%', position:"absolute", marginLeft:'-85%'}} > */}
-                                      {/* {menu_item} */}
-                                  {/* </AntDesign> */}
-                              </View>               
-          
-                            ))
-                        }
-                       
-                       
-    
-                    </ScrollView>
-                </View>
-                
-                    <View style={styles.Outer_Area}>
-                       
-                        <TouchableOpacity style={styles.trigger} onPress={()=> this.props.navigation.navigate("Camera_Screen")}>
-                            <Image source={require("../../Imagess/camera.png")} style={{width:'50%' , height:"50%"}} />
-                        </TouchableOpacity>
+                        <View style={styles.First} >
+                            <FlatList 
+                                inverted
+                                // style={{backgroundColor:'red'}}
+                                data={this.state.msgs}
+                                renderItem={({item})=>
+                                    <Message 
+                                        msg={item.data.text} 
+                                        side={item.data.fromID == this.props.user.firebase_id ? 'right':'left'}
+                                        photo={item.data.fromID == this.props.user.firebase_id ? this.props.user.Photo: this.props.route.params.person.image}
+                                    />
+                                }
 
-                        <TextInput  
-                            style={styles.Input_style}
-                            value={this.state.InputTxt}
-                            onChangeText={(text)=> this.setState({InputTxt: text})}
-                            placeholder="Type to start chat"
-                            placeholderTextColor="#FFFFFF"
-                            clearTextOnFocus={true}
-                            autoFocus={true}
-                            autoCapitalize="none"
-                            blurOnSubmit={false}
-                        />
-                        <TouchableOpacity style={styles.trigger} onPress={this.chatReply} >
-                            <Image source={require("../../Imagess/send.png")} style={{width:'50%' , height:"50%"}} />
-                        </TouchableOpacity>
-                    </View>
+                            />
+                        </View>
+                    
+                        <View style={styles.Outer_Area}>
+                        
+                            <TouchableOpacity style={styles.trigger} onPress={()=> this.props.navigation.navigate("Camera_Screen")}>
+                                <Image source={require("../../Imagess/camera.png")} style={{width:'50%' , height:"50%"}} />
+                            </TouchableOpacity>
+
+                            <TextInput  
+                                ref={input=> this.input = input}
+                                style={styles.Input_style}
+                                value={this.state.InputTxt}
+                                onChangeText={(text)=> this.setState({InputTxt: text})}
+                                placeholder="Type to start chat"
+                                placeholderTextColor="#FFFFFF"
+                                clearTextOnFocus={true}
+                                autoFocus={true}
+                                autoCapitalize="none"
+                                blurOnSubmit={false}
+                            />
+                            <TouchableOpacity style={styles.trigger} onPress={this.onSend} >
+                                <Image source={require("../../Imagess/send.png")} style={{width:'50%' , height:"50%"}} />
+                            </TouchableOpacity>
+                        </View>
               
-                </View>
+                    </View>
             
                 
                     
@@ -127,7 +158,13 @@ export default class Chatting extends Component {
     }
 }
 
+const mapStateToProps = state => {
+    return{
+        user: state.Login_Reducer.user,
+    }
+}
 
+export default connect(mapStateToProps,null)(Chatting)
 
 const styles = StyleSheet.create({
     main:{

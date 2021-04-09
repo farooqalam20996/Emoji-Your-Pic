@@ -100,34 +100,69 @@ var contactObjects;
         
         this.setState({ contacts, otherContacts, Search:text})
     }
-    goToChat = (user) => () => {
-        
-        const {firebase_id,full_name,id,image} = this.props.user;
-        // alert(user.id)
-        firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`).set({
-            lastMessage: new Date().getTime(),
-            lastMessageText: ``,
-            fromID: firebase_id,
-            fromName: full_name,
-            fromPhoto:image,
-            // fromSqlID:id,
-            toID: user.id,
-            toPhoto:user.data.image,
-            // toSqlID:person.idUser,
-            toName: user.data.name,
-        }).then(()=>{
-            firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`)
-            .collection('messages')
-            .add({})
-            .then(()=>{
-                this.props.navigation.navigate("Main_Chat_Screen",{
-                    
-                })
-            })
-            .catch((err)=>alert(err))
-        }).catch((err)=>{
-            alert(err)
+    checkChatExists = async (firebase_id,userID) => {
+        // alert(firebase_id+" "+userID)
+        var ch1,ch2 = false;
+        await firebase.firestore.collection('chats').doc(`${firebase_id}_${userID}`)
+        .get().then((chat)=>{
+            if(chat.exists){
+                ch1 = true;
+            }
         })
+        await firebase.firestore.collection('chats').doc(`${userID}_${firebase_id}`)
+        .get().then((chat)=>{
+            if(chat.exists){
+                ch2 = true;                
+            }
+        })
+        if(ch1 || ch2){
+            return true
+        }else{
+            return false;
+        }
+    }
+    goToChat = (user) => async () => {
+
+        const {firebase_id,full_name,id,image} = this.props.user;
+        var check = await this.checkChatExists(firebase_id,user.id)
+        if(!check){
+            firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`).set({
+                lastMessage: new Date().getTime(),
+                lastMessageText: ``,
+                fromID: firebase_id,
+                fromName: full_name,
+                fromPhoto:image,
+                // fromSqlID:id,
+                toID: user.id,
+                toPhoto:user.data.image,
+                // toSqlID:person.idUser,
+                toName: user.data.name,
+            }).then(()=>{
+                firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`)
+                .collection('messages')
+                .add({})
+                .then(()=>{
+                    this.props.navigation.navigate("Main_Chat_Screen",{
+                        person:{
+                            id: user.id,
+                            name:user.data.name,
+                            image:user.data.image, 
+                        },
+                    })
+                })
+                .catch((err)=>alert(err))
+            }).catch((err)=>{
+                alert(err)
+            })
+        }else{
+            this.props.navigation.navigate("Main_Chat_Screen",{
+                person:{
+                    id: user.id,
+                    name:user.data.name,
+                    image:user.data.image, 
+                },
+            })
+        }   
 
     }
     sendInvite = (item) => () => {
@@ -158,15 +193,19 @@ var contactObjects;
                                 <View>
                                 <FlatList
                                     data={this.state.contacts}
-                                    renderItem={({item})=>(
-                                        <Contact_Card 
-                                            Name={item.data.name}  
-                                            Number={item.data.phone} 
-                                            img={{uri:item.data.image}}
-                                            // img={this.state.image == null ? require("../../Imagess/chat_profile.png") : {uri: item.image }} 
-                                            onpress={this.goToChat(item)} 
-                                        />
-                                    )}
+                                    renderItem={({item})=>{
+                                        if(item.data.uid !== this.props.user.firebase_id){
+                                            return(
+                                                <Contact_Card 
+                                                    Name={item.data.name}  
+                                                    Number={item.data.phone} 
+                                                    img={{uri:item.data.image}}
+                                                    // img={this.state.image == null ? require("../../Imagess/chat_profile.png") : {uri: item.image }} 
+                                                    onpress={this.goToChat(item)} 
+                                                />
+                                            )
+                                        }
+                                    }}
                                 />
                                 
                                     {/* <Message_Cards Press={()=> this.props.navigation.navigate('Main_Chat_Screen')} /> */}

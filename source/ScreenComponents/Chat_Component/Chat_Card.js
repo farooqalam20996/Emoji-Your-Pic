@@ -19,36 +19,51 @@ const Chat_Card = (props) => {
 
     
     const Tareekh = new Date().getHours()+ ":"+ new Date().getSeconds()
+
+
     const Chat = (chat) => {
         console.log(chat)
         var name = chat.data.toName
-        var idUser = chat.data.toSqlID
+        var toID = chat.data.toID
         var Photo = chat.data.toPhoto
         if(chat.data.toID == props.id){
             name = chat.data.fromName;
-            // image = chat.data.fromPhoto;
-            idUser = chat.data.fromSqlID;
-            Photo = props.image;
+            toID = chat.data.fromID;
+            Photo = chat.data.fromPhoto;
         }
-        return(
-            <TouchableWithoutFeedback style={styles.main} onPress={props.onpress} > 
-                <View style={styles.Under_main} >
-                    <View style={{ flexDirection:'row' }} >
-                        <Image source={{uri:Photo}} style={{ width:60 , height:60 , borderRadius:100 }} />
-                        <View style={{ marginLeft:"3%", justifyContent:"space-around", alignItems:"flex-start" }} >
-                            <Text style={styles.Profile_Name}>{name}</Text>
-                            <Text style={styles.Profile_msg}>{chat.data.lastMessageText}</Text>
+        const navigate = () => {
+            props.navigation.navigate('Main_Chat_Screen',{
+                person:{
+                    id: toID,
+                    name:name,
+                    image:Photo, 
+                },
+            })
+        }
+        if(chat.data.lastMessageText  !== ""){
+            return(
+                <TouchableWithoutFeedback style={styles.main} onPress={navigate} > 
+                    <View style={styles.Under_main} >
+                        <View style={{ flexDirection:'row' }} >
+                            <Image source={{uri:Photo}} style={{ width:60 , height:60 , borderRadius:100 }} />
+                            <View style={{ marginLeft:"3%", justifyContent:"space-around", alignItems:"flex-start" }} >
+                                <Text style={styles.Profile_Name}>{name}</Text>
+                                <Text style={styles.Profile_msg}>{chat.data.lastMessageText}</Text>
+                            </View>
+                        </View>
+                        <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
+                            <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {Tareekh} </Text>
+                            <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520"  }} >
+                                <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text>
+                            </View>
                         </View>
                     </View>
-                    <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
-                        <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {Tareekh} </Text>
-                        <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520"  }} >
-                            <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text>
-                        </View>
-                    </View>
-                </View>
-            </TouchableWithoutFeedback> 
-        )
+                </TouchableWithoutFeedback> 
+            )
+        }else{
+            return <View/>;
+        }
+        
     }
 
     return (
