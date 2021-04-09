@@ -13,6 +13,11 @@ import Login_Page from "../Screens/LoginScreen/Login";
 import SignUp_OTP_Verification from "../Screens/Get_started/SignUp_OTP_Verification";
 import SignUp_Success from "../Screens/Get_started/SignUp_Success";
 import SignUp_Profile from "../Screens/Get_started/SignUp_Profile";
+import Email_Recovery from "../Screens/ForgetScreens/Email_Recovery";
+import Email_Verifi_Code from "../Screens/ForgetScreens/Email_Verifi_Code";
+import Change_Password from "../Screens/ForgetScreens/Change_Password";
+
+
 import AppRoutes from "../Routes_Navigation/AppRoutes";
 import AsyncStorage from '@react-native-community/async-storage';
 import { putToken, putUserData } from "../Redux/Actions/User_Login_Action";
@@ -78,6 +83,9 @@ class AuthRoute extends Component {
                                     <Stack.Screen name="SignUp_OTP_Verification" component={SignUp_OTP_Verification} />
                                     <Stack.Screen name="SignUp_Success" component={SignUp_Success} />
                                     <Stack.Screen name="SignUp_Profile" component={SignUp_Profile} />
+                                    <Stack.Screen name="Email_Recovery" component={Email_Recovery} />
+                                    <Stack.Screen name="Email_Verifi_Code" component={Email_Verifi_Code} />
+                                    <Stack.Screen name="Change_Password" component={Change_Password} />
                                 </>
 
                             } 

@@ -61,7 +61,7 @@ class Login extends Component {
                             />
                             { this.props.Loading_Failed ? <Text style={{color:"yellow"}} >Email/Password is not Exist</Text> : null }
                         </View>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={()=> this.props.navigation.navigate("Email_Recovery")}  >
                             <Text style={[styles.Txt,{color:"#C63520", alignSelf:"flex-end"}]} >forget?</Text>
                         </TouchableOpacity>
                        {
@@ -75,8 +75,11 @@ class Login extends Component {
                                 <Text style={[styles.Txt,{color:"#FFFFFF"}]} > Login </Text>
                             </TouchableOpacity>
                        }
+                            <TouchableOpacity style={[styles.Login_btn, {backgroundColor:"#FFB81A"}]} onPress={()=>this.props.navigation.goBack()} >
+                                <Text style={[styles.Txt,{color:"#060A16"}]} > Back </Text>
+                            </TouchableOpacity>
                     </View>
-                    <View style={{flexDirection:"row" , alignItems:"center" , justifyContent:"center", marginTop:"8%"}} >
+                    {/* <View style={{flexDirection:"row" , alignItems:"center" , justifyContent:"center", marginTop:"8%"}} >
                         <Image source={require('../../Imagess/Line1.png')} style={{ width:"45%" , height:3 }} />
                         <Text style={{ fontFamily:'Light' , color:"#273253", fontSize:12,lineHeight:13 }} >OR</Text>
                         <Image source={require('../../Imagess/Line1.png')} style={{ width:"45%" , height:3 }} />
@@ -97,6 +100,7 @@ class Login extends Component {
                                 <Text style={styles.Pol_Txt} > Terms Of Use </Text>
                         </TouchableOpacity>
                     </View>
+                    */}
                     {/* <View style={{ width:'35%', height:3 , backgroundColor:"#FFFFFF" , borderRadius:100, alignSelf:"center" }} /> */}
                 </ScrollView>
             </View>    
@@ -146,7 +150,7 @@ function mapDispatchToProps(dispatch) {
         flexDirection:"row",
         alignItems:'center',
         justifyContent:"space-evenly",  
-        marginTop:"5%"
+        marginTop:"5%",
     },
     Pol_Txt:{
         fontSize:12,

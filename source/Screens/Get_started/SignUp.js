@@ -72,7 +72,7 @@ class SignUp_Page extends Component {
                             null
                     }
                 </View>
-                <View style={styles.OtherSignUp_Container} >
+                {/* <View style={styles.OtherSignUp_Container} >
                     <TouchableOpacity style={[styles.SignUp_btn,{backgroundColor:"#FFB81A"}]} >
                             <Text style={[styles.Txt,{color:"#060A16"}]} > SignUp with Facebook </Text>
                     </TouchableOpacity>
@@ -87,7 +87,7 @@ class SignUp_Page extends Component {
                     <TouchableOpacity style={styles.priv_btn} >
                             <Text style={styles.Pol_Txt} > Terms Of Use </Text>
                     </TouchableOpacity>
-                </View> 
+                </View>  */}
                 <Snackbar 
                     visible={this.state.Show_error}
                     onDismiss={()=> this.setState({Show_error: false})}
