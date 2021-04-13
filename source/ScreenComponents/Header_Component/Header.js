@@ -33,10 +33,12 @@ import {
          padding:"5%",
          paddingLeft:'1%',
          paddingRight:'1%',
+         paddingBottom:"3%",
+        //  backgroundColor:"red"
      },
      Heading_Txt:{
         fontSize:26,
-        lineHeight:30,
+        lineHeight:28,
         fontFamily:"Bold",
         color:'#FFFFFF', 
         textAlign:"left"

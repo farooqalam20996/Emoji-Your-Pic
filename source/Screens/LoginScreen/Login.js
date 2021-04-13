@@ -19,6 +19,7 @@ class Login extends Component {
      state = { 
         username:"",
         password:"",
+        show_password:true
       }
 
       login_Now = () => {
@@ -55,15 +56,29 @@ class Login extends Component {
                                 style={styles.Input_Style}
                                 value={this.state.password}
                                 onChangeText={(text) => this.setState({password: text})}
-                                blurOnSubmit={false}
-                                secureTextEntry={true}
+                                blurOnSubmit={false} 
+                                secureTextEntry={this.state.show_password?true:false}
                                 onSubmitEditing={this.login_Now}
                             />
                             { this.props.Loading_Failed ? <Text style={{color:"yellow"}} >Email/Password is not Exist</Text> : null }
                         </View>
-                        <TouchableOpacity onPress={()=> this.props.navigation.navigate("Email_Recovery")}  >
-                            <Text style={[styles.Txt,{color:"#C63520", alignSelf:"flex-end"}]} >forget?</Text>
-                        </TouchableOpacity>
+                        <View style={{ flexDirection:'row' , alignItems:"center"  , justifyContent:"space-between" , marginTop:"5%" }} >
+                           {
+                               this.state.password !== "" &&  
+                                <TouchableOpacity onPress={()=> this.setState({show_password: !this.state.show_password})}  >
+                                        {
+                                            this.state.show_password ?
+                                            <Text style={[styles.Txt,{color:'#FFB81A' , fontFamily:"Bold"}]} >Show Passsword</Text>
+                                            :
+                                            <Text style={[styles.Txt,{color:'#FFB81A' , fontFamily:"Bold"}]} >Hide Passsword</Text>
+                                        }
+                                </TouchableOpacity>
+                           }
+                            
+                            <TouchableOpacity onPress={()=> this.props.navigation.navigate("Email_Recovery")}  >
+                                <Text style={[styles.Txt,{color:"#C63520"}]} >forget?</Text>
+                            </TouchableOpacity>
+                        </View>
                        {
                            this.props._loader ?
                             <View style={styles.Login_btn} >
@@ -130,7 +145,8 @@ function mapDispatchToProps(dispatch) {
      main:{
         flex:1,
         backgroundColor:"#060A16",
-        padding:'5%'
+        padding:'5%',
+        paddingBottom:"0%"
      },
      Login_container:{
         flex:1.5,
@@ -160,10 +176,10 @@ function mapDispatchToProps(dispatch) {
      },
      Txt:{
         fontSize:14,
-        lineHeight:16,
+        lineHeight:17,
         fontFamily:"Regular",
         color:'#FFFFFF',
-        textAlign:"left",
+        // textAlign:"left",
         marginBottom:"3%",
         marginTop:"4%"
      }, 

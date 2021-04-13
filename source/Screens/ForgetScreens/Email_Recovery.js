@@ -69,12 +69,12 @@ import { API } from '../../Routes_Navigation/MainURL';
                     />
                     {
                         this.state.Failed ?
-                            <Text style={[styles.Txt,{color:"#FFB81A" ,  lineHeight:14 , marginBottom:0 , marginTop:4}]} > {this.props.err} </Text>
+                            <Text style={[styles.Txt,{color:"#FFB81A" ,  lineHeight:16 , marginBottom:0 , marginTop:"5%"}]} > Email not exist </Text>
                             :
                             null
                     }
                 </View>
-                <TouchableOpacity disabled={false} style={styles.Login_btn} onPress={this.Email_Verification} >
+                <TouchableOpacity disabled={this.state.Loader} style={styles.Login_btn} onPress={this.Email_Verification} >
                     {
                         this.state.Loader ?
                         <ActivityIndicator size="large" color="#FFFFFF"  />

@@ -174,7 +174,7 @@ var contactObjects;
          return (
                 <View style={styles.main}>
                     <Top_Header Heading="New Message" btn={<Text sty={styles.Txt} >Cancel</Text>} />
-                    <View style={{ marginBottom:"10%", marginTop:"5%" }} >
+                    <View style={{  marginBottom:"2%", marginTop:"1%" }} >
                         <TextInput 
                             style={styles.Input_Style}
                             value={this.state.Search}
@@ -270,10 +270,10 @@ const styles = StyleSheet.create({
      },
      Input_Style:{
         width:"100%",
-        height:45,
+        height:35,
         backgroundColor:"#0C1326",
         borderColor:"#273253",
-        borderRadius:12,
+        borderRadius:8,
         borderWidth:1,  
         fontSize:13,
         lineHeight:14,

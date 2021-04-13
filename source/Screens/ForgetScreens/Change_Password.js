@@ -27,7 +27,8 @@ import { API } from '../../Routes_Navigation/MainURL';
             Loader:false,
             Fialed:false,
             Success:false,
-            err:""
+            err:"",
+            show_password:true
         }
     }
 
@@ -104,7 +105,7 @@ import { API } from '../../Routes_Navigation/MainURL';
                                 value={this.state.Password}
                                 onChangeText={(text) => this.setState({Password: text})}
                                 blurOnSubmit={false}
-                                secureTextEntry={true}
+                                secureTextEntry={this.state.show_password?true:false}
                             />
                         </View>
                         <View style={{marginTop:"7%"}} >
@@ -114,10 +115,19 @@ import { API } from '../../Routes_Navigation/MainURL';
                                 value={this.state.Confirm_Password}
                                 onChangeText={(text) => this.setState({Confirm_Password: text})}
                                 blurOnSubmit={false}
-                                secureTextEntry={true}
+                                secureTextEntry={this.state.show_password?true:false}
                                 onSubmitEditing={this.Check_Balance}
                             />
                         </View>
+
+                        <TouchableOpacity onPress={() => this.setState({show_password: !this.state.show_password})} >
+                            {
+                                this.state.show_password ?
+                                <Text style={[styles.Txt,{color:'#FFB81A' , fontFamily:"Bold"}]} >Show Passsword</Text>
+                                :
+                                <Text style={[styles.Txt,{color:'#FFB81A' , fontFamily:"Bold"}]} >Hide Passsword</Text>
+                            }
+                        </TouchableOpacity>
                         
                         <TouchableOpacity disabled={false} style={styles.Login_btn} onPress={this.Check_Balance} >
                             {
