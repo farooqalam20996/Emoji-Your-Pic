@@ -11,6 +11,8 @@ import {
  } from 'react-native';
 import { connect } from 'react-redux';
 import firebase from '../../firebase';
+import { Entypo } from '@expo/vector-icons'; 
+import * as ImagePicker from 'expo-image-picker';
 import Message_Header from "../../ScreenComponents/NewMessage_Component/Message_Header";
 import Message from './Message';
 
@@ -20,6 +22,7 @@ class Chatting extends Component {
         super(props);
         this.state = { 
             InputTxt:"",
+            image:null,
             msgs:[]
         } 
     }
@@ -30,6 +33,50 @@ class Chatting extends Component {
     componentDidMount(){
         chatID = null;
         this.fetchMessages()
+    }
+    // urlToBlob(url) {
+    //     return new Promise((resolve, reject) => {
+    //         var xhr = new XMLHttpRequest();
+    //         xhr.onerror = reject;
+    //         xhr.onreadystatechange = () => {
+    //             if (xhr.readyState === 4) {
+    //                 resolve(xhr.response);
+    //             }
+    //         };
+    //         xhr.open('GET', url);
+    //         xhr.responseType = 'blob'; // convert type
+    //         xhr.send();
+    //     })
+    // }
+    select_image = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        // allowsMultipleSelection:true,
+        // allowsEditing: true,
+        // aspect: [4, 3],
+        quality: 1,
+    });
+        console.log(result);
+        if (!result.cancelled) {
+            this.setState({ image: result},()=>{
+                this.sendImage()
+            })
+        }
+    };
+    sendImage = async () => {
+        // const imageFile = await this.urlToBlob(this.state.image.uri);
+        // console.log(imageFile)
+        // const img = {
+        //     name: "image.jpg",
+        //     type: "image/jpeg",
+        //     uri: Platform.OS === "android" ? this.state.image.uri : this.state.image.uri.replace("file://", "")
+        // }
+        // firebase.storage.ref('asda/iamgename.jpg').put(imageFile)
+        // const imageRef = storage().ref(`asdasd/${'imagename.jpg'}`)
+        // await imageRef.putFile(this.state.image.uri, { contentType: 'image/jpg'}).catch((error) => { throw error })
+        // const url = await imageRef.getDownloadURL().catch((error) => { throw error });
+        // console.log(url)
+        // return url
     }
     fetchMessages = async () => {
 
@@ -106,7 +153,11 @@ class Chatting extends Component {
         return (
             <>
                 <View style={styles.Chat_Head} >
-                    <Message_Header name={this.props.route.params.person.name} onpress={()=> this.props.navigation.goBack()} />
+                    <Message_Header 
+                        name={this.props.route.params.person.name}
+                        onpress={()=> this.props.navigation.goBack()}
+                        image={this.props.route.params.person.image}
+                    />
                 </View>
                     <View style={styles.main} >
                         <View style={styles.First} >
@@ -118,7 +169,7 @@ class Chatting extends Component {
                                     <Message 
                                         msg={item.data.text} 
                                         side={item.data.fromID == this.props.user.firebase_id ? 'right':'left'}
-                                        photo={item.data.fromID == this.props.user.firebase_id ? this.props.user.Photo: this.props.route.params.person.image}
+                                        // photo={item.data.fromID == this.props.user.firebase_id ? this.props.user.image: this.props.route.params.person.image}
                                     />
                                 }
 
@@ -130,6 +181,9 @@ class Chatting extends Component {
                             <TouchableOpacity style={styles.trigger} onPress={()=> this.props.navigation.navigate("Camera_Screen")}>
                                 <Image source={require("../../Imagess/camera.png")} style={{width:'50%' , height:"50%"}} />
                             </TouchableOpacity>
+                            <TouchableOpacity style={styles.trigger} onPress={this.select_image}>
+                                <Entypo name="images" size={22} color="#C63520" />
+                            </TouchableOpacity>
 
                             <TextInput  
                                 ref={input=> this.input = input}
@@ -139,7 +193,7 @@ class Chatting extends Component {
                                 placeholder="Type to start chat"
                                 placeholderTextColor="#FFFFFF"
                                 clearTextOnFocus={true}
-                                autoFocus={true}
+                                // autoFocus={true}
                                 autoCapitalize="none"
                                 blurOnSubmit={false}
                             />
@@ -192,7 +246,7 @@ const styles = StyleSheet.create({
         alignSelf:"flex-end",
     },
     Input_style:{
-        width:"80%",
+        width:"70%",
         height:45   ,
         backgroundColor:"#0C1326",
         borderRadius:12,

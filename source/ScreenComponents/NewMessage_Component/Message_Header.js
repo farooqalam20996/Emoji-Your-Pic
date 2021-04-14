@@ -16,9 +16,9 @@ const MEssage_Header = (props) => {
                     <TouchableOpacity style={styles.Back_Btn} onPress={props.onpress} >
                         <Ionicons name="md-arrow-back" size={18} color="black" />
                     </TouchableOpacity>
-                    <Image source={require("../../Imagess/chat_profile.png")} style={{ width:35 , height:35 ,borderRadius:100, marginRight:"5%" }} />
-                    <View>
-                        <Text style={styles.Profile_Name} >{props.name}</Text>
+                    <Image source={{uri: props.image}} style={{ width:35 , height:35 ,borderRadius:100, marginRight:"5%" }} />
+                    <View >
+                        <Text style={styles.Profile_Name} >{props.name.charAt(0).toUpperCase()+props.name.substr(1).toLowerCase() }</Text>
                         {
                             true ?
                             <Text style={styles.status_txt} >
@@ -72,7 +72,8 @@ export default MEssage_Header;
         textAlign:"left"
      },
      status_txt:{
-        fontSize:9,
+        fontSize:10,
+        marginTop:2,
         lineHeight:11,
         fontFamily:"Light",
         color:'#5B6C9F', 
