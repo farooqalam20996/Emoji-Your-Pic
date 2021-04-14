@@ -13,7 +13,6 @@ import {
 import { connect } from "react-redux";
 import { ChangeLogin } from "../../Redux/Actions/User_Login_Action";
 import AuthContext from "../../Routes_Navigation/Context";
-import Spinner from "react-native-loading-spinner-overlay";
 
 class Login extends Component {
      state = { 
@@ -25,17 +24,11 @@ class Login extends Component {
       login_Now = () => {
           Keyboard.dismiss(),
           this.props.user_Login(this.state.username, this.state.password, this.context)
-        // this.props.navigation.navigate('Tab_Navigator')
       }
 
      render() {
          return (
             <View style={styles.main} > 
-            {/* <Spinner 
-                visible={this.props._loader}
-                textContent="Loading..."
-                textStyle={{ fontSize:14 , color:'yellow',fontFamily:'Bold' }}
-            /> */}
                 <ScrollView> 
                     <View style={styles.Login_container} >
                         <Text style={styles.heading_Txt} >

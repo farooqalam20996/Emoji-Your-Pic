@@ -8,10 +8,7 @@ import {
     Animated
  } from 'react-native';
 // import Animated from "react-native-reanimated";
-import { RNCamera } from "react-native-camera";
-import { TabView , SceneMap } from "react-native-tab-view";
 import { FontAwesome5, Ionicons } from '@expo/vector-icons'; 
-import * as ImagePicker from "expo-image-picker";
 import { Camera } from "expo-camera";
 
 
@@ -168,7 +165,6 @@ export default class Camera_Screen extends Component {
   );
   const ThirdRoute = () => (
    <FirstRoute />
-
   );
 
  const styles = StyleSheet.create({

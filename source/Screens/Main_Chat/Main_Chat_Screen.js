@@ -11,7 +11,6 @@ import {
  } from 'react-native';
 import { connect } from 'react-redux';
 import firebase from '../../firebase';
- 
 import Message_Header from "../../ScreenComponents/NewMessage_Component/Message_Header";
 import Message from './Message';
 
@@ -148,12 +147,8 @@ class Chatting extends Component {
                                 <Image source={require("../../Imagess/send.png")} style={{width:'50%' , height:"50%"}} />
                             </TouchableOpacity>
                         </View>
-              
-                    </View>
-            
-                
-                    
-         </>
+                    </View>    
+            </>
         );
     }
 }

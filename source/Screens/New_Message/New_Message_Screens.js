@@ -11,9 +11,6 @@ import Contact_Card from '../../ScreenComponents/Contact_Component/Contact_Card'
  import Top_Header from "../../ScreenComponents/Header_Component/Header";
 import * as Contacts from "expo-contacts";
 import Communications from 'react-native-communications';
-
- import Message_Cards from "../../ScreenComponents/NewMessage_Component/Message_Card";
-import Contacts_Screen from "../Contacts/Contacts_Screen";
 import firebase from '../../firebase';
 import { connect } from 'react-redux';
 

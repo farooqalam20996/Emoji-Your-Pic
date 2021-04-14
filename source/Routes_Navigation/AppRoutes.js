@@ -19,6 +19,8 @@ import NotificationSetting from "../Screens/Settings/Notification_Setting/Notifi
 import AccountSetting from '../Screens/Settings/Account_Setting/Account_Setting';
 import PrivacySetting from "../Screens/Settings/Account_Setting/Privacy_Setting";
 import Search_Screen from "../Screens/Chats/Search_Screen";
+import Change_Password from "../Screens/Settings/Account_Setting/Change_Password";
+import Edit_Account from "../Screens/Settings/Account_Setting/Edit_Account";
 
 
 const Tab = createBottomTabNavigator();
@@ -152,6 +154,8 @@ function ChatScreen(params) {
             <Stack.Screen name="AccountSetting" component={AccountSetting} />
             <Stack.Screen name="NotificationSetting" component={NotificationSetting} />
             <Stack.Screen name="PrivacySetting" component={PrivacySetting} />
+            <Stack.Screen name="Change_Password" component={Change_Password} />
+            <Stack.Screen name="Edit_Account" component={Edit_Account} />
          </Stack.Navigator>
      )
  }

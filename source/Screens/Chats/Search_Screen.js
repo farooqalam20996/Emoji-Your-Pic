@@ -31,9 +31,6 @@ import {
                         placeholderTextColor="#5B6C9F"
                     />
                 </View>
-
-                
-            
             </View>
 
          );

@@ -11,9 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Call_Card from "../../ScreenComponents/Call_Component/Call_Card";
 
  export default class Calls_Screen extends Component {
-     state = { 
-
-      }
+    
      render() {
          return (
             <View style={styles.main}>

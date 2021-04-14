@@ -9,7 +9,6 @@ import stores from "./source/Redux/store";
 
 export default function App() {
 
-
   const [isloading] = useFonts({
               "Poppins_Black":require('./assets/fonts/Poppins/Poppins-Black.ttf'),
               "Poppins_BlackItalic":require('./assets/fonts/Poppins/Poppins-BlackItalic.ttf'),

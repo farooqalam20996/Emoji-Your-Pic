@@ -31,13 +31,6 @@ class Settings_Screen extends Component {
         this.context.updateState()
     }
 
-    componentDidMount(){
-        // AsyncStorage.getItem('user', (err, data)=>{
-            
-        // })
-        // alert(this.props.token) 
-    }
-
      render() {
          return (
             <View style={styles.main}>
@@ -47,7 +40,6 @@ class Settings_Screen extends Component {
                         <Image source={{uri: this.props.user_name.image}} style={{width:55 , height:55, borderRadius:100}} />
                     </TouchableOpacity>
                     <Text style={styles.Profile_Name} adjustsFontSizeToFit={true} > 
-                            {/* Jason Parker */}
                             {this.props.user_name.full_name}
                     </Text>
                 </View>
@@ -65,7 +57,6 @@ class Settings_Screen extends Component {
                <Modal
                     onRequestClose={()=>this.setState({isVisible:false})}
                     visible={this.state.isVisible}
-                    // style={{backgroundColor:"black"}}
                     transparent
                >
                     <ImageViewer 
@@ -92,8 +83,6 @@ class Settings_Screen extends Component {
 
 function mapStateToProps(state) {
     return{
-        // user_name: state.SignUp_Reducer.username,
-        // Image_uri:state.SignUp_Reducer.ImageUri,
         user_name:state.Login_Reducer.user,
         token:state.Login_Reducer.token,
     }

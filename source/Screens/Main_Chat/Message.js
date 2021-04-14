@@ -5,7 +5,6 @@ import {
     Text,
     StyleSheet,
 } from 'react-native';
-import { AntDesign } from "@expo/vector-icons";
 
 const Message = ({hrs,min,msg, side,photo}) => {
     // const hrs = new Date().getHours();

@@ -15,12 +15,7 @@ import {
         return (
             <View style={styles.main}>
                 <Setting_Header Heading="Privacy Setting" onpress={()=> this.props.navigation.goBack()} />
-                <Chat_Card Txt="Edit Account" Press={()=> alert("Pressed")} />
-                <Chat_Card Txt="Privacy Settings" Press={()=> alert("Pressed")} />
-                <Chat_Card Txt="Blocking" Press={()=> alert("Pressed")} />
-                <Chat_Card Txt="Read Receipts" Press={()=> alert("Pressed")} />
-                <Chat_Card Txt="Backup Account" Press={()=> alert("Pressed")} />
-                <Chat_Card Txt={this.delete_Txt} Press={()=> alert("Pressed")} />
+                <Chat_Card Txt="Change Password" Press={()=> this.props.navigation.navigate("Change_Password")} />
             </View>   
          );
      }
@@ -31,7 +26,7 @@ import {
         flex:1,
         padding:'6%',
         backgroundColor:"#060A16"
-    },
+    }, 
     Back_Btn:{
         width:20,
         height:20,

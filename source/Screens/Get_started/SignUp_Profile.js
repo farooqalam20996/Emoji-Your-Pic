@@ -186,10 +186,6 @@ class SignUp_Profile extends Component {
                         }
                         <Text style={styles.Txt} >Add number</Text>
                         <View style={{flexDirection:'row' , alignItems:"center"}} >
-                            {/* <View style={styles.uni_num} >
-                                <Image source={require('../../Imagess/flag.png')} style={{ width:28, height:28 , borderRadius:5 }} />
-                                <Text style={{color:'#FFFFFF' , fontFamily:"Regular", fontSize:13}} >+1</Text>
-                            </View> */}
                             <TextInput
                                 ref={ref => { this.NextInput3 = ref; }}
                                 style={[styles.Input_Style,{width:"100%"}]}
@@ -200,16 +196,6 @@ class SignUp_Profile extends Component {
                                 keyboardType="phone-pad"
                             />
                         </View>
-
-                        {/* <PhoneInput 
-                            ref={ref => { this.NextInput3 = ref; }}
-                            style={[styles.Input_Style,{width:"78%"}]}
-                            value={this.props.phoneNumber}
-                            onChange={(text) => this.props._PhoneNumber(text)}
-                            country="US"
-                            onSubmit={()=> this.result()}
-                        /> */}
-
                         {
                             this.props._failed ?
                             <Text style={{ color:"yellow" }} > Profile not Updated </Text>

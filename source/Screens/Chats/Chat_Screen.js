@@ -56,7 +56,7 @@ class Chats_Screen extends Component {
                     <TextInput 
                         style={styles.Input_Style}
                         value={this.state.Search}
-                        autoCapitalize
+                        // autoCapitalize
                         onChangeText={(text) => this.setState({Search: text})}
                         placeholder="Search chat"
                         placeholderTextColor="#5B6C9F"
