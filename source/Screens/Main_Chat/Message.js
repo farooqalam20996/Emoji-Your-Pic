@@ -42,7 +42,7 @@ const Message = ({hrs,min,msg, side,photo}) => {
                     {msg}
                 </Text>
             </View>
-            {!isLeftSide && <Image source={{uri:photo}} style={{ width:35, height:35 , borderRadius:8 }} />}
+            {/* {!isLeftSide && <Image source={{uri:photo}} style={{ width:35, height:35 , borderRadius:8 }} />} */}
         </View>
         
     )

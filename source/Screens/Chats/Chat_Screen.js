@@ -3,10 +3,10 @@ import {
     View,
     Text,
     StyleSheet,
-    ScrollView,
-    TextInput
+    ScrollView
  } from 'react-native';
 import Top_Header from "../../ScreenComponents/Header_Component/Header";
+import { AntDesign } from "@expo/vector-icons";
 import Chat_Card from "../../ScreenComponents/Chat_Component/Chat_Card";
 import { connect } from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -15,8 +15,7 @@ import firebase from '../../firebase';
 class Chats_Screen extends Component {
     state={
         user:[],
-        chats:[],
-        Search:""
+        chats:[]
     }
     componentDidMount(){
         AsyncStorage.getItem('user',(err,data)=>{
@@ -51,26 +50,16 @@ class Chats_Screen extends Component {
     render() {
         return (
             <View style={styles.main}>
-                <Top_Header Heading="Chat" />
-                <View style={{ marginBottom:"2%", marginTop:"1%" }} >
-                    <TextInput 
-                        style={styles.Input_Style}
-                        value={this.state.Search}
-                        autoCapitalize
-                        onChangeText={(text) => this.setState({Search: text})}
-                        placeholder="Search chat"
-                        placeholderTextColor="#5B6C9F"
-                    />
-                </View>
+                <Top_Header Heading="Chat" btn={<AntDesign name="search1" size={24} color="#FFB81A" onPress={()=> this.props.navigation.navigate("Search")} />} />
                 <ScrollView showsVerticalScrollIndicator={false} >
                     <Chat_Card 
                         id={this.state.user.firebase_id}
                         image={this.state.user.image}
                         chats={this.state.chats}
-                        navigation={this.props.navigation} 
-                    />
+                        navigation={this.props.navigation} />
                 </ScrollView>
             </View>
+
         );
     }
 }
@@ -88,18 +77,5 @@ const styles = StyleSheet.create({
         backgroundColor:"#060A16",
         padding:'6%',
         paddingBottom:"0%"
-    },
-    Input_Style:{
-        width:"100%",
-        height:35,
-        backgroundColor:"#0C1326",
-        borderColor:"#273253",
-        borderRadius:8,
-        borderWidth:1,  
-        fontSize:13,
-        lineHeight:14,
-        fontFamily:"Regular",
-        color:'#FFFFFF',
-        paddingLeft:"2%"
-     },
+    }
 })

@@ -45,15 +45,15 @@ const Chat_Card = (props) => {
                 <TouchableWithoutFeedback style={styles.main} onPress={navigate} > 
                     <View style={styles.Under_main} >
                         <View style={{ flexDirection:'row' }} >
-                            <Image source={{uri:Photo}} style={{ width:60 , height:60 , borderRadius:100 }} />
-                            <View style={{ marginLeft:"3%", justifyContent:"space-around", alignItems:"flex-start" }} >
-                                <Text style={styles.Profile_Name}>{name}</Text>
+                            <Image source={{uri:Photo}} style={{ width:50 , height:50 , borderRadius:100 }} />
+                            <View style={{ marginLeft:"5%", justifyContent:"center", alignItems:"flex-start" }} >
+                                <Text style={styles.Profile_Name}>{name.charAt(0).toUpperCase()+name.substr(1).toLowerCase()}</Text>
                                 <Text style={styles.Profile_msg}>{chat.data.lastMessageText}</Text>
                             </View>
                         </View>
                         <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
                             <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {Tareekh} </Text>
-                            <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520"  }} >
+                            <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520", marginTop:5  }} >
                                 <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text>
                             </View>
                         </View>
@@ -104,10 +104,9 @@ const styles = StyleSheet.create({
     
     main:{
         width:"100%",
-        height:80,
     },
     Under_main:{
-        padding:"5%",
+        padding:"2.5%",
         flexDirection:"row",
         alignItems:'center',
         justifyContent:"space-between",
@@ -118,18 +117,19 @@ const styles = StyleSheet.create({
         marginTop:"3%",
     },
     Profile_Name:{
-        fontSize:16,
+        fontSize:15,
         lineHeight:17,
         fontFamily:"Regular",
         color:'#FFB81A', 
-        textAlign:"left"
+        textAlign:"left",
     },
     Profile_msg:{
         fontSize:13,
         lineHeight:14,
         fontFamily:"Medium",
         color:'#5B6C9F', 
-        textAlign:"left"
+        textAlign:"left",
+        paddingTop:5
     },
     Unread_Style:{
         width:45,
