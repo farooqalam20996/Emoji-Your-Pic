@@ -6,29 +6,133 @@ import {
     TextInput,
     Image,
     StyleSheet,
-    ScrollView
+    ScrollView,
+    ActivityIndicator
  } from 'react-native';
  import Setting_Header from "../Setting_Header";
  import Modal from "react-native-modal";
  import { Feather , AntDesign} from '@expo/vector-icons'; 
+import AsyncStorage from '@react-native-community/async-storage';
+import { API } from '../../../Routes_Navigation/MainURL';
+import { connect } from "react-redux";
+import { Snackbar } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker";
+
+var axios = require('axios');
+var FormData = require('form-data');
  
- 
- export default class Edit_Accounts extends Component {
+var that;
+class Edit_Accounts extends Component {
      
     constructor(props){
         super(props);
         this.state = {
             user_name:"",
             full_name:"",
-            Email:"",
-            phoneNumber:"",
-            IsModalVisible:false
+            number:null,
+            IsModalVisible:false,
+            Loader:false,
+            Failed:false,
+            Success:false,
+            Image_uri:null,
+            visible:false,
+
         }
+    }
+
+    componentDidMount(){
+        that = this;
+        this.requestPermision();
+        AsyncStorage.getItem('user' , (err , data)=>{
+            const user = JSON.parse(data)
+            this.setState({user_name: user.username , full_name: user.full_name , number: user.phone_number , Image_uri:user.image  })
+        })
+    }
+
+    onDismissSnackBar=()=>{
+        this.setState({visible: false})
     }
 
     toggleModal = () => {
         this.setState({ IsModalVisible: !this.state.IsModalVisible  })
     }
+
+    requestPermision = async () => {
+        const {granted} = await ImagePicker.getCameraRollPermissionsAsync();
+        // if(!granted) return alert("You need to get permission first");
+    }  
+
+    select_image = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        // allowsMultipleSelection:true,
+        // allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+    });
+        console.log(result);
+        if (!result.cancelled) {
+            this.setState({ Image_uri: result.uri},()=>{
+                this.Update_Profile()
+            })
+        }
+    };
+    
+    Open_Camera =async () => {
+        const catch_Image = await ImagePicker.launchCameraAsync();
+        if(!catch_Image) return alert("Camera didn't reading... ");
+        this.setState({Image_uri:catch_Image.uri},()=>{
+            this.Update_Profile()
+        })
+    }
+
+    Update_Profile=()=>{
+       that.setState({Loader:true})
+        // var fs = require('fs');
+        var data = new FormData();
+        data.append('username', that.state.user_name);
+        data.append('full_name', that.state.full_name);
+        data.append('phone_number', that.state.number);
+        // data.append('image', fs.createReadStream('/path/to/file'));
+        data.append("image", {
+            name: "image.jpg",
+            type: "image/jpeg",
+            uri: Platform.OS === "android" ? that.state.Image_uri : that.state.Image_uri.replace("file://", "")
+        })
+        console.log(that.state.Image_uri)
+
+        var config = {
+        method: 'post',
+        url:API+"salvador_app/public/api/update-profile",
+        headers: { 
+            'Authorization': that.props._token,
+        },
+        data : data
+        };
+        console.log(data)
+        console.log(that.props._token)
+
+        axios(config)
+        .then(function (response) {
+            if(response.data.success){
+                console.log(JSON.stringify(response.data));
+                that.setState({Success: true, Loader:false, visible:true})
+            }
+            else{
+                console.log(JSON.stringify(response.data));
+                that.setState({Loader:false , Failed:true,visible:false})
+
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+            that.setState({Loader:false, Failed:true, visible:false})
+
+        });
+    }
+
+
+
      render() {
         return (
             <View style={styles.main}>
@@ -36,15 +140,22 @@ import {
                 <View style={styles.container} >
                     <ScrollView style={{flex:1}} >
 
-                <View style={styles.Image_Container} >
-                        <View style={styles.Image_Circle} >
-                            <Image source={require("../../../Imagess/Profile.png")}  style={{ width:"100%" , height:"100%" , borderRadius:100 }}  /> 
-                            
-                            <TouchableOpacity style={styles.add_btn} onPress={this.toggleModal} >
-                                <Feather name="plus" size={24} color="black" />
-                            </TouchableOpacity>
+                        <View style={styles.Image_Container} >
+                            <View style={styles.Image_Circle} >
+                                {
+                                    this.state.Image_uri ? 
+                                        <Image source={{uri: this.state.Image_uri}}  style={{width:"100%" , height:"100%" , borderRadius:100}}  />
+                                        :
+                                        <Image source={{uri: this.props._user.image}} style={{width:"100%" , height:"100%" , borderRadius:100}}  />
+
+                                }
+                                {/* <Image source={{uri: this.state.Image_uri}}  style={{ width:"100%" , height:"100%" , borderRadius:100 }}  />  */}
+                                
+                                <TouchableOpacity style={styles.add_btn} onPress={this.toggleModal} >
+                                    <Feather name="plus" size={24} color="black" />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
                     <View style={styles.Input_Container} >
                         <Text style={styles.Txt} >username</Text>
                         <TextInput 
@@ -61,16 +172,73 @@ import {
                             value={this.state.full_name}
                             onChangeText={(text) => this.setState({full_name: text})}
                             blurOnSubmit={false}
-                            onSubmitEditing={() => this.NextInput1.focus()}
+                            onSubmitEditing={() => this.NextInput2.focus()}
+                        />
+
+                        <Text style={styles.Txt} >Phone Number</Text>
+                        <TextInput 
+                            ref={ref => { this.NextInput2 = ref; }}
+                            style={styles.Input_Style}
+                            value={this.state.number}
+                            onChangeText={(text) => this.setState({number: text})}
+                            blurOnSubmit={false}
                         />
                         
                     </View>
                     <View style={styles.Btn_Container} >
-                        <TouchableOpacity style={styles.Save_btn} onPress={() => alert("enter")}  >
-                            <Text style={[styles.Txt,{color:"#000000"}]} > Save &amp; Proceed </Text>
-                        </TouchableOpacity>
+                       {
+                           this.state.Loader ?
+                            <View style={styles.Save_btn}  >
+                                <ActivityIndicator size="large" color="black" />
+                            </View>
+                            :
+                            <TouchableOpacity style={styles.Save_btn} onPress={() => this.Update_Profile()}  >
+                                <Text style={[styles.Txt,{color:"#000000"}]} > Save &amp; Proceed </Text>
+                            </TouchableOpacity>
+                       }
                     </View>
-                </ScrollView>   
+                    {
+                        this.state.Success?
+                        <Text style={[styles.Txt,{color:'#FFFFFF' , fontFamily:"Bold"}]} >
+                            Successfully Updated
+                        </Text>
+                        :
+                        (
+                            this.state.Failed ?
+                            <Text style={[styles.Txt,{color:'#FFFFFF' , fontFamily:"Bold"}]} >
+                                Failed To Update
+                            </Text>
+                            :       
+                            null
+                        )
+                    }  
+                </ScrollView> 
+                        <Snackbar style={{backgroundColor:"#18CE73" , width:"90%" , borderRadius:45 }} visible={this.state.visible} onDismiss={this.onDismissSnackBar}  duration={2000} >
+                            <Text style={[styles.Txt,{color:'#FFFFFF' , fontFamily:"Bold"}]} >
+                                Successfully Updated
+                            </Text>
+                        </Snackbar>
+                {/* {
+                    this.state.Success?
+                    <Snackbar style={{backgroundColor:"#18CE73" , width:"90%" , borderRadius:45 }} visible={this.state.visible} onDismiss={this.onDismissSnackBar}  duration={2000} >
+                        <Text style={[styles.Txt,{color:'#FFFFFF' , fontFamily:"Bold"}]} >
+                            Failed To Update
+                        </Text>
+                    </Snackbar>
+                    :
+                    (
+                        this.state.Failed ?
+                        <Snackbar style={{backgroundColor:"#FF3B30" , width:"90%" , borderRadius:45 }} visible={this.state.visible} onDismiss={this.onDismissSnackBar}  duration={2000} >
+                            <Text style={[styles.Txt,{color:'#FFFFFF' , fontFamily:"Bold"}]} >
+                                Failed To Update
+                            </Text>
+                        </Snackbar>
+                        :
+                        null
+                    )
+                }   */}
+
+                
                 <Modal 
                         isVisible={this.state.IsModalVisible}        
                         animationIn="slideInUp"
@@ -84,11 +252,11 @@ import {
                     <View style={styles.media_style}>
                         <View style={{ width:"15%" , height:5 , borderRadius:10 , backgroundColor:"#D8D8D8" , alignSelf:"center" , marginTop:'3%' }} />     
                         <View style={{ flexDirection:'row' , alignItems:"center" , justifyContent:"space-between" }} >
-                            <TouchableOpacity style={styles.btn_media}  >
+                            <TouchableOpacity style={styles.btn_media} onPress={()=> this.Open_Camera()} >
                                 <Feather name="camera" size={32} color="#FFB81A" />
                                 <Text style={styles.media_Txt} >Camera</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.btn_media}  >
+                            <TouchableOpacity style={styles.btn_media} onPress={()=> this.select_image()} >
                                 <AntDesign name="picture" size={32} color="#FFB81A" />
                                 <Text style={styles.media_Txt} >Gallery</Text>
                             </TouchableOpacity>
@@ -101,6 +269,15 @@ import {
          );
      }
  }
+
+function mapStateToProps(state) {
+    return{
+        _token:state.Login_Reducer.token,
+        _user:state.Login_Reducer.user,
+    }
+}
+
+ export default connect(mapStateToProps, null)(Edit_Accounts)
 
  const styles = StyleSheet.create({
     main:{

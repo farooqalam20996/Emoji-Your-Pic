@@ -99,7 +99,7 @@ import { API } from '../../Routes_Navigation/MainURL';
                     <View style={styles.container} >
 
                         <View style={{marginTop:"7%" }} >
-                            <Text style={styles.Txt} >Enter Your Password</Text>
+                            <Text style={styles.Txt} >New Password</Text>
                             <TextInput 
                                 style={styles.Input_Style}
                                 value={this.state.Password}
@@ -109,7 +109,7 @@ import { API } from '../../Routes_Navigation/MainURL';
                             />
                         </View>
                         <View style={{marginTop:"7%"}} >
-                            <Text style={styles.Txt} >Enter Your Confirm Password</Text>
+                            <Text style={styles.Txt} >Confirm Password</Text>
                             <TextInput 
                                 style={styles.Input_Style}
                                 value={this.state.Confirm_Password}

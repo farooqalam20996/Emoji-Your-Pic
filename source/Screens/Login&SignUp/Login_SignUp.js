@@ -36,10 +36,10 @@ import {
                      </TouchableOpacity>
                  </View>
                  <View style={styles.Policy_container} >  
-                     <TouchableOpacity style={styles.priv_btn} >
+                     <TouchableOpacity style={styles.priv_btn} onPress={()=> this.props.navigation.navigate("Privacy_Policy")} >
                             <Text style={styles.Pol_Txt} > Privacy Policy </Text>
                      </TouchableOpacity>
-                     <TouchableOpacity style={styles.priv_btn} >
+                     <TouchableOpacity style={styles.priv_btn} onPress={()=> this.props.navigation.navigate("Terms_use")} >
                             <Text style={styles.Pol_Txt} > Terms Of Use </Text>
                      </TouchableOpacity>
                  </View>

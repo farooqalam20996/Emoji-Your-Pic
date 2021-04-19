@@ -14,7 +14,7 @@ export default(state=initialState, action)=>{
             return{ ...state, Loader:true, error:'', loginFailed:false }
         
         case Login_Success:
-            return{ ...state, Loader:false, error:''}
+            return{ ...state, Loader:false}
         
         case Login_Failed:
             return{ ...state,Loader:false, loginFailed:true, error:action.error}
@@ -23,7 +23,7 @@ export default(state=initialState, action)=>{
             return{ ...state, user:action.user}
 
         case User_Token:
-            return{ ...state, token:action.payload}
+            return{ ...state, token:"Bearer "+action.payload}
     
         default:
             return state;

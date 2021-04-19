@@ -24,7 +24,7 @@ class Settings_Screen extends Component {
             isVisible:false
         }
     }
-        
+
     LogOut = async() =>{
         await AsyncStorage.removeItem('user'),
         await AsyncStorage.removeItem('token'),
@@ -45,12 +45,12 @@ class Settings_Screen extends Component {
                 </View>
                 <View style={{ width:"100%" ,height:2 , backgroundColor:"#273253", marginBottom:"8%" }} />
                 <ScrollView>
-                    <Setting_Card Txt="Chats" Press={() => this.props.navigation.navigate("ChatSetting")} />
+                    {/* <Setting_Card Txt="Chats" Press={() => this.props.navigation.navigate("ChatSetting")} /> */}
                     <Setting_Card Txt="Account Settings" Press={()=> this.props.navigation.navigate("AccountSetting")} />
                     <Setting_Card Txt="Notifications" Press={() => alert("Press")} />
-                    <Setting_Card Txt="Storage &amp; Data" Press={() => alert("Press")} />
-                    <Setting_Card Txt="Help" Press={() => alert("Press")} />
-                    <Setting_Card Txt="Tell a Friend" Press={() => alert("Press")} />
+                    {/* <Setting_Card Txt="Storage &amp; Data" Press={() => alert("Press")} /> */}
+                    <Setting_Card Txt="Help" Press={() => this.props.navigation.navigate("Help_Page")} />
+                    {/* <Setting_Card Txt="Tell a Friend" Press={() => alert("Press")} /> */}
                     <Setting_Card Txt="Log out" Press={() => this.LogOut()} />
                 </ScrollView>
 

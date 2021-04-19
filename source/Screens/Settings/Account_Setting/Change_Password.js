@@ -50,50 +50,42 @@ import { API } from '../../../Routes_Navigation/MainURL';
         }
     }
 
-    ChangePassword= async ()=>{
-
-        // var tok_en;
-        // AsyncStorage.getItem('token', (err , data)=>{
-        //     tok_en = data
-        // })
+    ChangePassword= ()=>{
 
         that.setState({Loader: true})
         var data = new FormData();
         data.append('password', this.state.Password);
+        data.append('currentPassword', this.state.Current_Password);
 
         var config = {
         method: 'post',
         url: API+'salvador_app/public/api/change-password',
         headers: { 
-            // 'Authorization': 'Bearer '+that.props._token, 
-            'Authorization': that.props._token, 
+            'Authorization': 'Bearer '+that.props._token, 
+            // 'Authorization': that.props._token, 
         },
         data : data
         };
         console.log(that.props._token)
         axios(config)
         .then(function (response) {
-            if(response.success == true){
+            if(response.success){
                 console.log(JSON.stringify(response.data));
-                that.setState({Loader: false , visible: true , err: response.data.message , Success:true})
-                that.result()
+                that.setState({Loader: false, err: response.data.message , Success:true})
+                that.setState({visible:true})
             }
             else{
                 console.log(JSON.stringify(response.data));
-                that.setState({err: response.data.status, Loader:false , Fialed:true })
+                that.setState({err: response.data.message, Loader:false , Fialed:true })
             }
         })
         .catch(function (error) {
         console.log(error);
         });
     }
-
-    result=()=>{
-        this.setState({visible: true})
-    }
     
     onDismissSnackBar=()=>{
-        this.setState({visible: false})
+        this.setState({visible: !this.state.visible})
         // this.props.navigation.navigate("Login_SignUp")
     }
 
@@ -103,6 +95,7 @@ import { API } from '../../../Routes_Navigation/MainURL';
             <View style={styles.main} >
                 <Setting_Header  Heading="Change Password" onpress={()=> this.props.navigation.goBack()} />
                 <ScrollView>
+                   
                     <View style={styles.container} >
                         
                         <View style={{marginTop:"7%" }} >
@@ -160,11 +153,11 @@ import { API } from '../../../Routes_Navigation/MainURL';
                         </TouchableOpacity> 
                             {
                                 this.state.Success ? 
-                                    <Text style={[styles.Txt,{color:'#C63520', fontFamily:"Bold"}]} > {this.state.err}  </Text>
+                                    <Text style={[styles.Txt,{color:'#C63520', fontFamily:"Bold"}]} > Success  </Text>
                                 :
                                     (
                                         this.state.Fialed?
-                                        <Text style={[styles.Txt,{color:'#C63520', fontFamily:"Bold"}]} > {this.state.err}  </Text>
+                                        <Text style={[styles.Txt,{color:'white', fontFamily:"Bold"}]} > {this.state.err}  </Text>
                                         :
                                         null
                                     )
@@ -184,11 +177,14 @@ import { API } from '../../../Routes_Navigation/MainURL';
                        
                         </View>
                         <View style={{ height:75 }} /> 
-                        <Snackbar style={{backgroundColor:"#18CE73" , width:"90%" , borderRadius:45 }} visible={this.state.visible} onDismiss={this.onDismissSnackBar}  duration={2000} >
+                        
+                        <Snackbar style={{backgroundColor:"#18CE73" , width:"90%" , borderRadius:45 }} visible={this.state.visible} onDismiss={this.onDismissSnackBar}  duration={3500} >
                             <Text style={[styles.Txt,{color:'#FFFFFF' , fontFamily:"Bold"}]} >
                                 Your Password Has Been Changed
                             </Text>
-                    </Snackbar>
+                        </Snackbar>
+                        
+                
                 </ScrollView>
             </View>
         );

@@ -16,7 +16,8 @@ import SignUp_Profile from "../Screens/Get_started/SignUp_Profile";
 import Email_Recovery from "../Screens/ForgetScreens/Email_Recovery";
 import Email_Verifi_Code from "../Screens/ForgetScreens/Email_Verifi_Code";
 import Change_Password from "../Screens/ForgetScreens/Change_Password";
-
+import Privacy_Policy from "../ScreenComponents/Terms_Policy/Privacy_Policy";
+import Terms_use from "../ScreenComponents/Terms_Policy/Terms_use";
 
 import AppRoutes from "../Routes_Navigation/AppRoutes";
 import AsyncStorage from '@react-native-community/async-storage';
@@ -86,6 +87,8 @@ class AuthRoute extends Component {
                                     <Stack.Screen name="Email_Recovery" component={Email_Recovery} />
                                     <Stack.Screen name="Email_Verifi_Code" component={Email_Verifi_Code} />
                                     <Stack.Screen name="Change_Password" component={Change_Password} />
+                                    <Stack.Screen name="Terms_use" component={Terms_use} />
+                                    <Stack.Screen name="Privacy_Policy" component={Privacy_Policy} />
                                 </>
 
                             } 

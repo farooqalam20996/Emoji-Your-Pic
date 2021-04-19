@@ -13,6 +13,7 @@ import * as Contacts from "expo-contacts";
 import Communications from 'react-native-communications';
 import firebase from '../../firebase';
 import { connect } from 'react-redux';
+import Contact_Placeholder from "../../ScreenComponents/PlaceHolders/Contact_Placeholder";
 
 var contacts;
 var contactObjects;
@@ -175,12 +176,17 @@ var contactObjects;
                         <TextInput 
                             style={styles.Input_Style}
                             value={this.state.Search}
-                            autoCapitalize
+                            autoCapitalize="none"
                             onChangeText={(text) => this.search(text)}
                             placeholder="Search to start a chat with"
                             placeholderTextColor="#5B6C9F"
                         />
                     </View>
+
+                    {
+                        true ?
+                        <Contact_Placeholder />
+                        :
                         <ScrollView showsVerticalScrollIndicator={false} >
                             {this.state.contacts.length > 0 &&
                             <>
@@ -237,7 +243,9 @@ var contactObjects;
                             </>
                             }
                         </ScrollView>
-                </View>
+              
+                        }
+              </View>
 
          );
      }

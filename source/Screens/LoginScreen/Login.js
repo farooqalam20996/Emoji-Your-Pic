@@ -53,7 +53,7 @@ class Login extends Component {
                                 secureTextEntry={this.state.show_password?true:false}
                                 onSubmitEditing={this.login_Now}
                             />
-                            { this.props.Loading_Failed ? <Text style={{color:"yellow"}} >Email/Password is not Exist</Text> : null }
+                            { this.props.Loading_Failed ? <Text style={{color:"yellow"}} >{this.props.error}</Text> : null }
                         </View>
                         <View style={{ flexDirection:'row' , alignItems:"center"  , justifyContent:"space-between" , marginTop:"5%" }} >
                            {

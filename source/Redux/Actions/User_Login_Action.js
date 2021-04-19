@@ -6,7 +6,6 @@ import { User_Login, Login_Success, Login_Failed, User_Data, User_Token } from "
 export const ChangeLogin = (email,password,context) =>{
     return(dispatch)=>{
       if(email && password){
-        console.log("abcd")
         dispatch({ type: User_Login })
         var axios = require('axios');
         var data = JSON.stringify({
@@ -16,7 +15,6 @@ export const ChangeLogin = (email,password,context) =>{
         
         var config = {
           method: 'post',
-          // url: API+'projects/salvador-app/public/api/login',
           url:API+"salvador_app/public/api/login",
           headers: { 
             'Content-Type': 'application/json'
@@ -36,7 +34,7 @@ export const ChangeLogin = (email,password,context) =>{
               AsyncStorage.removeItem('fid');
               context.updateState()
             }).catch((err)=>{
-              dispatch({type: Login_Failed, error:"Can't Login"})
+              dispatch({type: Login_Failed, error:response.data.message})
               console.log(err)
             })
             
@@ -44,16 +42,17 @@ export const ChangeLogin = (email,password,context) =>{
           else{
             // alert(JSON.stringify(response.data))
             dispatch({type: Login_Failed, error:response.data.message})
+            console.log(response.data.message)
             console.log(response.data)
           }
         })
         .catch(function (error) {
-          dispatch({ type: Login_Failed })
+          dispatch({ type: Login_Failed , error:"some problem occured try again"})
           console.log(error);
         });
       }
       else{
-        dispatch({type: Login_Failed, error:'Enter email and password'})
+        dispatch({type: Login_Failed, error:'Enter Email and Password'})
       }
         
     }
