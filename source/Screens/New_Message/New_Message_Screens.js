@@ -14,6 +14,8 @@ import Communications from 'react-native-communications';
 import firebase from '../../firebase';
 import { connect } from 'react-redux';
 import Contact_Placeholder from "../../ScreenComponents/PlaceHolders/Contact_Placeholder";
+import AsyncStorage from '@react-native-community/async-storage';
+import { getBlockedByUsersList, getBlockedUsersList } from '../../Redux/Actions/BlockAction';
 
 var contacts;
 var contactObjects;
@@ -24,13 +26,30 @@ var contactObjects;
         Search:"",
         contacts:[],
         otherContacts:[],
+        // loaded:false,
     }
+    
     contactsHolder = [];
     otherContactsHolder = [];
+
+    // componentWillUnmount() {
+    //     this._unsubscribe();
+    // }
+
     componentDidMount(){
         contacts=[];
         contactObjects=[];
         this.contacts_Permission()
+
+        // this._unsubscribe = this.props.navigation.addListener('focus', () => {
+        //     AsyncStorage.getItem('token',(err,data)=>{
+        //         const token = JSON.parse(data)
+        //         this.props.getBlockedUsersList('Bearer '+token)
+        //         this.props.getBlockedByUsersList('Bearer '+token)
+        //     })
+        // })
+
+
     }
     getOtherContacts = () => {
         contactObjects.map((contact)=>{
@@ -44,11 +63,11 @@ var contactObjects;
     }
 
     contacts_Permission = async ()=> {
-            const { status } = await Contacts.requestPermissionsAsync();
-                if (status === 'granted') {
-                    this.getContacts()
-            }
+        const { status } = await Contacts.requestPermissionsAsync();
+        if (status === 'granted') {
+            this.getContacts()
         }
+    }
 
     getContacts = async ()=>{
         const { data } = await Contacts.getContactsAsync({
@@ -77,6 +96,7 @@ var contactObjects;
             console.log(err)
         })
         this.getOtherContacts()
+        // this.setState({loaded:true})
 
     }
     contains = (name, phone , query) => {
@@ -98,48 +118,48 @@ var contactObjects;
         
         this.setState({ contacts, otherContacts, Search:text})
     }
-    checkChatExists = async (firebase_id,userID) => {
-        // alert(firebase_id+" "+userID)
-        var ch1,ch2 = false;
-        await firebase.firestore.collection('chats').doc(`${firebase_id}_${userID}`)
-        .get().then((chat)=>{
-            if(chat.exists){
-                ch1 = true;
-            }
-        })
-        await firebase.firestore.collection('chats').doc(`${userID}_${firebase_id}`)
-        .get().then((chat)=>{
-            if(chat.exists){
-                ch2 = true;                
-            }
-        })
-        if(ch1 || ch2){
-            return true
-        }else{
-            return false;
-        }
-    }
+    // checkChatExists = async (firebase_id,userID) => {
+    //     // alert(firebase_id+" "+userID)
+    //     var ch1,ch2 = false;
+    //     await firebase.firestore.collection('chats').doc(`${firebase_id}_${userID}`)
+    //     .get().then((chat)=>{
+    //         if(chat.exists){
+    //             ch1 = true;
+    //         }
+    //     })
+    //     await firebase.firestore.collection('chats').doc(`${userID}_${firebase_id}`)
+    //     .get().then((chat)=>{
+    //         if(chat.exists){
+    //             ch2 = true;                
+    //         }
+    //     })
+    //     if(ch1 || ch2){
+    //         return true
+    //     }else{
+    //         return false;
+    //     }
+    // }
     goToChat = (user) => async () => {
 
-        const {firebase_id,full_name,id,image} = this.props.user;
-        var check = await this.checkChatExists(firebase_id,user.id)
-        if(!check){
-            firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`).set({
-                lastMessage: new Date().getTime(),
-                lastMessageText: ``,
-                fromID: firebase_id,
-                fromName: full_name,
-                fromPhoto:image,
-                // fromSqlID:id,
-                toID: user.id,
-                toPhoto:user.data.image,
-                // toSqlID:person.idUser,
-                toName: user.data.name,
-            }).then(()=>{
-                firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`)
-                .collection('messages')
-                .add({})
-                .then(()=>{
+        // const {firebase_id,full_name,id,image} = this.props.user;
+        // var check = await this.checkChatExists(firebase_id,user.id)
+        // if(!check){
+        //     firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`).set({
+        //         lastMessage: new Date().getTime(),
+        //         lastMessageText: ``,
+        //         fromID: firebase_id,
+        //         fromName: full_name,
+        //         fromPhoto:image,
+        //         // fromSqlID:id,
+        //         toID: user.id,
+        //         toPhoto:user.data.image,
+        //         // toSqlID:person.idUser,
+        //         toName: user.data.name,
+        //     }).then(()=>{
+        //         firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`)
+        //         .collection('messages')
+        //         .add({})
+        //         .then(()=>{
                     this.props.navigation.navigate("Main_Chat_Screen",{
                         person:{
                             id: user.id,
@@ -147,20 +167,20 @@ var contactObjects;
                             image:user.data.image, 
                         },
                     })
-                })
-                .catch((err)=>alert(err))
-            }).catch((err)=>{
-                alert(err)
-            })
-        }else{
-            this.props.navigation.navigate("Main_Chat_Screen",{
-                person:{
-                    id: user.id,
-                    name:user.data.name,
-                    image:user.data.image, 
-                },
-            })
-        }   
+            //     })
+            //     .catch((err)=>alert(err))
+            // }).catch((err)=>{
+            //     alert(err)
+            // })
+        // }else{
+        //     this.props.navigation.navigate("Main_Chat_Screen",{
+        //         person:{
+        //             id: user.id,
+        //             name:user.data.name,
+        //             image:user.data.image, 
+        //         },
+        //     })
+        // }   
 
     }
     sendInvite = (item) => () => {
@@ -183,10 +203,10 @@ var contactObjects;
                         />
                     </View>
 
-                    {
-                        true ?
+                    {/* {
+                        !this.state.loaded ?
                         <Contact_Placeholder />
-                        :
+                        : */}
                         <ScrollView showsVerticalScrollIndicator={false} >
                             {this.state.contacts.length > 0 &&
                             <>
@@ -197,6 +217,7 @@ var contactObjects;
                                 <FlatList
                                     data={this.state.contacts}
                                     renderItem={({item})=>{
+                                        // console.log(item)
                                         if(item.data.uid !== this.props.user.firebase_id){
                                             return(
                                                 <Contact_Card 
@@ -244,7 +265,7 @@ var contactObjects;
                             }
                         </ScrollView>
               
-                        }
+                        {/* } */}
               </View>
 
          );
@@ -253,11 +274,19 @@ var contactObjects;
 
 const mapStateToProps = state => {
     return{
-        user: state.Login_Reducer.user
+        user: state.Login_Reducer.user,
+
+        
+    }
+}
+const mapDispatchToProps = dispatch => {
+    return{
+        getBlockedUsersList: (token) => dispatch(getBlockedUsersList(token)),
+        getBlockedByUsersList: (token) => dispatch(getBlockedByUsersList(token))
     }
 }
 
-export default connect(mapStateToProps,null)(Message_Screen)
+export default connect(mapStateToProps,mapDispatchToProps)(Message_Screen)
 
 const styles = StyleSheet.create({
      main:{

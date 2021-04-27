@@ -17,7 +17,7 @@ import { API } from '../../../Routes_Navigation/MainURL';
 import { connect } from "react-redux";
 import { Snackbar } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-
+import AuthContext from "../../../Routes_Navigation/Context";
 var axios = require('axios');
 var FormData = require('form-data');
  
@@ -45,7 +45,10 @@ class Edit_Accounts extends Component {
         this.requestPermision();
         AsyncStorage.getItem('user' , (err , data)=>{
             const user = JSON.parse(data)
-            this.setState({user_name: user.username , full_name: user.full_name , number: user.phone_number , Image_uri:user.image  })
+            this.setState({user_name: user.username , full_name: user.full_name , number: user.phone_number });
+        })
+        AsyncStorage.getItem('image',(err,data)=>{
+            this.setState({Image_uri:data});
         })
     }
 
@@ -72,56 +75,52 @@ class Edit_Accounts extends Component {
     });
         console.log(result);
         if (!result.cancelled) {
-            this.setState({ Image_uri: result.uri},()=>{
-                this.Update_Profile()
-            })
+            this.setState({ Image_uri: result.uri})
         }
     };
     
     Open_Camera =async () => {
         const catch_Image = await ImagePicker.launchCameraAsync();
         if(!catch_Image) return alert("Camera didn't reading... ");
-        this.setState({Image_uri:catch_Image.uri},()=>{
-            this.Update_Profile()
-        })
+        this.setState({Image_uri:catch_Image.uri})
     }
 
     Update_Profile=()=>{
        that.setState({Loader:true})
-        // var fs = require('fs');
         var data = new FormData();
         data.append('username', that.state.user_name);
         data.append('full_name', that.state.full_name);
         data.append('phone_number', that.state.number);
-        // data.append('image', fs.createReadStream('/path/to/file'));
         data.append("image", {
             name: "image.jpg",
             type: "image/jpeg",
             uri: Platform.OS === "android" ? that.state.Image_uri : that.state.Image_uri.replace("file://", "")
         })
-        console.log(that.state.Image_uri)
+        // console.log(that.state.Image_uri)
 
         var config = {
-        method: 'post',
-        url:API+"salvador_app/public/api/update-profile",
-        headers: { 
-            'Authorization': that.props._token,
-        },
-        data : data
+            method: 'post',
+            url:API+"salvador_app/public/api/update-profile",
+            headers: { 
+                'Authorization': that.props._token,
+            },
+            data : data
         };
-        console.log(data)
-        console.log(that.props._token)
+        // console.log(data)
+        // console.log(that.props._token)
 
         axios(config)
         .then(function (response) {
             if(response.data.success){
                 console.log(JSON.stringify(response.data));
+                AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false );
+                AsyncStorage.setItem('image',response.data.userData.image+"?"+new Date(), (err)=> err? true:false );
+                that.context.updateState();
                 that.setState({Success: true, Loader:false, visible:true})
             }
             else{
                 console.log(JSON.stringify(response.data));
                 that.setState({Loader:false , Failed:true,visible:false})
-
             }
         })
         .catch(function (error) {
@@ -144,9 +143,9 @@ class Edit_Accounts extends Component {
                             <View style={styles.Image_Circle} >
                                 {
                                     this.state.Image_uri ? 
-                                        <Image source={{uri: this.state.Image_uri}}  style={{width:"100%" , height:"100%" , borderRadius:100}}  />
+                                        <Image source={{uri: this.state.Image_uri, cache:"reload"}}  style={{width:"100%" , height:"100%" , borderRadius:100}}  />
                                         :
-                                        <Image source={{uri: this.props._user.image}} style={{width:"100%" , height:"100%" , borderRadius:100}}  />
+                                        <Image source={{uri: this.props._user.image, cache:"reload"}} style={{width:"100%" , height:"100%" , borderRadius:100}}  />
 
                                 }
                                 {/* <Image source={{uri: this.state.Image_uri}}  style={{ width:"100%" , height:"100%" , borderRadius:100 }}  />  */}
@@ -276,6 +275,8 @@ function mapStateToProps(state) {
         _user:state.Login_Reducer.user,
     }
 }
+
+Edit_Accounts.contextType = AuthContext;
 
  export default connect(mapStateToProps, null)(Edit_Accounts)
 

@@ -22,3 +22,11 @@ export const Login_Failed = "Login_Failed";
 export const Login_Success = "Login_Success";
 export const User_Data = "User_Data";
 export const User_Token = "User_Token";
+
+// Block
+
+export const BLOCKUSERSLIST = "BLOCKUSERSLIST";
+export const BLOCKUSERSLISTDONE = "BLOCKUSERSLISTDONE";
+export const BLOCKEDBYUSERSLIST = "BLOCKEDBYUSERSLIST";
+export const BLOCKEDBYUSERSLISTDONE = "BLOCKEDBYUSERSLISTDONE";
+

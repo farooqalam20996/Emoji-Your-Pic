@@ -13,19 +13,46 @@ import { connect } from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from '../../firebase';
 import Chat_Placeholder from "../../ScreenComponents/PlaceHolders/Chat_Placeholder";
+import { getBlockedByUsersList, getBlockedUsersList } from '../../Redux/Actions/BlockAction';
 
 class Chats_Screen extends Component {
     state={
         user:[],
-        chats:[]
+        chats:[],
+        loading: true,
+        // blockedUsers:[],
+        // blockedByUsers:[]
     }
+    // componentWillUnmount() {
+    //     this._unsubscribe();
+    // }
     componentDidMount(){
         AsyncStorage.getItem('user',(err,data)=>{
             this.setState({user:JSON.parse(data)})
-            // alert(this.state.user.id)
             this.loadChats(this.state.user.firebase_id)
         })
+        // this._unsubscribe = this.props.navigation.addListener('focus', () => {
+
+        //     AsyncStorage.getItem('token',(err,data)=>{
+        //         // this.setState({user:JSON.parse(data)})
+        //         const token = JSON.parse(data)
+        //         this.props.getBlockedUsersList('Bearer '+token)
+        //         this.props.getBlockedByUsersList('Bearer '+token)
+        //     })
+        // })
     }
+    // componentDidUpdate(prevProps,prevState){
+    //     if(this.props.blockedUsers !== prevProps.blockedUsers){
+    //         // console.log(JSON.stringify(this.props.blockedUsers))
+    //         // const list = this.state.blockList;
+    //         // list.push(this.props.blockedByUsers)
+    //         this.setState({blockedUsers:this.props.blockedUsers})
+    //     }
+    //     if(this.props.blockedByUsers !== prevProps.blockedByUsers){
+    //         // console.log(JSON.stringify(this.props.blockedByUsers))
+    //         this.setState({blockedByUsers:this.props.blockedByUsers})
+    //     }
+    // }
     loadChats(id){
         firebase.firestore
         .collection('chats')
@@ -48,6 +75,8 @@ class Chats_Screen extends Component {
 
             })
         })
+
+        this.setState({loading: false});
     }
     render() {
         return (
@@ -61,11 +90,12 @@ class Chats_Screen extends Component {
                         onChangeText={(text) => this.setState({Search: text})}
                         placeholder="Search chat"
                         placeholderTextColor="#5B6C9F"
+                        onSubmitEditing={()=>alert(JSON.stringify(this.state.blockedByUsers))}
                     />
                 </View>
                 {
                     
-                    true?
+                    this.state.loading?
                     <Chat_Placeholder />
                     :
                     <ScrollView showsVerticalScrollIndicator={false} >
@@ -73,7 +103,9 @@ class Chats_Screen extends Component {
                             id={this.state.user.firebase_id}
                             image={this.state.user.image}
                             chats={this.state.chats}
-                            navigation={this.props.navigation} 
+                            navigation={this.props.navigation}
+                            // blockedUsers = {this.state.blockedUsers}
+                            // blockedByUsers = {this.state.blockedByUsers}
                         />
                     </ScrollView>    
                 }
@@ -85,11 +117,22 @@ class Chats_Screen extends Component {
 }
 const mapStateToProps = state => {
     return{
-        user: state.Login_Reducer.user,
+
+        // blockedUsers: state.BlockReducer.blockedUsers,
+        // blockedUsersFailed: state.BlockReducer.blockedUsersFailed,
+        // blockedUsersLoading: state.BlockReducer.blockedUsersLoading,
+        // blockedByUsers: state.BlockReducer.blockedByUsers,
+        // blockedByUsersFailed: state.BlockReducer.blockedByUsersFailed,
+        // blockedByUsersLoading: state.BlockReducer.blockedByUsersLoading,
     }
 } 
-
-export default connect(mapStateToProps,null)(Chats_Screen);
+const mapDispatchToProps = dispatch => {
+    return{
+        // getBlockedUsersList: (token) => dispatch(getBlockedUsersList(token)),
+        // getBlockedByUsersList: (token) => dispatch(getBlockedByUsersList(token))
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Chats_Screen);
 
 const styles = StyleSheet.create({
     main:{
