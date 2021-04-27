@@ -22,7 +22,7 @@ class Login extends Component {
       }
 
       login_Now = () => {
-          Keyboard.dismiss(),
+          Keyboard.dismiss()
           this.props.user_Login(this.state.username, this.state.password, this.context)
       }
 
@@ -35,7 +35,7 @@ class Login extends Component {
                             Login to your account
                         </Text>
                         <View style={{marginTop:"7%"}} >
-                            <Text style={styles.Txt} >email</Text>
+                            <Text style={styles.Txt} >Email</Text>
                             <TextInput 
                                 style={styles.Input_Style}
                                 value={this.state.username}
@@ -43,7 +43,7 @@ class Login extends Component {
                                 blurOnSubmit={false}
                                 onSubmitEditing={() => this.NextInput.focus()}
                             />
-                            <Text style={styles.Txt} >password</Text>
+                            <Text style={styles.Txt} >Password</Text>
                             <TextInput 
                                 ref={ref => { this.NextInput = ref; }}
                                 style={styles.Input_Style}

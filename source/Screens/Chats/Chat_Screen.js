@@ -65,7 +65,7 @@ class Chats_Screen extends Component {
                 </View>
                 {
                     
-                    true?
+                    false?
                     <Chat_Placeholder />
                     :
                     <ScrollView showsVerticalScrollIndicator={false} >

@@ -336,7 +336,7 @@ function mapStateToProps(state) {
         width:"100%",
         alignItems:"center",
         justifyContent:"center",
-        marginTop:"10%"
+        marginTop:"5%"
        //  backgroundColor:"green"
     },
      Save_btn:{

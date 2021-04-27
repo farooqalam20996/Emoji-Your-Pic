@@ -7,8 +7,10 @@ import {
     Image,
     TouchableOpacity,
  } from 'react-native';
+ import { connect } from "react-redux";
+import { Login_Success } from '../../Redux/Constants';
 
- export default class Login_SignUp extends Component {
+class Login_SignUp extends Component {
      
       componentDidMount(){
             AsyncStorage.getItem('verified',(err,data)=>{
@@ -21,6 +23,12 @@ import {
                 }
             })
       }
+
+      onEvent = () => {
+            this.props.clearLoader()
+            this.props.navigation.navigate("Login_Page")
+      }
+
      render() {
          return (
              <View style={styles.main} >
@@ -28,7 +36,7 @@ import {
                      <Image source={require('../../Imagess/logo.png')}  style={{ width:"80%" , height:"55%" }} />
                  </View>
                  <View style={styles.Buttons_container}>
-                     <TouchableOpacity style={styles.Login_btn} onPress={() => this.props.navigation.navigate("Login_Page")} >
+                     <TouchableOpacity style={styles.Login_btn} onPress={() => this.onEvent()} >
                             <Text style={styles.Txt} > Login </Text>
                      </TouchableOpacity>
                      <TouchableOpacity style={[styles.Login_btn,{backgroundColor:"#C63520", marginTop:"5%"}]} onPress={() => this.props.navigation.navigate("SignUp_Page")} >
@@ -48,6 +56,20 @@ import {
          );
      }
  }
+
+ function mapStateToProps(state) {
+     return{
+         Loader:state.Login_Reducer.Loader
+     }
+ }
+
+ function mapDispatchToProps(dispatch) {
+     return{
+         clearLoader:()=> {dispatch({type: Login_Success})}
+     }
+ }
+
+ export default connect(mapStateToProps , mapDispatchToProps)(Login_SignUp);
 
  const styles = StyleSheet.create({
      main:{

@@ -168,7 +168,6 @@ var contactObjects;
         Communications.text(item.phone,"You are invited to join Emoji Chat App");
     }
      render() {
-           
          return (
                 <View style={styles.main}>
                     <Top_Header Heading="New Message" btn={<Text sty={styles.Txt} >Cancel</Text>} />
@@ -184,7 +183,7 @@ var contactObjects;
                     </View>
 
                     {
-                        true ?
+                        false ?
                         <Contact_Placeholder />
                         :
                         <ScrollView showsVerticalScrollIndicator={false} >
