@@ -9,21 +9,22 @@ import {
 } from 'react-native';
 
 
- function BlockAcc_Card({name , number , image , onpress}) {
+ function BlockAcc_Card({name , number , image , onPress}) {
 
     // const[Name , setName] = useState("John Aker");
     // const[Number , setNumber] = useState(+125354456);
-
+    
+    const _name = name.charAt(0).toUpperCase()+name.substr(1).toLowerCase();
      return (
          <View style={styles.main} >
             <View style={{flexDirection:"row" , alignItems:"center"}} >
-                <Image source={{image}} style={{ width:55 , height:55 , borderRadius:100 }} />
+                <Image source={{uri: image}} style={{ width:55 , height:55 , borderRadius:100 }} />
                 <View style={{ marginLeft:"5%" }} >
-                    <Text style={[styles.Txt,{color:'#FFB81A' , fontSize:17 , lineHeight:18}]} >{name}</Text>
+                    <Text style={[styles.Txt,{color:'#FFB81A' , fontSize:17 , lineHeight:18}]} >{_name}</Text>
                     <Text style={styles.Txt} >{number}</Text>
                 </View>
             </View>
-            <TouchableOpacity onPress={onpress} > 
+            <TouchableOpacity onPress={onPress} > 
                 <Text style={[styles.Txt,{color:'#5B6C9F' , fontFamily:"Italic" , fontSize:14 , lineHeight:15}]} >Unblock</Text>
             </TouchableOpacity>
          </View>

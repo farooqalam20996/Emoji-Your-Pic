@@ -6,6 +6,8 @@ import AppLoading from "expo-app-loading";
 import AuthRoute from "./source/Routes_Navigation/AuthRoute";
 import { Provider } from "react-redux";
 import stores from "./source/Redux/store";
+import {Provider as MenuProvider} from 'react-native-paper';
+
 
 export default function App() {
 
@@ -37,7 +39,9 @@ export default function App() {
     return (
          <Provider store={stores} >
             <>
+            <MenuProvider>
               <AuthRoute />
+            </MenuProvider>
               <StatusBar backgroundColor="#060A16" barStyle="light-content" />
             </>
          </Provider>

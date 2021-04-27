@@ -16,31 +16,58 @@ import AuthContext from '../../Routes_Navigation/Context';
  import ImageViewer from "react-native-image-zoom-viewer";
 import { Feather } from '@expo/vector-icons';
 
+
+
+const renderName = (username) => {
+    const nameArr = username.split(" ");
+    var name;
+    if(nameArr.length > 0){
+        name = nameArr[0].charAt(0).toUpperCase() + nameArr[0].slice(1) + " " + nameArr[1].charAt(0).toUpperCase() + nameArr[1].slice(1)
+    }else{
+        name = nameArr[0].charAt(0).toUpperCase() + nameArr[0].slice(1) 
+    }
+    return name;
+    
+}
+
 class Settings_Screen extends Component {
 
     constructor(props){
         super(props);
         this.state={
-            isVisible:false
+            isVisible:false,
+            image:'null'
         }
     }
+    componentWillUnmount() {
+        this._unsubscribe();
+    }
+    componentDidMount(){
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
 
+            AsyncStorage.getItem('image',(err,data)=>{
+                this.setState({image:data})
+            })
+        })
+    }
     LogOut = async() =>{
         await AsyncStorage.removeItem('user'),
         await AsyncStorage.removeItem('token'),
         this.context.updateState()
     }
-
+    
      render() {
+         const name = this.props.user_name.full_name;
+
          return (
             <View style={styles.main}>
                 <Top_Header Heading="Settings" />
                 <View style={styles.container} >
                     <TouchableOpacity style={styles.Image_Container} onPress={() => this.setState({isVisible: true})} >
-                        <Image source={{uri: this.props.user_name.image}} style={{width:55 , height:55, borderRadius:100}} />
+                        <Image source={{uri: this.state.image}} style={{width:55 , height:55, borderRadius:100}} />
                     </TouchableOpacity>
                     <Text style={styles.Profile_Name} adjustsFontSizeToFit={true} > 
-                            {this.props.user_name.full_name}
+                        {renderName(name)}
                     </Text>
                 </View>
                 <View style={{ width:"100%" ,height:2 , backgroundColor:"#273253", marginBottom:"8%" }} />

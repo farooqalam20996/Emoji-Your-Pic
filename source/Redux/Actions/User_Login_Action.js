@@ -25,18 +25,20 @@ export const ChangeLogin = (email,password,context) =>{
         axios(config)
         .then(function (response) {
           if(response.data.success){
-            firebase.auth.signInWithEmailAndPassword(email,password)
-            .then(()=>{
+            // firebase.auth.signInWithEmailAndPassword(email,password)
+            // .then(()=>{
               dispatch({type: Login_Success})
               console.log(JSON.stringify(response.data));
               AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false )
+              // AsyncStorage.setItem('password',password, (err)=> err? true:false )
+              AsyncStorage.setItem('image',response.data.userData.image+"?"+ new Date(), (err)=> err? true:false )
               AsyncStorage.setItem('token',JSON.stringify(response.data.token), (err)=> err? true:false )
               AsyncStorage.removeItem('fid');
               context.updateState()
-            }).catch((err)=>{
-              dispatch({type: Login_Failed, error:response.data.message})
-              console.log(err)
-            })
+            // }).catch((err)=>{
+            //   dispatch({type: Login_Failed, error:response.data.message})
+            //   console.log(err)
+            // })
             
           }
           else{

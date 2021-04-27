@@ -16,13 +16,9 @@ LogBox.ignoreLogs([
     'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.'
 ])
 const Chat_Card = (props) => {
-
-    
-    const Tareekh = new Date().getHours()+ ":"+ new Date().getSeconds()
-
-
+    const date = new Date().getHours()+ ":"+ new Date().getSeconds()
     const Chat = (chat) => {
-        console.log(chat)
+        // console.log("idher ao "+chat)
         var name = chat.data.toName
         var toID = chat.data.toID
         var Photo = chat.data.toPhoto
@@ -31,12 +27,15 @@ const Chat_Card = (props) => {
             toID = chat.data.fromID;
             Photo = chat.data.fromPhoto;
         }
+        // alert(chat.data.isBlocked)
         const navigate = () => {
             props.navigation.navigate('Main_Chat_Screen',{
                 person:{
                     id: toID,
                     name:name,
                     image:Photo, 
+                    isBlocked: chat.data.isBlocked,
+                    blockedBy: chat.data.blockedBy
                 },
             })
         }
@@ -52,7 +51,7 @@ const Chat_Card = (props) => {
                             </View>
                         </View>
                         <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
-                            <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {Tareekh} </Text>
+                            <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {date} </Text>
                             <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520", marginTop:5  }} >
                                 <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text>
                             </View>

@@ -4,21 +4,35 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
-    Image
+    Image,
+    TouchableWithoutFeedback
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import {
+    Ionicons,
+    MaterialCommunityIcons,
+} from '@expo/vector-icons';
+import { Button, Menu, Divider } from 'react-native-paper';
+import { useState } from 'react';
 
 const MEssage_Header = (props) => {
-     
+    const [visible,setVisible] = useState(false)
+    const name = props.name.charAt(0).toUpperCase()+props.name.substr(1).toLowerCase();
+    const { userID, isBlocked, blockedBy, person} = props;
+    const { image, id } = person;
+
+    const itemPressed = () => {
+        isBlocked ? props.onUnBlockPress() : props.onBlockPress() 
+        setVisible(false)
+    }
          return (
             <View style={styles.main} >
                 <View style={styles.Frist} >
                     <TouchableOpacity style={styles.Back_Btn} onPress={props.onpress} >
                         <Ionicons name="md-arrow-back" size={18} color="black" />
                     </TouchableOpacity>
-                    <Image source={{uri: props.image}} style={{ width:35 , height:35 ,borderRadius:100, marginRight:"5%" }} />
+                    <Image source={{uri: image}} style={{ width:35 , height:35 ,borderRadius:100, marginRight:"5%" }} />
                     <View >
-                        <Text style={styles.Profile_Name} >{props.name.charAt(0).toUpperCase()+props.name.substr(1).toLowerCase() }</Text>
+                        <Text style={styles.Profile_Name} >{name}</Text>
                         {
                             true ?
                             <Text style={styles.status_txt} >
@@ -31,14 +45,34 @@ const MEssage_Header = (props) => {
                         }
                     </View>
                 </View>
-                <View style={styles.Second} >
-                    {/* <TouchableOpacity>
+                {/* <View style={styles.Second} >
+                    <TouchableOpacity>
                        <Image source={require("../../Imagess/video.png")} style={{ width:45 , height:45 }} />
                     </TouchableOpacity>
                     <TouchableOpacity>
                         <Image source={require("../../Imagess/phone.png")} style={{ width:15 , height:15 }} />
-                    </TouchableOpacity> */}
-                </View>
+                    </TouchableOpacity>
+                </View> */}
+                <Menu 
+                    contentStyle={{backgroundColor:'#0C1326'}}
+                    // contentStyle={{height:0,width:0}}
+                    visible={visible}
+                    onDismiss={()=>setVisible(false)}
+                    anchor={
+                        <TouchableWithoutFeedback onPress={()=>setVisible(true)}>
+                            <MaterialCommunityIcons name="dots-vertical" size={24} color="#FFB81A" />
+                        </TouchableWithoutFeedback>
+                    }
+                >
+                    <Menu.Item 
+                        disabled = {blockedBy === id}
+                        // style={{backgroundColor:'red',height:0}}
+                        titleStyle={{alignSelf:'center',color:'#FFB81A'}}
+                        onPress={itemPressed}
+                        title={blockedBy == userID ? "Unblock" : "Block"}
+                    />
+                    {/* <Menu.Item onPress={() => alert('no')} title="Item 2" /> */}
+                </Menu>
             </View>    
          );
  }
@@ -49,7 +83,7 @@ export default MEssage_Header;
         padding:"1%",
         flexDirection:"row",
         alignItems:"center",
-        justifyContent:"center",
+        justifyContent:"space-between",
         backgroundColor:"#060A16",
      },
      Frist:{

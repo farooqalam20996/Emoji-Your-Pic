@@ -30,7 +30,6 @@ export default function Chat_Placeholder() {
                         <View >
                             <SkeletonPlaceholder.Item  width={100} height={10} marginBottom={5} />
                             <SkeletonPlaceholder.Item  width={250} height={10} marginBottom={5} />
-                            <SkeletonPlaceholder.Item  width={150} height={10} marginBottom={5} />
                         </View>
                     </View>
                 </SkeletonPlaceholder.Item>
@@ -43,7 +42,6 @@ export default function Chat_Placeholder() {
                         <View >
                             <SkeletonPlaceholder.Item  width={100} height={10} marginBottom={5} />
                             <SkeletonPlaceholder.Item  width={250} height={10} marginBottom={5} />
-                            <SkeletonPlaceholder.Item  width={150} height={10} marginBottom={5} />
                         </View>
                     </View>
                 </SkeletonPlaceholder.Item>
@@ -56,7 +54,6 @@ export default function Chat_Placeholder() {
                         <View >
                             <SkeletonPlaceholder.Item  width={100} height={10} marginBottom={5} />
                             <SkeletonPlaceholder.Item  width={250} height={10} marginBottom={5} />
-                            <SkeletonPlaceholder.Item  width={150} height={10} marginBottom={5} />
                         </View>
                     </View>
                 </SkeletonPlaceholder.Item>
@@ -69,7 +66,6 @@ export default function Chat_Placeholder() {
                         <View >
                             <SkeletonPlaceholder.Item  width={100} height={10} marginBottom={5} />
                             <SkeletonPlaceholder.Item  width={250} height={10} marginBottom={5} />
-                            <SkeletonPlaceholder.Item  width={150} height={10} marginBottom={5} />
                         </View>
                     </View>
                 </SkeletonPlaceholder.Item>

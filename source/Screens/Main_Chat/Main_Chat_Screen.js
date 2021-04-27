@@ -6,24 +6,34 @@ import {
     Image,
     StyleSheet,
     TextInput,
-    ScrollView,
     FlatList,
+    Platform,
  } from 'react-native';
 import { connect } from 'react-redux';
 import firebase from '../../firebase';
 import { Entypo } from '@expo/vector-icons'; 
 import * as ImagePicker from 'expo-image-picker';
 import Message_Header from "../../ScreenComponents/NewMessage_Component/Message_Header";
+import Spinner from "react-native-loading-spinner-overlay";
 import Message from './Message';
+import { Snackbar } from "react-native-paper";
+import { API } from '../../Routes_Navigation/MainURL';
+var axios = require('axios');
+var FormData = require('form-data');
 
 var chatID;
+var that;
+var tempID;
 class Chatting extends Component {
     constructor(props){
         super(props);
         this.state = { 
+            err:false,
+            spinner:false,
+            isBlocked:this.props.route.params.person.isBlocked,
+            blockedBy:this.props.route.params.person.blockedBy,
             InputTxt:"",
-            image:null,
-            msgs:[]
+            msgs:[],
         } 
     }
 
@@ -32,7 +42,63 @@ class Chatting extends Component {
 
     componentDidMount(){
         chatID = null;
+        that = this
+        this.createChat();
         this.fetchMessages()
+    }
+   
+    checkChatExists = async (firebase_id,userID) => {
+        var ch1,ch2 = false;
+        await firebase.firestore.collection('chats').doc(`${firebase_id}_${userID}`)
+        .get().then((chat)=>{
+            if(chat.exists){
+                ch1 = true;
+            }
+        })
+        await firebase.firestore.collection('chats').doc(`${userID}_${firebase_id}`)
+        .get().then((chat)=>{
+            if(chat.exists){
+                ch2 = true;                
+            }
+        })
+        if(ch1 || ch2){
+            return true
+        }else{
+            return false;
+        }
+    }
+    createChat = async () => {
+        const user = this.props.route.params.person
+        const {firebase_id,full_name,id,image} = this.props.user;
+        var check = await this.checkChatExists(firebase_id,user.id)
+        if(!check){
+            chatID = `${firebase_id}_${user.id}`
+            firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`).set({
+                lastMessage: new Date().getTime(),
+                lastMessageText: ``,
+                fromID: firebase_id,
+                fromName: full_name,
+                fromPhoto:image,
+                toID: user.id,
+                toPhoto:user.image,
+                toName: user.name,
+                isBlocked: false,
+                blockedBy: '',
+            }).then(()=>{
+                firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`)
+                .collection('messages')
+                .add({})
+                .then(()=>{ 
+                    console.log('chat created')
+                })
+                .catch((err)=>alert(err))
+            }).catch((err)=>{
+                alert(err)
+            })
+        }else{
+            console.log('chat already exists')
+        }   
+
     }
     // urlToBlob(url) {
     //     return new Promise((resolve, reject) => {
@@ -58,25 +124,79 @@ class Chatting extends Component {
     });
         console.log(result);
         if (!result.cancelled) {
-            this.setState({ image: result},()=>{
-                this.sendImage()
-            })
+            // this.setState({ image: result},()=>{
+                this.sendImage(result.uri)
+            // })
         }
     };
-    sendImage = async () => {
-        // const imageFile = await this.urlToBlob(this.state.image.uri);
-        // console.log(imageFile)
-        // const img = {
-        //     name: "image.jpg",
-        //     type: "image/jpeg",
-        //     uri: Platform.OS === "android" ? this.state.image.uri : this.state.image.uri.replace("file://", "")
-        // }
-        // firebase.storage.ref('asda/iamgename.jpg').put(imageFile)
-        // const imageRef = storage().ref(`asdasd/${'imagename.jpg'}`)
-        // await imageRef.putFile(this.state.image.uri, { contentType: 'image/jpg'}).catch((error) => { throw error })
-        // const url = await imageRef.getDownloadURL().catch((error) => { throw error });
-        // console.log(url)
-        // return url
+    sendImage = (uri) => {
+        tempID = new Date().getTime();
+        const fromID = this.props.user.firebase_id;
+        const toID = this.props.route.params.person.id;
+
+        this.setState({msgs:[{id:tempID,data:{
+            image: uri,
+            text:"",
+            createdAt: tempID,
+            fromID:fromID,
+            toID: toID,
+        }},...this.state.msgs]});
+
+
+        var data = new FormData();
+        data.append('firebase_id', this.props.user.firebase_id );
+        data.append("c_image", {
+            name: "image.jpg",
+            type: "image/jpeg",
+            uri: Platform.OS === "android" ? uri : uri.replace("file://", "")
+        })
+        var config = {
+            method: 'post',
+            url: API+'salvador_app/public/api/chat-image',
+            headers: { 
+                'Authorization': this.props.token
+            },
+            data : data
+        };
+
+        axios(config)
+        .then(function (response) {
+            if(response.data.success){
+                // yahn pr that ka variable hoga
+                this.onSend(response.data.imageUrl)
+            }else{
+                alert("cant send")
+            }
+            console.log(JSON.stringify(response.data));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+
+    }
+    
+    blockUser = () => {
+        firebase.firestore
+        .collection('chats')
+        .doc(chatID)
+        .set({
+            isBlocked:true,
+            blockedBy: this.props.user.firebase_id
+        },{
+            merge:true
+        })
+    }
+    unblockUser = () => {
+        firebase.firestore
+        .collection('chats')
+        .doc(chatID)
+        .set({
+            isBlocked:false,
+            blockedBy: ''
+        },{
+            merge:true
+        })
     }
     fetchMessages = async () => {
 
@@ -98,50 +218,68 @@ class Chatting extends Component {
         })
 
         //to get chat messages
-       firebase.firestore.collection('chats')
-       .doc(chatID)
-       .collection('messages')
-       .orderBy("createdAt","desc")
-       .onSnapshot((snapshot)=>{
-           const messages = snapshot.docs.map(doc=>{
-               const data = {
-                   id:doc.id,
-                   data:doc.data(),
-               }
-               return data;
-           });
-           this.setState({msgs:messages})
-       })
+        firebase.firestore
+        .collection('chats')
+        .doc(chatID)
+        .collection('messages')
+        .orderBy("createdAt","desc")
+        .onSnapshot((snapshot)=>{
+            const messages = snapshot.docs.map(doc=>{
+                const data = {
+                    id:doc.id,
+                    data:doc.data(),
+                }
+                return data;
+            });
+            this.setState({msgs:messages})
+        });
+
+
+        firebase.firestore
+        .collection('chats')
+        .doc(chatID)
+        .onSnapshot((snapshot)=>{
+            const data = snapshot.data();
+            if(this.state.isBlocked !== data.isBlocked){
+                this.setState({isBlocked: data.isBlocked, blockedBy: data.blockedBy})
+            }
+        })
+
     }
-    onSend = async () => {
+    onSend = (image) => {
         this.input.clear();
         const fromID = this.props.user.firebase_id;
-        const toID = this.props.route.params.person.id
+        const toID = this.props.route.params.person.id;
 
-        // alert(toID)
+        const obj = image ? 
+        {
+            image: image,
+            text:"",
+            createdAt: new Date().getTime(),
+            fromID: fromID,
+            toID: toID,
+        }
+        :
+        {
+            text: this.state.InputTxt.trim(),
+            createdAt: new Date().getTime(),
+            fromID: fromID,
+            toID: toID,
+        }
 
         firebase.firestore.collection('chats').
         doc(chatID)
         .collection('messages')
         .add(
-            {
-                text: this.state.InputTxt,
-                createdAt: new Date().getTime(),
-                fromID: fromID,
-                toID: toID,
-            }
-        ).then(()=>this.setState({InputTxt:''})).catch((err)=>console.log(err))
+           obj
+        ).then(()=> this.setState({InputTxt:''})).catch((err)=>console.log(err))
 
-        await firebase.firestore.collection('chats')
+        firebase.firestore.collection('chats')
         .doc(chatID)
         .set(
             {
                 lastMessage: new Date().getTime(),
-                lastMessageText: this.state.InputTxt,
-                // fromID: fromID,
-                // fromName: this.state.user.name,
-                // toID: 'qJm6HqhfHmbKnsKhQFmqi9332BF2',
-                // toName: 'asad',
+                lastMessageText: image ? "Image" : this.state.InputTxt.trim(),
             },
             {
                 merge:true
@@ -150,13 +288,31 @@ class Chatting extends Component {
     }
     
     render() {
+        const {firebase_id} = this.props.user; 
+        const name = this.props.route.params.person.name.charAt(0).toUpperCase()+this.props.route.params.person.name.substr(1).toLowerCase();;
+        const blockedText = this.state.blockedBy == firebase_id ? name+" has been blocked by you" : "You have been blocked by "+name;
         return (
             <>
+                <Snackbar style={{backgroundColor:"#18CE73", width:"90%", borderRadius:45 }} visible={this.state.err} onDismiss={this.onDismissSnackBar}  duration={3500} >
+                    <Text style={[styles.Txt,{color:'#FFFFFF' , fontFamily:"Bold"}]} >
+                        Some Problem Occurred!
+                    </Text>
+                </Snackbar>
+                <Spinner
+                    visible={this.state.spinner}
+                    // textContent={'Blocking '+name}
+                    // textStyle={{color:'#FFCF30' , fontFamily:"Bold" }}
+                />
                 <View style={styles.Chat_Head} >
-                    <Message_Header 
-                        name={this.props.route.params.person.name}
+                    <Message_Header
+                        userID={firebase_id}
+                        person={this.props.route.params.person}
+                        name={name}
                         onpress={()=> this.props.navigation.goBack()}
-                        image={this.props.route.params.person.image}
+                        onBlockPress={this.blockUser}
+                        onUnBlockPress={this.unblockUser}
+                        isBlocked={this.state.isBlocked}
+                        blockedBy = {this.state.blockedBy}
                     />
                 </View>
                     <View style={styles.main} >
@@ -167,7 +323,7 @@ class Chatting extends Component {
                                 data={this.state.msgs}
                                 renderItem={({item})=>
                                     <Message 
-                                        msg={item.data.text} 
+                                        data={item.data} 
                                         side={item.data.fromID == this.props.user.firebase_id ? 'right':'left'}
                                         // photo={item.data.fromID == this.props.user.firebase_id ? this.props.user.image: this.props.route.params.person.image}
                                     />
@@ -175,32 +331,37 @@ class Chatting extends Component {
 
                             />
                         </View>
-                    
-                        <View style={styles.Outer_Area}>
+                        {this.state.isBlocked
+                            ?
+                            <Text style={{textAlign:'center',color:'#FFB81A',padding:'3%'}}>{blockedText}</Text>
+                            :
+                            <View style={styles.Outer_Area}>
                         
-                            <TouchableOpacity style={styles.trigger} onPress={()=> this.props.navigation.navigate("Camera_Screen")}>
-                                <Image source={require("../../Imagess/camera.png")} style={{width:'50%' , height:"50%"}} />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.trigger} onPress={this.select_image}>
-                                <Entypo name="images" size={22} color="#C63520" />
-                            </TouchableOpacity>
+                                <TouchableOpacity style={styles.trigger} onPress={()=> this.props.navigation.navigate("Camera_Screen")}>
+                                    <Image source={require("../../Imagess/camera.png")} style={{width:'50%' , height:"50%"}} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.trigger} onPress={this.select_image}>
+                                    <Entypo name="images" size={22} color="#C63520" />
+                                </TouchableOpacity>
 
-                            <TextInput  
-                                ref={input=> this.input = input}
-                                style={styles.Input_style}
-                                value={this.state.InputTxt}
-                                onChangeText={(text)=> this.setState({InputTxt: text})}
-                                placeholder="Type to start chat"
-                                placeholderTextColor="#FFFFFF"
-                                clearTextOnFocus={true}
-                                // autoFocus={true}
-                                autoCapitalize="none"
-                                blurOnSubmit={false}
-                            />
-                            <TouchableOpacity style={styles.trigger} onPress={this.onSend} >
-                                <Image source={require("../../Imagess/send.png")} style={{width:'50%' , height:"50%"}} />
-                            </TouchableOpacity>
-                        </View>
+                                <TextInput
+                                    ref={input=> this.input = input}
+                                    style={styles.Input_style}
+                                    value={this.state.InputTxt}
+                                    onChangeText={(text)=> this.setState({InputTxt: text})}
+                                    placeholder="Type to start chat"
+                                    placeholderTextColor="#FFFFFF"
+                                    clearTextOnFocus={true}
+                                    // autoFocus={true}
+                                    autoCapitalize="none"
+                                    blurOnSubmit={false}
+                                />
+                                <TouchableOpacity disabled={this.state.InputTxt.trim() == ""} style={styles.trigger} onPress={()=>this.onSend(null)} >
+                                    <Image source={require("../../Imagess/send.png")} style={{width:'50%' , height:"50%"}} />
+                                </TouchableOpacity>
+                            </View>
+                        }
+                        
                     </View>    
             </>
         );
@@ -210,6 +371,7 @@ class Chatting extends Component {
 const mapStateToProps = state => {
     return{
         user: state.Login_Reducer.user,
+        token: state.Login_Reducer.token,
     }
 }
 
@@ -221,6 +383,15 @@ const styles = StyleSheet.create({
         backgroundColor:"#060A16",
         // padding:'5%',
     },
+    Txt:{
+        fontSize:14,
+        lineHeight:16,
+        fontFamily:"Regular",
+        color:'#FFFFFF',
+        textAlign:"left",
+        marginBottom:"3%",
+        marginTop:"4%"
+     }, 
     Chat_Head:{
         width:"100%",
         // height:130,
