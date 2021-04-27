@@ -163,7 +163,7 @@ class Chatting extends Component {
         .then(function (response) {
             if(response.data.success){
                 // yahn pr that ka variable hoga
-                this.onSend(response.data.imageUrl)
+                that.onSend(response.data.imageUrl)
             }else{
                 alert("cant send")
             }
