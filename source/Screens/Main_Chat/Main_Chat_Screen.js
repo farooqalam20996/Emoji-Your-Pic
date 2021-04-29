@@ -75,6 +75,7 @@ class Chatting extends Component {
             chatID = `${firebase_id}_${user.id}`
             firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`).set({
                 lastMessage: new Date().getTime(),
+                lastMessageBy: ``,
                 lastMessageText: ``,
                 fromID: firebase_id,
                 fromName: full_name,
@@ -84,6 +85,8 @@ class Chatting extends Component {
                 toName: user.name,
                 isBlocked: false,
                 blockedBy: '',
+                deletedBy: [firebase_id,user.id],
+                read: false,
             }).then(()=>{
                 firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`)
                 .collection('messages')
@@ -162,7 +165,6 @@ class Chatting extends Component {
         axios(config)
         .then(function (response) {
             if(response.data.success){
-                // yahn pr that ka variable hoga
                 that.onSend(response.data.imageUrl)
             }else{
                 alert("cant send")
@@ -244,7 +246,16 @@ class Chatting extends Component {
                 this.setState({isBlocked: data.isBlocked, blockedBy: data.blockedBy})
             }
         })
-
+        firebase.firestore.collection('chats')
+        .doc(chatID)
+        .set(
+            {
+                read: true,
+            },
+            {
+                merge:true
+            }
+        ).then((res)=>console.log(res)).catch((err)=>console.log(err))
     }
     onSend = (image) => {
         this.input.clear();
@@ -272,14 +283,19 @@ class Chatting extends Component {
         .collection('messages')
         .add(
            obj
-        ).then(()=> this.setState({InputTxt:''})).catch((err)=>console.log(err))
+        ).then(()=> {
+            this.setState({InputTxt:''})
+        }).catch((err)=>console.log(err))
 
         firebase.firestore.collection('chats')
         .doc(chatID)
         .set(
             {
                 lastMessage: new Date().getTime(),
+                lastMessageBy: fromID,
                 lastMessageText: image ? "Image" : this.state.InputTxt.trim(),
+                deletedBy: [fromID,toID],
+                read: false,
             },
             {
                 merge:true

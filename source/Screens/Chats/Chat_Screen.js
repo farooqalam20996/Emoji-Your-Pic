@@ -27,6 +27,10 @@ class Chats_Screen extends Component {
     //     this._unsubscribe();
     // }
     componentDidMount(){
+        // AsyncStorage.getItem('chats',(err,data)=>{
+        //     this.setState({chats:JSON.parse(data)})
+        //     console.log(data)
+        // })
         AsyncStorage.getItem('user',(err,data)=>{
             this.setState({user:JSON.parse(data)})
             this.loadChats(this.state.user.firebase_id)
@@ -57,26 +61,66 @@ class Chats_Screen extends Component {
         firebase.firestore
         .collection('chats')
         .where('fromID','==',id)
+        .where('deletedBy','array-contains',id)
         .orderBy('lastMessage',"desc")
         .onSnapshot((querySnapshot)=>{
             querySnapshot.docs.map((documentSnapshot)=>{
                 const chats = this.state.chats.filter(chat=>chat.id!==documentSnapshot.id)
-                return this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]})
+                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]})
+                // AsyncStorage.setItem('chats',JSON.stringify(this.state.chats),(err)=> err?true:false)
             })
         })
         firebase.firestore
         .collection('chats')
         .where('toID','==',id)
+        .where('deletedBy','array-contains',id)
         .orderBy('lastMessage',"desc")
         .onSnapshot((querySnapshot)=>{
             querySnapshot.docs.map((documentSnapshot)=>{
                 const chats = this.state.chats.filter(chat=>chat.id!==documentSnapshot.id)
-                return this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]})
-
+                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]})
+                // AsyncStorage.setItem('chats',JSON.stringify(this.state.chats),(err)=> err?true:false)
             })
         })
-
         this.setState({loading: false});
+    }
+    onDeletePress = (id,del) => {
+        var otherID;
+        if(del.length > 1){
+            if(del[0] == this.state.user.firebase_id){
+                otherID = del[1];
+            }else{
+                otherID = del[0];
+            }
+
+        }else{
+            otherID = "";
+        }
+        
+        firebase.firestore
+        .collection('chats')
+        .doc(id)
+        .set(
+            {
+                deletedBy: [otherID]
+            },
+            {
+                merge:true
+            }
+        ).then(()=>{
+            this.setState({chats: this.state.chats.filter(chat=>chat.id!==id)})
+            console.log('chat deleted')
+        })
+    }
+    setUnreadChat = (id) => {
+        firebase.firestore
+        .collection('chats')
+        .doc(id)
+        .set({
+            read: false,
+        },{
+            merge:true,
+        });
     }
     render() {
         return (
@@ -104,6 +148,8 @@ class Chats_Screen extends Component {
                             image={this.state.user.image}
                             chats={this.state.chats}
                             navigation={this.props.navigation}
+                            onDeletePress={this.onDeletePress}
+                            onUnreadPress={this.setUnreadChat}
                             // blockedUsers = {this.state.blockedUsers}
                             // blockedByUsers = {this.state.blockedByUsers}
                         />

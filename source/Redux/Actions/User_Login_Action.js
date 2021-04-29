@@ -33,6 +33,7 @@ export const ChangeLogin = (email,password,context) =>{
               // AsyncStorage.setItem('password',password, (err)=> err? true:false )
               AsyncStorage.setItem('image',response.data.userData.image+"?"+ new Date(), (err)=> err? true:false )
               AsyncStorage.setItem('token',JSON.stringify(response.data.token), (err)=> err? true:false )
+              AsyncStorage.setItem('chats',JSON.stringify([]), (err)=> err? true:false )
               AsyncStorage.removeItem('fid');
               context.updateState()
             // }).catch((err)=>{
