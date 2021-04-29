@@ -50,7 +50,7 @@ var that;
 
          return (
             <View style={styles.main} >
-                <Top_Header Heading="Term's &amp; Conditions" />
+                <Top_Header Heading="Term's &amp; Conditions" btn={<Text style={styles.can_Txt} onPress={() => this.props.navigation.goBack()} >cancel</Text>} />
                 {
                     this.state.Failed ?
                         <View style={{ flex:1 , alignItems:"center" , justifyContent:"center" }} >
@@ -117,5 +117,11 @@ var that;
         color:'lightgray', 
         textAlign:"left",
         alignItems:"center"
+    },
+    can_Txt:{
+        fontSize:16,
+        lineHeight:18,
+        fontFamily:"Regular",
+        color:'#FFB81A', 
     }
  })
