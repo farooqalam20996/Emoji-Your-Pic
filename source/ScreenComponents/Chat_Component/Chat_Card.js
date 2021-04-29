@@ -52,9 +52,11 @@ const Chat_Card = (props) => {
                         </View>
                         <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
                             <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} > {date} </Text>
+                            {!chat.data.read && chat.data.lastMessageBy !== props.id &&
                             <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520", marginTop:5  }} >
-                                <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text>
+                                {/* <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text> */}
                             </View>
+                            }
                         </View>
                     </View>
                 </TouchableWithoutFeedback> 
@@ -69,24 +71,24 @@ const Chat_Card = (props) => {
         <SwipeListView
         data={props.chats}
         renderItem={ ({item}, rowMap) => Chat(item)}
-        renderHiddenItem={ (data, rowMap) => (
+        renderHiddenItem={ ({item}, rowMap) => (
             <View style={{ flexDirection:"row" , alignItems:"center" , justifyContent:"space-between",padding:"5%" }} >
                 <View style={{flexDirection:"row"}} >
-                    <TouchableOpacity style={styles.Unread_Style} >
+                    <TouchableOpacity onPress={() => props.onUnreadPress(item.id)} style={styles.Unread_Style} >
                         <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
                         <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.Unread_Style,{backgroundColor:"#FFB81A", borderColor:"#000000"}]} >
+                    {/* <TouchableOpacity style={[styles.Unread_Style,{backgroundColor:"#FFB81A", borderColor:"#000000"}]} >
                         <Image source={require('../../Imagess/star.png')} style={{ width:15 , height:15 }} />
                         <Text style={[styles.Unread_Txt, {color:"#0C1326"}]} >Pin fav.</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 <View style={{flexDirection:"row"}} >
-                    <TouchableOpacity style={styles.Unread_Style} >
+                    {/* <TouchableOpacity style={styles.Unread_Style} >
                         <Image source={require('../../Imagess/archive.png')} style={{ width:15 , height:15 }} />
                         <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Archive</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.Unread_Style} >
+                    </TouchableOpacity> */}
+                    <TouchableOpacity onPress={() => props.onDeletePress(item.id,item.data.deletedBy)} style={styles.Unread_Style} >
                         <Image source={require('../../Imagess/delete.png')} style={{ width:15 , height:15 }} />
                         <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Delete</Text>
                     </TouchableOpacity>
