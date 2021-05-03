@@ -143,6 +143,7 @@ class Chats_Screen extends Component {
                 <Modal 
                     onRequestClose={()=>this.setState({isVisible:false})}
                     visible={this.state.isVisible}
+                    transparent
                 >
                     <ImageViewer 
                         enablePreload
@@ -168,7 +169,7 @@ class Chats_Screen extends Component {
                     <TextInput 
                         style={styles.Input_Style}
                         value={this.state.Search}
-                        autoCapitalize
+                        // autoCapitalize
                         onChangeText={(text) => this.search(text)}
                         placeholder="Search Chat"
                         placeholderTextColor="#5B6C9F"

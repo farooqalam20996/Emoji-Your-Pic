@@ -385,6 +385,7 @@ class Chatting extends Component {
                                     autoCapitalize="none"
                                     blurOnSubmit={false}
                                     multiline
+                                    scrollEnabled={true}
                                 />
                                 <TouchableOpacity disabled={this.state.InputTxt.trim() == ""} style={styles.trigger} onPress={()=>this.onSend(null)} >
                                     <Image source={require("../../Imagess/send.png")} style={{width:'50%' , height:"50%"}} />
@@ -439,16 +440,21 @@ const styles = StyleSheet.create({
     },
     Outer_Area:{
         width:"100%",
-        height:47,
+        // height:47,
         backgroundColor:"#7676801F",
         alignItems:"center",
         flexDirection:'row',
         // justifyContent:"",
         alignSelf:"flex-end",
+        // paddingTop:"1%",
+        borderTopColor:"#273253",
+        borderTopWidth:1
     },
     Input_style:{
         width:"70%",
-        height:45   ,
+        // height:47,
+        maxHeight:120,
+        minHeight:47,
         backgroundColor:"#0C1326",
         borderRadius:12,
         borderColor:"#273253",
@@ -459,7 +465,8 @@ const styles = StyleSheet.create({
         fontSize:14,
         color:'#FFFFFF',
         letterSpacing:0,
-        lineHeight:16
+        lineHeight:16,
+        paddingTop:"2%",
     },
     trigger:{
         backgroundColor:'#0C1326',
@@ -468,6 +475,7 @@ const styles = StyleSheet.create({
         borderRadius:8,
         justifyContent:'center',
         alignItems:"center",
+        alignSelf:"flex-end"
     },
     Reciever:{
         flexDirection:'row',

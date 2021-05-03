@@ -75,13 +75,14 @@ class Settings_Screen extends Component {
                     onRequestClose={()=>this.setState({isVisible:false})}
                     visible={this.state.isVisible}
                     transparent
+                    
                >
                     <ImageViewer 
                         imageUrls={[{url: this.props.user_name.image}]}
                         onLongPress={()=>this.setState({isVisible:false})}
                         renderHeader={()=>
                             <View style={{flexDirection:"row",top:0,width:"100%", position:"absolute", alignItems:"center",zIndex:1 , justifyContent:"space-between"}} >
-                                <Text style={{color:"white" , fontSize:18 , fontFamily:"Medium", marginLeft:"3%"}} >{renderName(name)}</Text>
+                                <Text style={{color:"white" , fontSize:18 , fontFamily:"Medium", marginLeft:"3%"}} >{titleName(name)}</Text>
                                 <TouchableOpacity   onPress={()=>this.setState({isVisible:false})}  >
                                     <Feather name="x" size={25} style={{margin:20}} color="white"/>
                                 </TouchableOpacity>

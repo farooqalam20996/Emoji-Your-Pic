@@ -25,6 +25,7 @@ const ImageModal = (props) => {
                     <Text style={{color:"white"}}>Send to {props.name}</Text>
                 </View>
                 <Image 
+                    resizeMode="contain"
                     source={{uri:props.image}}
                     style={[styles.image]}
                 />
@@ -36,7 +37,7 @@ const ImageModal = (props) => {
                         placeholder="Enter Message Here"
                         placeholderTextColor="#FFFFFF"
                         clearTextOnFocus={true}
-                        autoCapitalize="none"
+                        // autoCapitalize="none"
                         blurOnSubmit={false}
                         multiline
                     />

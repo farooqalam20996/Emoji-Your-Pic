@@ -55,7 +55,7 @@ const Chat_Card = (props) => {
         const getLastMessageText = () => {
             var text = chat.data.lastMessageText;
             if(chat.data.lastMessageText.length > 20){
-                text = chat.data.lastMessageText.slice(0,25)+"...";
+                text = chat.data.lastMessageText.slice(0,30)+"...";
             }
             return text
         }
@@ -63,17 +63,17 @@ const Chat_Card = (props) => {
             return(
                 <TouchableWithoutFeedback style={styles.main} onPress={navigate} > 
                     <View style={styles.Under_main} >
-                        <View style={{ flexDirection:'row' }} >
-                            <TouchableWithoutFeedback onPress={()=>props.onImagePress(Photo,name)}>
-                                <Image source={{uri:Photo}} style={{ width:50 , height:50 , borderRadius:100 }} />
+                        <View style={{ flexDirection:'row' , flex:4 }} >
+                            <TouchableWithoutFeedback onPress={()=>props.onImagePress(Photo,name)} >
+                                <Image source={{uri:Photo}} style={{ width:50 , height:50 , borderRadius:100, }} />
                             </TouchableWithoutFeedback>
-                            <View style={{ marginLeft:"5%", justifyContent:"center", alignItems:"flex-start" }} >
+                            <View style={{ marginLeft:"3%", justifyContent:"center", alignItems:"flex-start" }} >
                                 <Text style={styles.Profile_Name}>{name.charAt(0).toUpperCase()+name.substr(1).toLowerCase()}</Text>
                                 <Text style={styles.Profile_msg}>{getLastMessageText()}</Text>
                             </View>
                         </View>
-                        <View style={{ justifyContent:"space-between" , alignItems:"flex-end" }} >
-                            <Text style={{ fontSize:10.5 , color:"#FFFFFF" , fontFamily:"Regular" }} > {getDate()} </Text>
+                        <View style={{ justifyContent:"space-between" , alignItems:"flex-end"  , flex:1 }} >
+                            <Text style={{ fontSize:10.5 , color:"#FFFFFF" , fontFamily:"Regular"  }} > {getDate()} </Text>
                             {!chat.data.read && chat.data.lastMessageBy !== props.id &&
                             <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520", marginTop:5  }} >
                                 {/* <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text> */}
@@ -97,10 +97,10 @@ const Chat_Card = (props) => {
                 renderHiddenItem={ ({item}, rowMap) => (
                     <View style={{ flexDirection:"row" , alignItems:"center" , justifyContent:"space-between",padding:"5%" }} >
                         <View style={{flexDirection:"row"}} >
-                            <TouchableOpacity onPress={() => props.onUnreadPress(item.id)} style={styles.Unread_Style} >
+                            {/* <TouchableOpacity onPress={() => props.onUnreadPress(item.id)} style={styles.Unread_Style} >
                                 <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
                                 <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                             {/* <TouchableOpacity style={[styles.Unread_Style,{backgroundColor:"#FFB81A", borderColor:"#000000"}]} >
                                 <Image source={require('../../Imagess/star.png')} style={{ width:15 , height:15 }} />
                                 <Text style={[styles.Unread_Txt, {color:"#0C1326"}]} >Pin fav.</Text>
@@ -111,6 +111,10 @@ const Chat_Card = (props) => {
                                 <Image source={require('../../Imagess/archive.png')} style={{ width:15 , height:15 }} />
                                 <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Archive</Text>
                             </TouchableOpacity> */}
+                            <TouchableOpacity onPress={() => props.onUnreadPress(item.id)} style={styles.Unread_Style} >
+                                <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
+                                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity onPress={() => props.onDeletePress(item.id,item.data.deletedBy)} style={styles.Unread_Style} >
                                 <Image source={require('../../Imagess/delete.png')} style={{ width:15 , height:15 }} />
                                 <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Delete</Text>
@@ -118,8 +122,10 @@ const Chat_Card = (props) => {
                         </View>
                     </View>
                 )}
-                leftOpenValue={110}
+                // leftOpenValue={50}
                 rightOpenValue={-110}
+                disableRightSwipe={true}
+                closeOnRowBeginSwipe={true}
             />
             
         </>
@@ -159,7 +165,7 @@ const styles = StyleSheet.create({
     },
     Unread_Style:{
         width:45,
-        height:70,
+        height:65,
         padding:"5%",
         // flexDirection:"row",
         alignItems:'center',
@@ -168,12 +174,13 @@ const styles = StyleSheet.create({
         borderRadius:12,
         borderColor:"#00000000",
         borderWidth:1,
-        marginTop:"3%"
+        // marginTop:"3%",
+        marginTop:"-3%"
     },
     Unread_Txt:{
         fontSize:9,
         lineHeight:13,
-        fontFamily:"Light", 
+        fontFamily:"Regular", 
         textAlign:"center"
     }
 })
