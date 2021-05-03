@@ -13,8 +13,6 @@ import * as Contacts from "expo-contacts";
 import Communications from 'react-native-communications';
 import firebase from '../../firebase';
 import { connect } from 'react-redux';
-import Contact_Placeholder from "../../ScreenComponents/PlaceHolders/Contact_Placeholder";
-import AsyncStorage from '@react-native-community/async-storage';
 import { getBlockedByUsersList, getBlockedUsersList } from '../../Redux/Actions/BlockAction';
 
 var contacts;
@@ -26,35 +24,18 @@ var contactObjects;
         Search:"",
         contacts:[],
         otherContacts:[],
-        // loaded:false,
     }
     
     contactsHolder = [];
     otherContactsHolder = [];
 
-    // componentWillUnmount() {
-    //     this._unsubscribe();
-    // }
-
     componentDidMount(){
         contacts=[];
         contactObjects=[];
         this.contacts_Permission()
-
-        // this._unsubscribe = this.props.navigation.addListener('focus', () => {
-        //     AsyncStorage.getItem('token',(err,data)=>{
-        //         const token = JSON.parse(data)
-        //         this.props.getBlockedUsersList('Bearer '+token)
-        //         this.props.getBlockedByUsersList('Bearer '+token)
-        //     })
-        // })
-
-
     }
     getOtherContacts = () => {
         contactObjects.map((contact)=>{
-        //    console.log(this.state.contacts)
-        // console.log(this.state.contacts.some(e=>e.data.phone==contact))
         if(!this.state.contacts.some(e=>e.data.phone==contact.phone)){
             this.setState({otherContacts:[...this.state.otherContacts,contact]})
             this.otherContactsHolder.push(contact)
@@ -76,8 +57,6 @@ var contactObjects;
         console.log(data)
         data.map(item => {
             if(item.phoneNumbers){
-                // this.setState({ contact_list: [...this.state.contact_list, item.phoneNumbers[0].number] })
-                // this.setState({ image: [...this.state.image, {image:item.image }] })
                 contacts.push(item.phoneNumbers[0].number);
                 contactObjects.push({id:item.id,name:item.name,phone:item.phoneNumbers[0].number});
             }
@@ -85,10 +64,8 @@ var contactObjects;
         await firebase.firestore
         .collection('users')
         .where('phone','in',contacts)
-        // .orderBy('lastMessage',"desc")
         .get().then((res)=>{
             res.forEach((contact)=>{
-                // console.log(contact.data())
                 this.setState({contacts:[...this.state.contacts,{id:contact.id,data:contact.data()}]});
                 this.contactsHolder.push({id:contact.id,data:contact.data()})
             })
@@ -96,8 +73,6 @@ var contactObjects;
             console.log(err)
         })
         this.getOtherContacts()
-        // this.setState({loaded:true})
-
     }
     contains = (name, phone , query) => {
         const squery = String(query).toLocaleLowerCase()
@@ -118,73 +93,17 @@ var contactObjects;
         
         this.setState({ contacts, otherContacts, Search:text})
     }
-    // checkChatExists = async (firebase_id,userID) => {
-    //     // alert(firebase_id+" "+userID)
-    //     var ch1,ch2 = false;
-    //     await firebase.firestore.collection('chats').doc(`${firebase_id}_${userID}`)
-    //     .get().then((chat)=>{
-    //         if(chat.exists){
-    //             ch1 = true;
-    //         }
-    //     })
-    //     await firebase.firestore.collection('chats').doc(`${userID}_${firebase_id}`)
-    //     .get().then((chat)=>{
-    //         if(chat.exists){
-    //             ch2 = true;                
-    //         }
-    //     })
-    //     if(ch1 || ch2){
-    //         return true
-    //     }else{
-    //         return false;
-    //     }
-    // }
+   
     goToChat = (user) => async () => {
-
-        // const {firebase_id,full_name,id,image} = this.props.user;
-        // var check = await this.checkChatExists(firebase_id,user.id)
-        // if(!check){
-        //     firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`).set({
-        //         lastMessage: new Date().getTime(),
-        //         lastMessageText: ``,
-        //         fromID: firebase_id,
-        //         fromName: full_name,
-        //         fromPhoto:image,
-        //         // fromSqlID:id,
-        //         toID: user.id,
-        //         toPhoto:user.data.image,
-        //         // toSqlID:person.idUser,
-        //         toName: user.data.name,
-        //     }).then(()=>{
-        //         firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`)
-        //         .collection('messages')
-        //         .add({})
-        //         .then(()=>{
-                    this.props.navigation.navigate("Main_Chat_Screen",{
-                        person:{
-                            id: user.id,
-                            name:user.data.name,
-                            image:user.data.image, 
-                        },
-                    })
-            //     })
-            //     .catch((err)=>alert(err))
-            // }).catch((err)=>{
-            //     alert(err)
-            // })
-        // }else{
-        //     this.props.navigation.navigate("Main_Chat_Screen",{
-        //         person:{
-        //             id: user.id,
-        //             name:user.data.name,
-        //             image:user.data.image, 
-        //         },
-        //     })
-        // }   
-
+        this.props.navigation.navigate("Main_Chat_Screen",{
+            person:{
+                id: user.id,
+                name:user.data.name,
+                image:user.data.image, 
+            },
+        })
     }
     sendInvite = (item) => () => {
-        // alert(JSON.stringify(item))
         Communications.text(item.phone,"You are invited to join Emoji Chat App");
     }
      render() {
@@ -250,7 +169,7 @@ var contactObjects;
                                             onInvitePress={this.sendInvite(item)}
                                             Name={item.name}  
                                             Number={item.phone} 
-                                            img={require("../../Imagess/chat_profile.png")}
+                                            img={require("../../Imagess/user.png")}
                                             // img={this.state.image == null ? require("../../Imagess/chat_profile.png") : {uri: item.image }} 
                                             onpress={()=> this.props.navigation.navigate("Main_Chat_Screen")} 
                                         />
@@ -320,6 +239,7 @@ const styles = StyleSheet.create({
         fontFamily:"Medium",
         color:'#FFB81A', 
         textAlign:"left", 
-        marginBottom:"8%",
+        marginBottom:"4%",
+        marginTop:"4%",
      }
  })

@@ -5,27 +5,38 @@ import {
     StyleSheet,
     Image,
 } from 'react-native';
+import { manageDate } from '../../utils';
 
 const Message = ({data, side}) => {
     const isLeftSide = side === 'left';
-    const long = data.text.length > 25;
     const containerStyles = isLeftSide ? styles.container : flattenedStyles.container;
-    const textContainerStyles = isLeftSide ?  [styles.textContainer,long && {flex:1} ] : [flattenedStyles.textContainer, long && {flex:1}];
+    const textContainerStyles = isLeftSide ?  [styles.textContainer, data.image && {marginRight:170}] : [flattenedStyles.textContainer, data.image && {marginLeft:170}];
     const textStyles = isLeftSide ? flattenedStyles.leftText : flattenedStyles.rightText;
     
+    const getDate = () => {
+        const today = manageDate(new Date().getTime());
+        const date = manageDate(data.createdAt)
+        if(today.split(",")[0] == date.split(",")[0]){
+            return date.split(",")[1]
+        }
+        return date.split(",")[0]
+    }
+
     return(
         <View style={containerStyles}>
-            <View style={textContainerStyles}>
+            <View style={[textContainerStyles, data.image && {paddingHorizontal:7.25,paddingVertical:7.25}]}>
                 {data.image
                     ?
                     <>
                         <Image style={styles.imageStyle} source={{uri: data.image}}/>
-                        {data.text ? <Text style={textStyles}>{data.text}</Text> : null }
+                        {data.text ? <Text style={[textStyles,{marginTop:5}]}>{data.text}</Text> : null }
                     </>
                     :
-                    <Text style={textStyles}>{data.text}</Text>
+                    <>
+                        <Text style={textStyles}>{data.text}</Text>
+                    </>
                 }
-                
+                <Text style={[styles.dateStyle,isLeftSide ? {color:'black'} : { color:'#AC7908'}]}>{getDate()}</Text>
             </View>
         </View>
     )
@@ -44,13 +55,13 @@ const styles = StyleSheet.create({
     },
     textContainer: {
         backgroundColor: '#C63520',
-        borderRadius: 15,
-        paddingHorizontal: 15,
-        paddingVertical: 12,
+        borderRadius: 12,
+        paddingHorizontal: 8,
+        paddingVertical: 6,
         marginLeft: 10
     },
     rightContainer: {
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
     },
     rightTextContainer: {
         backgroundColor: '#FFB81A',
@@ -58,17 +69,25 @@ const styles = StyleSheet.create({
     },
     leftText: {
         textAlign: 'left',
+        color:'white'
     },
     rightText: {
-        textAlign: 'right',
+        // textAlign: 'right',
         color:'black'
     },
     imageStyle:{
-        height:100,
-        width:100,
+        height:150,
+        width:145,
+        borderRadius:10
     },
     text: {
-        fontSize: 12
+        fontSize: 15
+    },
+    dateStyle:{
+        color:'gray',
+        fontSize:9,
+        textAlign:'right',
+        marginTop:5,
     }
     
 });

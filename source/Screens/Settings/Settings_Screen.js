@@ -15,20 +15,7 @@ import AuthContext from '../../Routes_Navigation/Context';
  import { connect  } from "react-redux";
  import ImageViewer from "react-native-image-zoom-viewer";
 import { Feather } from '@expo/vector-icons';
-
-
-
-const renderName = (username) => {
-    const nameArr = username.split(" ");
-    var name;
-    if(nameArr.length > 0){
-        name = nameArr[0].charAt(0).toUpperCase() + nameArr[0].slice(1) + " " + nameArr[1].charAt(0).toUpperCase() + nameArr[1].slice(1)
-    }else{
-        name = nameArr[0].charAt(0).toUpperCase() + nameArr[0].slice(1) 
-    }
-    return name;
-    
-}
+import { titleName } from '../../utils';
 
 class Settings_Screen extends Component {
 
@@ -67,7 +54,7 @@ class Settings_Screen extends Component {
                         <Image source={{uri: this.state.image}} style={{width:55 , height:55, borderRadius:100}} />
                     </TouchableOpacity>
                     <Text style={styles.Profile_Name} adjustsFontSizeToFit={true} > 
-                        {renderName(name)}
+                        {titleName(name)}
                     </Text>
                 </View>
                 <View style={{ width:"100%" ,height:2 , backgroundColor:"#273253", marginBottom:"8%" }} />

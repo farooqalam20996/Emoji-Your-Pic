@@ -4,59 +4,65 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    TextInput
+    TextInput,
+    Modal,
+    TouchableOpacity
  } from 'react-native';
 import Top_Header from "../../ScreenComponents/Header_Component/Header";
-import { AntDesign } from "@expo/vector-icons";
 import Chat_Card from "../../ScreenComponents/Chat_Component/Chat_Card";
 import { connect } from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from '../../firebase';
 import Chat_Placeholder from "../../ScreenComponents/PlaceHolders/Chat_Placeholder";
-import { getBlockedByUsersList, getBlockedUsersList } from '../../Redux/Actions/BlockAction';
+import { Feather } from '@expo/vector-icons';
+import ImageViewer from 'react-native-image-zoom-viewer';
+import { titleName } from '../../utils';
 
 class Chats_Screen extends Component {
     state={
         user:[],
         chats:[],
         loading: true,
-        // blockedUsers:[],
-        // blockedByUsers:[]
+        Search:"",
+        isVisible:false,
+        image:[],
+        name:'',
     }
-    // componentWillUnmount() {
-    //     this._unsubscribe();
-    // }
+
+    chatsHolder = [];
+
     componentDidMount(){
-        // AsyncStorage.getItem('chats',(err,data)=>{
-        //     this.setState({chats:JSON.parse(data)})
-        //     console.log(data)
-        // })
         AsyncStorage.getItem('user',(err,data)=>{
             this.setState({user:JSON.parse(data)})
             this.loadChats(this.state.user.firebase_id)
         })
-        // this._unsubscribe = this.props.navigation.addListener('focus', () => {
-
-        //     AsyncStorage.getItem('token',(err,data)=>{
-        //         // this.setState({user:JSON.parse(data)})
-        //         const token = JSON.parse(data)
-        //         this.props.getBlockedUsersList('Bearer '+token)
-        //         this.props.getBlockedByUsersList('Bearer '+token)
-        //     })
-        // })
     }
-    // componentDidUpdate(prevProps,prevState){
-    //     if(this.props.blockedUsers !== prevProps.blockedUsers){
-    //         // console.log(JSON.stringify(this.props.blockedUsers))
-    //         // const list = this.state.blockList;
-    //         // list.push(this.props.blockedByUsers)
-    //         this.setState({blockedUsers:this.props.blockedUsers})
-    //     }
-    //     if(this.props.blockedByUsers !== prevProps.blockedByUsers){
-    //         // console.log(JSON.stringify(this.props.blockedByUsers))
-    //         this.setState({blockedByUsers:this.props.blockedByUsers})
-    //     }
-    // }
+    showImage = (image,name) => {
+        const url = [{url:image}]
+        // alert(image)
+        this.setState({name,image:url,isVisible:true})
+    }
+    contains = (name, query) => {
+        const squery = String(query).toLocaleLowerCase()
+        const check = name.length > 1 ? String(name[1]).toLocaleLowerCase().includes(squery) : false
+        
+        if (String(name[0]).toLocaleLowerCase().includes(squery) || check) {
+          return true
+        }
+        return false
+    }
+    search = (text) => {
+        
+        const chats = this.chatsHolder.filter(chat => {
+            console.log(chat)
+            var name = chat.data.toName
+            if(chat.data.toID == this.state.user.firebase_id){
+                name = chat.data.fromName;
+            }
+            return this.contains(name.split(" "), text)
+        })
+        this.setState({ chats, Search:text})
+    }
     loadChats(id){
         firebase.firestore
         .collection('chats')
@@ -66,8 +72,9 @@ class Chats_Screen extends Component {
         .onSnapshot((querySnapshot)=>{
             querySnapshot.docs.map((documentSnapshot)=>{
                 const chats = this.state.chats.filter(chat=>chat.id!==documentSnapshot.id)
-                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]})
-                // AsyncStorage.setItem('chats',JSON.stringify(this.state.chats),(err)=> err?true:false)
+                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]},()=>{
+                    this.chatsHolder = this.state.chats;
+                })
             })
         })
         firebase.firestore
@@ -78,8 +85,9 @@ class Chats_Screen extends Component {
         .onSnapshot((querySnapshot)=>{
             querySnapshot.docs.map((documentSnapshot)=>{
                 const chats = this.state.chats.filter(chat=>chat.id!==documentSnapshot.id)
-                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]})
-                // AsyncStorage.setItem('chats',JSON.stringify(this.state.chats),(err)=> err?true:false)
+                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]},()=>{
+                    this.chatsHolder = this.state.chats;
+                })
             })
         })
         this.setState({loading: false});
@@ -92,7 +100,6 @@ class Chats_Screen extends Component {
             }else{
                 otherID = del[0];
             }
-
         }else{
             otherID = "";
         }
@@ -113,28 +120,58 @@ class Chats_Screen extends Component {
         })
     }
     setUnreadChat = (id) => {
+        const idArr = id.split("_");
+        var otherID = id.split("_")[0];
+        if(idArr[0] == this.state.user.firebase_id){
+            otherID = id.split("_")[1];
+        }
         firebase.firestore
         .collection('chats')
         .doc(id)
         .set({
             read: false,
+            lastMessageBy:otherID
         },{
             merge:true,
+        }).then(()=>{
+            console.log(this.state.chats)
         });
     }
     render() {
         return (
             <View style={styles.main}>
+                <Modal 
+                    onRequestClose={()=>this.setState({isVisible:false})}
+                    visible={this.state.isVisible}
+                >
+                    <ImageViewer 
+                        enablePreload
+                        enableImageZoom
+                        onLongPress={()=>this.setState({isVisible:false})}
+                        renderHeader={()=>
+                            <View style={{position: "absolute",top:0, width:'100%',flexDirection:'row',justifyContent:'space-between',alignItems:'center',zIndex: 9999}}>
+                                <Text style={{color:'white',fontFamily:"Regular",fontSize:18,paddingLeft:10}}>{titleName(this.state.name)}</Text>
+                                <TouchableOpacity  onPress={()=>this.setState({isVisible:false})}>
+                                    <Feather name="x" size={25} style={{margin:20}} color="white"/>
+                                </TouchableOpacity>
+                            </View>
+                        }
+                        onSwipeDown={()=>this.setState({isVisible:false})}
+                        enableSwipeDown
+                        imageUrls={this.state.image}
+                        renderIndicator={()=>null}
+                    />
+                </Modal>
+
                 <Top_Header Heading="Chat" />
                 <View style={{ marginBottom:"2%", marginTop:"1%" }} >
                     <TextInput 
                         style={styles.Input_Style}
                         value={this.state.Search}
-                        // autoCapitalize
-                        onChangeText={(text) => this.setState({Search: text})}
-                        placeholder="Search chat"
+                        autoCapitalize
+                        onChangeText={(text) => this.search(text)}
+                        placeholder="Search Chat"
                         placeholderTextColor="#5B6C9F"
-                        onSubmitEditing={()=>alert(JSON.stringify(this.state.blockedByUsers))}
                     />
                 </View>
                 {
@@ -150,8 +187,7 @@ class Chats_Screen extends Component {
                             navigation={this.props.navigation}
                             onDeletePress={this.onDeletePress}
                             onUnreadPress={this.setUnreadChat}
-                            // blockedUsers = {this.state.blockedUsers}
-                            // blockedByUsers = {this.state.blockedByUsers}
+                            onImagePress={this.showImage}
                         />
                     </ScrollView>    
                 }
@@ -163,19 +199,10 @@ class Chats_Screen extends Component {
 }
 const mapStateToProps = state => {
     return{
-
-        // blockedUsers: state.BlockReducer.blockedUsers,
-        // blockedUsersFailed: state.BlockReducer.blockedUsersFailed,
-        // blockedUsersLoading: state.BlockReducer.blockedUsersLoading,
-        // blockedByUsers: state.BlockReducer.blockedByUsers,
-        // blockedByUsersFailed: state.BlockReducer.blockedByUsersFailed,
-        // blockedByUsersLoading: state.BlockReducer.blockedByUsersLoading,
     }
 } 
 const mapDispatchToProps = dispatch => {
     return{
-        // getBlockedUsersList: (token) => dispatch(getBlockedUsersList(token)),
-        // getBlockedByUsersList: (token) => dispatch(getBlockedByUsersList(token))
     }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Chats_Screen);
