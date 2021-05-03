@@ -8,6 +8,7 @@ import {
     TextInput,
     FlatList,
     Platform,
+    Modal,
  } from 'react-native';
 import { connect } from 'react-redux';
 import firebase from '../../firebase';
@@ -18,6 +19,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import Message from './Message';
 import { Snackbar } from "react-native-paper";
 import { API } from '../../Routes_Navigation/MainURL';
+import ImageModal from '../../ScreenComponents/common/ImageModal';
 var axios = require('axios');
 var FormData = require('form-data');
 
@@ -34,6 +36,8 @@ class Chatting extends Component {
             blockedBy:this.props.route.params.person.blockedBy,
             InputTxt:"",
             msgs:[],
+            image:"",
+            visible:false,
         } 
     }
 
@@ -103,21 +107,9 @@ class Chatting extends Component {
         }   
 
     }
-    // urlToBlob(url) {
-    //     return new Promise((resolve, reject) => {
-    //         var xhr = new XMLHttpRequest();
-    //         xhr.onerror = reject;
-    //         xhr.onreadystatechange = () => {
-    //             if (xhr.readyState === 4) {
-    //                 resolve(xhr.response);
-    //             }
-    //         };
-    //         xhr.open('GET', url);
-    //         xhr.responseType = 'blob'; // convert type
-    //         xhr.send();
-    //     })
-    // }
+    
     select_image = async () => {
+        // this.setState({visible:true})
         let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         // allowsMultipleSelection:true,
@@ -126,20 +118,22 @@ class Chatting extends Component {
         quality: 1,
     });
         console.log(result);
-        if (!result.cancelled) {
-            // this.setState({ image: result},()=>{
-                this.sendImage(result.uri)
-            // })
+        if (result.cancelled) {
+            this.setState({ image: "",visible:false})
+        }else{
+            this.setState({ image: result.uri, visible:true})
         }
     };
     sendImage = (uri) => {
+        that.input.clear()
+        this.setState({visible:false})
         tempID = new Date().getTime();
         const fromID = this.props.user.firebase_id;
         const toID = this.props.route.params.person.id;
 
         this.setState({msgs:[{id:tempID,data:{
             image: uri,
-            text:"",
+            text:this.state.InputTxt,
             createdAt: tempID,
             fromID:fromID,
             toID: toID,
@@ -245,17 +239,25 @@ class Chatting extends Component {
             if(this.state.isBlocked !== data.isBlocked){
                 this.setState({isBlocked: data.isBlocked, blockedBy: data.blockedBy})
             }
-        })
-        firebase.firestore.collection('chats')
+        });
+        firebase.firestore
+        .collection('chats')
         .doc(chatID)
-        .set(
-            {
-                read: true,
-            },
-            {
-                merge:true
+        .get()
+        .then((data)=>{
+            if(data.data().lastMessageBy !== firebase_id){
+                firebase.firestore.collection('chats')
+                .doc(chatID)
+                .set(
+                    {
+                        read: true,
+                    },
+                    {
+                        merge:true
+                    }
+                ).then((res)=>console.log(res)).catch((err)=>console.log(err))
             }
-        ).then((res)=>console.log(res)).catch((err)=>console.log(err))
+        })
     }
     onSend = (image) => {
         this.input.clear();
@@ -265,7 +267,7 @@ class Chatting extends Component {
         const obj = image ? 
         {
             image: image,
-            text:"",
+            text:this.state.InputTxt,
             createdAt: new Date().getTime(),
             fromID: fromID,
             toID: toID,
@@ -316,8 +318,18 @@ class Chatting extends Component {
                 </Snackbar>
                 <Spinner
                     visible={this.state.spinner}
+                   
                     // textContent={'Blocking '+name}
                     // textStyle={{color:'#FFCF30' , fontFamily:"Bold" }}
+                />
+                <ImageModal 
+                    visible={this.state.visible}
+                    name={name}
+                    close={()=>this.setState({visible:false})}
+                    input={this.state.InputTxt}
+                    inputChange={(text)=>this.setState({InputTxt:text})}
+                    send={this.sendImage}
+                    image={this.state.image}
                 />
                 <View style={styles.Chat_Head} >
                     <Message_Header
@@ -369,8 +381,10 @@ class Chatting extends Component {
                                     placeholderTextColor="#FFFFFF"
                                     clearTextOnFocus={true}
                                     // autoFocus={true}
+                                    autoCorrect={false}
                                     autoCapitalize="none"
                                     blurOnSubmit={false}
+                                    multiline
                                 />
                                 <TouchableOpacity disabled={this.state.InputTxt.trim() == ""} style={styles.trigger} onPress={()=>this.onSend(null)} >
                                     <Image source={require("../../Imagess/send.png")} style={{width:'50%' , height:"50%"}} />
@@ -495,6 +509,11 @@ const styles = StyleSheet.create({
         backgroundColor:"#2E8BFF",
         borderRadius:8,
     },
+    image:{
+        width:"100%",
+        height:"70%",
+        marginTop:"20%"
+    }
    
 })
 
