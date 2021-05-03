@@ -7,7 +7,8 @@ import {
     Image,
     ScrollView,
     Modal,
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator
  } from 'react-native';
 import AuthContext from '../../Routes_Navigation/Context';
  import Top_Header from "../../ScreenComponents/Header_Component/Header";
@@ -27,7 +28,7 @@ const renderName = (username) => {
         name = nameArr[0].charAt(0).toUpperCase() + nameArr[0].slice(1) 
     }
     return name;
-    
+     
 }
 
 class Settings_Screen extends Component {
@@ -36,7 +37,8 @@ class Settings_Screen extends Component {
         super(props);
         this.state={
             isVisible:false,
-            image:'null'
+            image:'null',
+            load:false,
         }
     }
     componentWillUnmount() {
@@ -64,7 +66,8 @@ class Settings_Screen extends Component {
                 <Top_Header Heading="Settings" />
                 <View style={styles.container} >
                     <TouchableOpacity style={styles.Image_Container} onPress={() => this.setState({isVisible: true})} >
-                        <Image source={{uri: this.state.image}} style={{width:55 , height:55, borderRadius:100}} />
+                        {!this.state.load && <ActivityIndicator size="large" color="#FFB81A" style={{position:"absolute"}} />}
+                        <Image onLoad={()=>this.setState({load: true})} source={{uri: this.state.image}} style={{width:55 , height:55, borderRadius:100}} />
                     </TouchableOpacity>
                     <Text style={styles.Profile_Name} adjustsFontSizeToFit={true} > 
                         {renderName(name)}
@@ -90,14 +93,19 @@ class Settings_Screen extends Component {
                         imageUrls={[{url: this.props.user_name.image}]}
                         onLongPress={()=>this.setState({isVisible:false})}
                         renderHeader={()=>
-                            <TouchableOpacity style={{top: 0, position: "absolute", zIndex: 9999,alignSelf:'flex-end'}} onPress={()=>this.setState({isVisible:false})}>
-                                <Feather name="x" size={25} style={{margin:20}} color="white"/>
-                            </TouchableOpacity>
+                            <View style={{flexDirection:"row",top:0,width:"100%", position:"absolute", alignItems:"center",zIndex:1 , justifyContent:"space-between"}} >
+                                <Text style={{color:"white" , fontSize:18 , fontFamily:"Medium", marginLeft:"3%"}} >{renderName(name)}</Text>
+                                <TouchableOpacity   onPress={()=>this.setState({isVisible:false})}  >
+                                    <Feather name="x" size={25} style={{margin:20}} color="white"/>
+                                </TouchableOpacity>
+                            </View>
                         }
                         enablePreload
                         enableImageZoom
                         onSwipeDown={()=>this.setState({isVisible:false})}
                         enableSwipeDown
+                        renderIndicator={()=> null}
+
                     />
                </Modal>
             </View>
@@ -139,7 +147,9 @@ function mapStateToProps(state) {
          width:60,
          height:60,
          borderRadius:100,
-         backgroundColor:"#FFB81A",
+        //  backgroundColor:"#FFB81A",
+         borderColor:"#FFB81A",
+         borderWidth:4,
          alignItems:"center",
          justifyContent:"center",
          marginRight:"5%"

@@ -51,7 +51,7 @@ var that;
 
          return (
             <View style={styles.main} >
-                <Top_Header Heading="Privacy Policy" btn={<Text style={styles.can_Txt} onPress={() => this.props.navigation.goBack()} >cancel</Text>} />
+                <Top_Header Heading="Privacy Policy" btn={<Text style={styles.can_Txt} onPress={() => this.props.navigation.goBack()} >Back</Text>} />
                 {
                     this.state.Failed ?
                         <View style={{ flex:1 , alignItems:"center" , justifyContent:"center" }} >

@@ -73,6 +73,9 @@ class SignUp_Page extends Component {
                                 :
                                 null
                         }
+                        <TouchableOpacity style={[styles.SignUp_btn, {marginTop:"10%", backgroundColor:"#FFB81A"}]} onPress={() => this.props.navigation.goBack()} >
+                                <Text style={[styles.Txt,{color:"#000000"}]} > Cancel </Text>
+                        </TouchableOpacity>
                 </View>
                     {/* <View style={styles.OtherSignUp_Container} >
                         <TouchableOpacity style={[styles.SignUp_btn,{backgroundColor:"#FFB81A"}]} >

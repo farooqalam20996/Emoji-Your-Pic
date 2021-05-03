@@ -156,7 +156,7 @@ class Edit_Accounts extends Component {
                             </View>
                         </View>
                     <View style={styles.Input_Container} >
-                        <Text style={styles.Txt} >username</Text>
+                        <Text style={styles.Txt} >Username</Text>
                         <TextInput 
                             style={styles.Input_Style}
                             value={this.state.user_name}
@@ -164,7 +164,7 @@ class Edit_Accounts extends Component {
                             blurOnSubmit={false}
                             onSubmitEditing={() => this.NextInput.focus()}
                         />
-                        <Text style={styles.Txt} >fullname</Text>
+                        <Text style={styles.Txt} >Fullname</Text>
                         <TextInput 
                             ref={ref => { this.NextInput = ref; }}
                             style={styles.Input_Style}
@@ -212,7 +212,7 @@ class Edit_Accounts extends Component {
                         )
                     }  
                 </ScrollView> 
-                        <Snackbar style={{backgroundColor:"#18CE73" , width:"90%" , borderRadius:45 }} visible={this.state.visible} onDismiss={this.onDismissSnackBar}  duration={2000} >
+                        <Snackbar style={{backgroundColor:"#FFB81A" , width:"90%" , borderRadius:25 , height:35 }} visible={this.state.visible} onDismiss={this.onDismissSnackBar}  duration={3000} >
                             <Text style={[styles.Txt,{color:'#FFFFFF' , fontFamily:"Bold"}]} >
                                 Successfully Updated
                             </Text>

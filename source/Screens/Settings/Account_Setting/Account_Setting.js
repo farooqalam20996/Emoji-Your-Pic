@@ -77,7 +77,7 @@ class AccountSetting extends Component {
         });
     }
 
-    delete_Txt = <Text style={{ fontSize:14, lineHeight:20, fontFamily:"Regular", color:'#C63520', textAlign:"left" }} > DeAcivate Account </Text>
+    delete_Txt = <Text style={{ fontSize:14, lineHeight:20, fontFamily:"Regular", color:'#C63520', textAlign:"left" }} > DeActivate Account </Text>
 
      render() {
         return (
