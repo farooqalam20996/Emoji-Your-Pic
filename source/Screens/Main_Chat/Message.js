@@ -10,6 +10,7 @@ import {
 import { ImageViewer } from "react-native-image-zoom-viewer";
 import { manageDate } from '../../utils';
 import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 const Message = ({data, side}) => {
     const isLeftSide = side === 'left';
@@ -49,7 +50,18 @@ const Message = ({data, side}) => {
                             <Text style={textStyles}>{data.text}</Text>
                         </>
                     }
-                    <Text style={[styles.dateStyle,isLeftSide ? {color:'black'} : { color:'#AC7908'}]}>{getDate()}</Text>
+                   
+                    <View style={{flexDirection:'row',justifyContent:'flex-end',alignItems:'center'}}>
+                        <Text style={[styles.dateStyle,isLeftSide ? {color:'black'} : { color:'#AC7908'}]}>{getDate()}</Text>
+                        {!isLeftSide &&
+                            (data.seen 
+                                ?                                
+                                <Ionicons style={{marginLeft:3}} name="md-checkmark-done-sharp" size={14} color="black" />
+                                :
+                                <Ionicons style={{marginLeft:3}} name="md-checkmark-sharp" size={14} color="black" />
+                            )
+                        }
+                    </View>
                 </View>
             </View>
             <Modal 

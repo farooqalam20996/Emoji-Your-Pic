@@ -12,7 +12,7 @@ import {
 // import Swipeable from "react-native-swipeable";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import {manageDate} from '../../utils/';
-
+import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs([
     'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.'
 ])
@@ -54,10 +54,10 @@ const Chat_Card = (props) => {
         }
         const getLastMessageText = () => {
             var text = chat.data.lastMessageText;
-            if(chat.data.lastMessageText.length > 20){
-                text = chat.data.lastMessageText.slice(0,30)+"...";
+            if(chat.data.lastMessageText.length > 25){
+                text = chat.data.lastMessageText.slice(0,25)+"...";
             }
-            return text
+            return text.replace(/(\r\n|\n|\r)/gm, " ");
         }
         if(chat.data.lastMessageText  !== ""){
             return(
@@ -69,16 +69,22 @@ const Chat_Card = (props) => {
                             </TouchableWithoutFeedback>
                             <View style={{ marginLeft:"3%", justifyContent:"center", alignItems:"flex-start" }} >
                                 <Text style={styles.Profile_Name}>{name.charAt(0).toUpperCase()+name.substr(1).toLowerCase()}</Text>
-                                <Text style={styles.Profile_msg}>{getLastMessageText()}</Text>
+                                <View style={{flexDirection:"row", alignItems:'center'}}>
+                                    {
+                                        chat.data.lastMessageBy == props.id && 
+                                        (
+                                            chat.data.read 
+                                            ?<Ionicons style={{marginRight:5}} name="md-checkmark-done-sharp" size={14}  color="#FFB81A" />
+                                            :<Ionicons style={{marginRight:5}} name="md-checkmark-sharp" size={14} color="#FFB81A" />
+                                        )
+                                    }
+                                    <Text style={styles.Profile_msg}>{getLastMessageText()}</Text>
+                                </View>
                             </View>
                         </View>
-                        <View style={{ justifyContent:"space-between" , alignItems:"flex-end"  , flex:1 }} >
-                            <Text style={{ fontSize:10.5 , color:"#FFFFFF" , fontFamily:"Regular"  }} > {getDate()} </Text>
-                            {!chat.data.read && chat.data.lastMessageBy !== props.id &&
-                            <View style={{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 , backgroundColor:"#C63520", marginTop:5  }} >
-                                {/* <Text style={{ fontSize:9 , color:"#FFFFFF" , fontFamily:"Regular" }} >3</Text> */}
-                            </View>
-                            }
+                        <View style={{ justifyContent:"space-between" , alignItems:"flex-end"  , flex:1.5 }} >
+                            <Text style={{ fontSize:10 , color:"#FFFFFF" , fontFamily:"Regular"  }} > {getDate()} </Text>
+                            <View style={[{ alignItems:"center", justifyContent:"center" , width:15 , height:15 , borderRadius:100 ,marginTop:5  }, !chat.data.readBy.includes(props.id)  ? {backgroundColor:"#C63520"}:{backgroundColor:"#0C1326"}]} />
                         </View>
                     </View>
                 </TouchableWithoutFeedback> 
@@ -94,6 +100,7 @@ const Chat_Card = (props) => {
             <SwipeListView
                 data={props.chats}
                 renderItem={ ({item}, rowMap) => Chat(item)}
+                keyExtractor={(item, index) => item.id}
                 renderHiddenItem={ ({item}, rowMap) => (
                     <View style={{ flexDirection:"row" , alignItems:"center" , justifyContent:"space-between",padding:"5%" }} >
                         <View style={{flexDirection:"row"}} >
@@ -111,10 +118,25 @@ const Chat_Card = (props) => {
                                 <Image source={require('../../Imagess/archive.png')} style={{ width:15 , height:15 }} />
                                 <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Archive</Text>
                             </TouchableOpacity> */}
-                            <TouchableOpacity onPress={() => props.onUnreadPress(item.id)} style={styles.Unread_Style} >
-                                <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
-                                <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
-                            </TouchableOpacity>
+                            {!item.data.readBy.includes(props.id) 
+                                ?
+                                <TouchableOpacity onPress={() => {
+                                    rowMap[item.id].closeRow()
+                                    props.onReadPress(item.id,item.data.readBy)
+                                }} style={styles.Unread_Style} >
+                                    <Image source={require('../../Imagess/Show.png')} style={{ width:15 , height:15 }} />
+                                    <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Read</Text>
+                                </TouchableOpacity>
+                                :
+                                <TouchableOpacity onPress={() => {
+                                    rowMap[item.id].closeRow()
+                                    props.onUnreadPress(item.id,item.data.readBy)
+                                }} style={styles.Unread_Style} >
+                                    <Image source={require('../../Imagess/unsee.png')} style={{ width:15 , height:15 }} />
+                                    <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Unread</Text>
+                                </TouchableOpacity>
+                            }
+                            
                             <TouchableOpacity onPress={() => props.onDeletePress(item.id,item.data.deletedBy)} style={styles.Unread_Style} >
                                 <Image source={require('../../Imagess/delete.png')} style={{ width:15 , height:15 }} />
                                 <Text style={[styles.Unread_Txt, {color:"#FFFFFF"}]} >Delete</Text>
@@ -126,6 +148,9 @@ const Chat_Card = (props) => {
                 rightOpenValue={-110}
                 disableRightSwipe={true}
                 closeOnRowBeginSwipe={true}
+                closeOnRowPress
+                closeOnScroll
+                closeOnRowOpen
             />
             
         </>

@@ -62,7 +62,10 @@ export const Update_Profile = (username, fullname, email, phone_number, password
                                 image: response.data.data.image,
                                 email: email,
                                 name: fullname,
+                                online:false
                             }).then(()=>{
+                                AsyncStorage.removeItem('verified')
+                                AsyncStorage.removeItem('updated')
                                 dispatch({type: User_SignUp_Success});
                                 dispatch({type: Email_Registration_Completed});
                                 console.log(JSON.stringify(response.data));

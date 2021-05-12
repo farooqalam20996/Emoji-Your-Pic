@@ -27,7 +27,7 @@ class SignUp_Page extends Component {
       Verify=()=>{
         Keyboard.dismiss()
         if(this.validateEmail(this.props.Email)){
-            this.props.Verification(this.props.Email)
+            this.props.Verification(this.props.Email,this.props.navigation)
         }
         else{
             this.setState({Show_error: true})

@@ -68,11 +68,12 @@ class SignUp_OTP_Verification extends Component {
         .then(function (response) {
             if(response.data.success){
                 AsyncStorage.setItem('id', JSON.stringify(response.data.data.id) , (err)=>err? true:false)
-                AsyncStorage.removeItem('verified')
+                // AsyncStorage.removeItem('verified')
                 firebase.auth.createUserWithEmailAndPassword(that.state.email,'123123')
                 .then((res)=>{
                     console.log(JSON.stringify(response.data));
                     AsyncStorage.setItem('fid',JSON.stringify(res.user.uid),(err)=>err?true:false)
+                    AsyncStorage.removeItem('verified');
                     that.setState({loader: false})
                     that.props.navigation.navigate("SignUp_Success");
                 }).catch((err)=>{

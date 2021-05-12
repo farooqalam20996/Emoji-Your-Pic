@@ -6,7 +6,8 @@ import {
     ScrollView,
     TextInput,
     Modal,
-    TouchableOpacity
+    TouchableOpacity,
+    AppState
  } from 'react-native';
 import Top_Header from "../../ScreenComponents/Header_Component/Header";
 import Chat_Card from "../../ScreenComponents/Chat_Component/Chat_Card";
@@ -20,7 +21,7 @@ import { titleName } from '../../utils';
 
 class Chats_Screen extends Component {
     state={
-        user:[],
+        user:'',
         chats:[],
         loading: true,
         Search:"",
@@ -35,7 +36,31 @@ class Chats_Screen extends Component {
         AsyncStorage.getItem('user',(err,data)=>{
             this.setState({user:JSON.parse(data)})
             this.loadChats(this.state.user.firebase_id)
+            this.getOnline(this.state.user.firebase_id)
         })
+        AppState.addEventListener("change", this._handleAppStateChange);
+
+    }
+    _handleAppStateChange = nextAppState => {
+        // console.log(nextAppState)
+        if(nextAppState == "background"){
+            firebase.firestore
+            .collection('users')
+            .doc(this.state.user.firebase_id)
+            .set({
+                online:false
+            },{merge:true})
+        }else if(nextAppState == "active"){
+            this.getOnline(this.state.user.firebase_id)
+        }
+    };
+    getOnline = (id) => {
+        firebase.firestore
+        .collection('users')
+        .doc(id)
+        .set({
+            online:true
+        },{merge:true})
     }
     showImage = (image,name) => {
         const url = [{url:image}]
@@ -119,23 +144,33 @@ class Chats_Screen extends Component {
             console.log('chat deleted')
         })
     }
-    setUnreadChat = (id) => {
-        const idArr = id.split("_");
-        var otherID = id.split("_")[0];
-        if(idArr[0] == this.state.user.firebase_id){
-            otherID = id.split("_")[1];
-        }
+    setUnreadChat = (id,readBy) => {
+        const newArr = readBy.filter(item => item!==this.state.user.firebase_id)
         firebase.firestore
         .collection('chats')
         .doc(id)
         .set({
-            read: false,
-            lastMessageBy:otherID
+            readBy:newArr
         },{
             merge:true,
         }).then(()=>{
             console.log(this.state.chats)
         });
+    }
+    setReadChat = (id,readBy) => {
+        if(!readBy.includes(this.state.user.firebase_id)){
+            firebase.firestore
+                .collection('chats')
+                .doc(id)
+                .set({
+                    readBy:[...readBy,this.state.user.firebase_id]
+                },{
+                    merge:true,
+                }).then(()=>{
+                    console.log(this.state.chats)
+            });
+        }
+        
     }
     render() {
         return (
@@ -180,17 +215,16 @@ class Chats_Screen extends Component {
                     this.state.loading?
                     <Chat_Placeholder />
                     :
-                    <ScrollView showsVerticalScrollIndicator={false} >
-                        <Chat_Card 
-                            id={this.state.user.firebase_id}
-                            image={this.state.user.image}
-                            chats={this.state.chats}
-                            navigation={this.props.navigation}
-                            onDeletePress={this.onDeletePress}
-                            onUnreadPress={this.setUnreadChat}
-                            onImagePress={this.showImage}
-                        />
-                    </ScrollView>    
+                    <Chat_Card 
+                        id={this.state.user.firebase_id}
+                        image={this.state.user.image}
+                        chats={this.state.chats}
+                        navigation={this.props.navigation}
+                        onDeletePress={this.onDeletePress}
+                        onUnreadPress={this.setUnreadChat}
+                        onReadPress={this.setReadChat}
+                        onImagePress={this.showImage}
+                    />
                 }
                 
             </View>

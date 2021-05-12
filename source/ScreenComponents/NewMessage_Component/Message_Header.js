@@ -34,7 +34,7 @@ const MEssage_Header = (props) => {
                     <View >
                         <Text style={styles.Profile_Name} >{name}</Text>
                         {
-                            true ?
+                            props.online ?
                             <Text style={styles.status_txt} >
                                 Online
                             </Text>
@@ -110,7 +110,9 @@ export default MEssage_Header;
         marginTop:2,
         lineHeight:11,
         fontFamily:"Light",
-        color:'#5B6C9F', 
+        letterSpacing:0.2,
+        color:'white', 
+        // color:'#5B6C9F', 
         textAlign:"left"
      },
      Back_Btn:{

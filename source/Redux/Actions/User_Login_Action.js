@@ -50,7 +50,7 @@ export const ChangeLogin = (email,password,context) =>{
           }
         })
         .catch(function (error) {
-          dispatch({ type: Login_Failed , error:"some problem occured try again"})
+          dispatch({ type: Login_Failed , error:"Some Problem Occurred Try Again"})
           console.log(error);
         });
       }

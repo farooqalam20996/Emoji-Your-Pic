@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { 
+import {
     View,
     Text,
     TouchableOpacity,
@@ -8,7 +8,6 @@ import {
     TextInput,
     FlatList,
     Platform,
-    Modal,
  } from 'react-native';
 import { connect } from 'react-redux';
 import firebase from '../../firebase';
@@ -25,7 +24,7 @@ var FormData = require('form-data');
 
 var chatID;
 var that;
-var tempID;
+
 class Chatting extends Component {
     constructor(props){
         super(props);
@@ -38,6 +37,7 @@ class Chatting extends Component {
             msgs:[],
             image:"",
             visible:false,
+            online: false,
         } 
     }
 
@@ -47,10 +47,43 @@ class Chatting extends Component {
     componentDidMount(){
         chatID = null;
         that = this
+        this.checkOnline();
         this.createChat();
         this.fetchMessages()
     }
-   
+    componentWillUnmount(){
+        const {firebase_id} = this.props.user;
+        firebase.firestore
+        .collection('chats')
+        .doc(chatID)
+        .get()
+        .then((chat)=>{
+            const data = chat.data()
+            if(!data.readBy.includes(firebase_id)){
+                firebase.firestore.collection('chats')
+                .doc(chatID)
+                .set(
+                    {
+                        readBy: [...data.readBy,firebase_id],
+                        read:true
+                    },
+                    {
+                        merge:true
+                    }
+                ).then((res)=>console.log(res)).catch((err)=>console.log(err))
+            }    
+        })
+    }
+    checkOnline = () => {
+        const {id} = this.props.route.params.person
+        
+        firebase.firestore
+        .collection('users')
+        .doc(id)
+        .onSnapshot((snapshot)=>{
+            this.setState({online: snapshot.data().online})
+        })
+    }
     checkChatExists = async (firebase_id,userID) => {
         var ch1,ch2 = false;
         await firebase.firestore.collection('chats').doc(`${firebase_id}_${userID}`)
@@ -76,7 +109,7 @@ class Chatting extends Component {
         const {firebase_id,full_name,id,image} = this.props.user;
         var check = await this.checkChatExists(firebase_id,user.id)
         if(!check){
-            chatID = `${firebase_id}_${user.id}`
+            chatID = `${firebase_id}_${user.id}`;
             firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`).set({
                 lastMessage: new Date().getTime(),
                 lastMessageBy: ``,
@@ -91,6 +124,7 @@ class Chatting extends Component {
                 blockedBy: '',
                 deletedBy: [firebase_id,user.id],
                 read: false,
+                readBy: [],
             }).then(()=>{
                 firebase.firestore.collection('chats').doc(`${firebase_id}_${user.id}`)
                 .collection('messages')
@@ -127,7 +161,7 @@ class Chatting extends Component {
     sendImage = (uri) => {
         that.input.clear()
         this.setState({visible:false})
-        tempID = new Date().getTime();
+        var tempID = new Date().getTime();
         const fromID = this.props.user.firebase_id;
         const toID = this.props.route.params.person.id;
 
@@ -138,7 +172,6 @@ class Chatting extends Component {
             fromID:fromID,
             toID: toID,
         }},...this.state.msgs]});
-
 
         var data = new FormData();
         data.append('firebase_id', this.props.user.firebase_id );
@@ -155,7 +188,6 @@ class Chatting extends Component {
             },
             data : data
         };
-
         axios(config)
         .then(function (response) {
             if(response.data.success){
@@ -168,8 +200,6 @@ class Chatting extends Component {
         .catch(function (error) {
             console.log(error);
         });
-
-
     }
     
     blockUser = () => {
@@ -199,7 +229,6 @@ class Chatting extends Component {
         const {firebase_id} = this.props.user;
         const {id} = this.props.route.params.person;
         
-        
         await firebase.firestore.collection('chats').doc(`${firebase_id}_${id}`)
         .get().then((chat)=>{
             if(chat.exists){
@@ -228,9 +257,28 @@ class Chatting extends Component {
                 return data;
             });
             this.setState({msgs:messages})
-        });
-
-
+        });   
+        // firebase.firestore
+        // .collection('chats')
+        // .doc(chatID)
+        // .collection('messages')
+        // .orderBy("createdAt","desc")
+        // .onSnapshot((snapshot)=>{
+        //     snapshot.docs.map(doc=>{
+        //         if(this.state.msgs.some(msg => msg.id == doc.id)){
+        //             if(doc.data().toID === firebase_id ){
+        //                 firebase.firestore
+        //                 .collection('chats')
+        //                 .doc(chatID)
+        //                 .collection('messages')
+        //                 .doc(doc.id)
+        //                 .set({
+        //                     seen:true
+        //                 },{merge:true})
+        //             }
+        //         }
+        //     })
+        // })
         firebase.firestore
         .collection('chats')
         .doc(chatID)
@@ -240,69 +288,58 @@ class Chatting extends Component {
                 this.setState({isBlocked: data.isBlocked, blockedBy: data.blockedBy})
             }
         });
-        firebase.firestore
-        .collection('chats')
-        .doc(chatID)
-        .get()
-        .then((data)=>{
-            if(data.data().lastMessageBy !== firebase_id){
-                firebase.firestore.collection('chats')
-                .doc(chatID)
-                .set(
-                    {
-                        read: true,
-                    },
-                    {
-                        merge:true
-                    }
-                ).then((res)=>console.log(res)).catch((err)=>console.log(err))
-            }
-        })
     }
     onSend = (image) => {
-        this.input.clear();
-        const fromID = this.props.user.firebase_id;
-        const toID = this.props.route.params.person.id;
+        if(this.state.InputTxt !== ""){
 
-        const obj = image ? 
-        {
-            image: image,
-            text:this.state.InputTxt,
-            createdAt: new Date().getTime(),
-            fromID: fromID,
-            toID: toID,
-        }
-        :
-        {
-            text: this.state.InputTxt.trim(),
-            createdAt: new Date().getTime(),
-            fromID: fromID,
-            toID: toID,
-        }
-
-        firebase.firestore.collection('chats').
-        doc(chatID)
-        .collection('messages')
-        .add(
-           obj
-        ).then(()=> {
+            const text = this.state.InputTxt.trim();
             this.setState({InputTxt:''})
-        }).catch((err)=>console.log(err))
+            const fromID = this.props.user.firebase_id;
+            const toID = this.props.route.params.person.id;
 
-        firebase.firestore.collection('chats')
-        .doc(chatID)
-        .set(
+            const obj = image ? 
             {
-                lastMessage: new Date().getTime(),
-                lastMessageBy: fromID,
-                lastMessageText: image ? "Image" : this.state.InputTxt.trim(),
-                deletedBy: [fromID,toID],
-                read: false,
-            },
-            {
-                merge:true
+                image: image,
+                text:text,
+                createdAt: new Date().getTime(),
+                seen:false,
+                fromID: fromID,
+                toID: toID,
             }
-        ).then((res)=>console.log(res)).catch((err)=>console.log(err))
+            :
+            {
+                text: text,
+                createdAt: new Date().getTime(),
+                fromID: fromID,
+                seen:false,
+                toID: toID,
+            }
+
+            firebase.firestore.collection('chats').
+            doc(chatID)
+            .collection('messages')
+            .add(
+            obj
+            ).then(()=> {
+                
+            }).catch((err)=>console.log(err))
+
+            firebase.firestore.collection('chats')
+            .doc(chatID)
+            .set(
+                {
+                    lastMessage: new Date().getTime(),
+                    lastMessageBy: fromID,
+                    lastMessageText: image ? "Image" : this.state.InputTxt.trim(),
+                    deletedBy: [fromID,toID],
+                    read: false,
+                    readBy: [fromID],
+                },
+                {
+                    merge:true
+                }
+            ).then((res)=>console.log(res)).catch((err)=>console.log(err))
+        }
     }
     
     render() {
@@ -318,7 +355,6 @@ class Chatting extends Component {
                 </Snackbar>
                 <Spinner
                     visible={this.state.spinner}
-                   
                     // textContent={'Blocking '+name}
                     // textStyle={{color:'#FFCF30' , fontFamily:"Bold" }}
                 />
@@ -336,6 +372,7 @@ class Chatting extends Component {
                         userID={firebase_id}
                         person={this.props.route.params.person}
                         name={name}
+                        online={this.state.online}
                         onpress={()=> this.props.navigation.goBack()}
                         onBlockPress={this.blockUser}
                         onUnBlockPress={this.unblockUser}
@@ -347,7 +384,6 @@ class Chatting extends Component {
                         <View style={styles.First} >
                             <FlatList 
                                 inverted
-                                // style={{backgroundColor:'red'}}
                                 data={this.state.msgs}
                                 renderItem={({item})=>
                                     <Message 

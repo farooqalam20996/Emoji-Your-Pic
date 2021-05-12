@@ -12,17 +12,26 @@ import { Login_Success } from '../../Redux/Constants';
 
 class Login_SignUp extends Component {
      
-      componentDidMount(){
+    componentDidMount(){
+            AsyncStorage.getItem('updated',(err,data)=>{
+                // alert(typeof data)
+                const update = JSON.parse(data);
+                if(update){
+                    if(!update.updated){
+                        this.props.navigation.replace('SignUp_Profile')
+                    }
+                }
+            })
             AsyncStorage.getItem('verified',(err,data)=>{
                 // alert(typeof data)
                 const verify = JSON.parse(data);
                 if(verify){
                     if(!verify.verified){
-                        this.props.navigation.navigate('SignUp_OTP_Verification')
+                        this.props.navigation.replace('SignUp_OTP_Verification')
                     }
                 }
             })
-      }
+    }
 
       onEvent = () => {
             this.props.clearLoader()

@@ -21,6 +21,7 @@ export const EmailVerification=(Email)=>{
         .then(function (response) {
             if(response.data.success){
                 AsyncStorage.setItem('verified',JSON.stringify({email:Email, verified: false}),(err)=>err? true : false);
+                AsyncStorage.setItem('updated',JSON.stringify({email:Email, updated: false}),(err)=>err? true : false);
                 dispatch({type:Email_Success , error:''})
                 console.log(JSON.stringify(response.data));
                 navigate("SignUp_OTP_Verification")

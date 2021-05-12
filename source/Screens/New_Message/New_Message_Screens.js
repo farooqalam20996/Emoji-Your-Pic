@@ -50,17 +50,21 @@ var contactObjects;
         }
     }
 
-    getContacts = async ()=>{
+    getContacts = async () => {
         const { data } = await Contacts.getContactsAsync({
             fields: [Contacts.Fields.PhoneNumbers],
         });
-        console.log(data)
-        data.map(item => {
-            if(item.phoneNumbers){
-                contacts.push(item.phoneNumbers[0].number);
-                contactObjects.push({id:item.id,name:item.name,phone:item.phoneNumbers[0].number});
-            }
-        })
+        if(data.length > 0){
+            console.log(data)
+        
+            data.map(item => {
+                if(item.phoneNumbers){
+                    contacts.push(item.phoneNumbers[0].number);
+                    contactObjects.push({id:item.id,name:item.name,phone:item.phoneNumbers[0].number});
+                }
+            })
+        }
+        
         await firebase.firestore
         .collection('users')
         .where('phone','in',contacts)
@@ -74,6 +78,7 @@ var contactObjects;
         })
         this.getOtherContacts()
     }
+    
     contains = (name, phone , query) => {
         const squery = String(query).toLocaleLowerCase()
         const check = name.length > 1 ? String(name[1]).toLocaleLowerCase().includes(squery) : false
@@ -106,86 +111,70 @@ var contactObjects;
     sendInvite = (item) => () => {
         Communications.text(item.phone,"You are invited to join Emoji Chat App");
     }
-     render() {
-         return (
-                <View style={styles.main}>
-                    <Top_Header Heading="New Message" btn={<Text sty={styles.Txt} >Cancel</Text>} />
-                    <View style={{  marginBottom:"2%", marginTop:"1%" }} >
-                        <TextInput 
-                            style={styles.Input_Style}
-                            value={this.state.Search}
-                            autoCapitalize="none"
-                            onChangeText={(text) => this.search(text)}
-                            placeholder="Search to start a chat with"
-                            placeholderTextColor="#5B6C9F"
-                        />
-                    </View>
-
-                    {/* {
-                        !this.state.loaded ?
-                        <Contact_Placeholder />
-                        : */}
-                        <ScrollView showsVerticalScrollIndicator={false} >
-                            {this.state.contacts.length > 0 &&
-                            <>
-                                <Text style={styles.Heading_Txt} >
-                                    Contacts
-                                </Text>
-                                <View>
-                                <FlatList
-                                    data={this.state.contacts}
-                                    renderItem={({item})=>{
-                                        // console.log(item)
-                                        if(item.data.uid !== this.props.user.firebase_id){
-                                            return(
-                                                <Contact_Card 
-                                                    Name={item.data.name}  
-                                                    Number={item.data.phone} 
-                                                    img={{uri:item.data.image}}
-                                                    // img={this.state.image == null ? require("../../Imagess/chat_profile.png") : {uri: item.image }} 
-                                                    onpress={this.goToChat(item)} 
-                                                />
-                                            )
-                                        }
-                                    }}
-                                />
-                                
-                                    {/* <Message_Cards Press={()=> this.props.navigation.navigate('Main_Chat_Screen')} /> */}
-                                    {/* <Message_Cards /> */}
-                                </View>
-                            </>
-                            }
-                            {this.state.otherContacts.length > 0 &&
-                            <>
-                                <Text style={styles.Heading_Txt} >
-                                    Other Contacts
-                                </Text>
-                                <View>
-                                <FlatList
-                                    data={this.state.otherContacts}
-                                    renderItem={({item})=>(
+    render() {
+        return (
+            <View style={styles.main}>
+                <Top_Header Heading="New Message" btn={<Text sty={styles.Txt} >Cancel</Text>} />
+                <View style={{  marginBottom:"2%", marginTop:"1%" }} >
+                    <TextInput 
+                        style={styles.Input_Style}
+                        value={this.state.Search}
+                        autoCapitalize="none"
+                        onChangeText={(text) => this.search(text)}
+                        placeholder="Search to start a chat with"
+                        placeholderTextColor="#5B6C9F"
+                    />
+                </View>
+                <ScrollView showsVerticalScrollIndicator={false} >
+                    {this.state.contacts.length > 0 &&
+                    <>
+                        <Text style={styles.Heading_Txt} >
+                            Contacts
+                        </Text>
+                        <View>
+                        <FlatList
+                            data={this.state.contacts}
+                            renderItem={({item})=>{
+                                if(item.data.uid !== this.props.user.firebase_id){
+                                    return(
                                         <Contact_Card 
-                                            invite
-                                            onInvitePress={this.sendInvite(item)}
-                                            Name={item.name}  
-                                            Number={item.phone} 
-                                            img={require("../../Imagess/user.png")}
-                                            // img={this.state.image == null ? require("../../Imagess/chat_profile.png") : {uri: item.image }} 
-                                            onpress={()=> this.props.navigation.navigate("Main_Chat_Screen")} 
+                                            Name={item.data.name}  
+                                            Number={item.data.phone} 
+                                            img={{uri:item.data.image}}
+                                            onpress={this.goToChat(item)} 
                                         />
-                                    )}
+                                    )
+                                }
+                            }}
+                        />
+                        </View>
+                    </>
+                    }
+                    {this.state.otherContacts.length > 0 &&
+                    <>
+                        <Text style={styles.Heading_Txt} >
+                            Other Contacts
+                        </Text>
+                        <View>
+                        <FlatList
+                            data={this.state.otherContacts}
+                            renderItem={({item})=>(
+                                <Contact_Card 
+                                    invite
+                                    onInvitePress={this.sendInvite(item)}
+                                    Name={item.name}  
+                                    Number={item.phone} 
+                                    img={require("../../Imagess/user.png")}
+                                    // img={this.state.image == null ? require("../../Imagess/chat_profile.png") : {uri: item.image }} 
+                                    onpress={()=> this.props.navigation.navigate("Main_Chat_Screen")} 
                                 />
-                                
-                                    {/* <Message_Cards Press={()=> this.props.navigation.navigate('Main_Chat_Screen')} /> */}
-                                    {/* <Message_Cards /> */}
-                                </View>
-                            </>
-                            }
-                        </ScrollView>
-              
-                        {/* } */}
-              </View>
-
+                            )}
+                        />
+                        </View>
+                    </>
+                    }
+                </ScrollView>
+            </View>
          );
      }
  }
@@ -193,8 +182,6 @@ var contactObjects;
 const mapStateToProps = state => {
     return{
         user: state.Login_Reducer.user,
-
-        
     }
 }
 const mapDispatchToProps = dispatch => {

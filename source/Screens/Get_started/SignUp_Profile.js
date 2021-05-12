@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 // import { EmailVerification } from "../../Redux/Actions/EmailRegistration_Action";
 // import PhoneInput from "react-phone-number-input/react-native-input";
 import { Snackbar } from "react-native-paper";
+import { Email_Register } from '../../Redux/Actions/EmailRegistration_Action';
 
 
 class SignUp_Profile extends Component {
@@ -36,6 +37,11 @@ class SignUp_Profile extends Component {
 
     componentDidMount(){
         this.requestPermision();
+        AsyncStorage.getItem("updated",(err,data)=>{
+            if(data){
+                this.props._Email(JSON.parse(data).email)
+            }
+        })
     }
 
 
@@ -266,6 +272,7 @@ class SignUp_Profile extends Component {
 
 function mapDispatchToProps(dispatch) {
     return{
+        _Email:(text)=>dispatch(Email_Register(text)),
         _UserName: (text)=>dispatch(Username(text)),
         _FullName: (text)=>dispatch(Fullname(text)),
         _Password: (text)=>dispatch(User_Password(text)),
