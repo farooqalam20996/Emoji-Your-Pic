@@ -82,7 +82,7 @@ class AccountSetting extends Component {
      render() {
         return (
             <View style={styles.main}>
-                <Setting_Header Heading="Account Setting" onpress={()=> this.props.navigation.goBack()} />
+                <Setting_Header Heading="Account Settings" onpress={()=> this.props.navigation.goBack()} />
                 <Chat_Card Txt="Edit Account" Press={()=> this.props.navigation.navigate("Edit_Account")} />
                 {/* <Chat_Card Txt="Privacy Settings" Press={()=> this.props.navigation.navigate("PrivacySetting")} /> */}
                 <Chat_Card Txt="Change Password" Press={()=> this.props.navigation.navigate("Change_Password")} />
@@ -117,8 +117,6 @@ class AccountSetting extends Component {
                         this.Delete_Account();
                     }}
                     contentContainerStyle={{ backgroundColor:"#060A16", width:"80%" , height:150 }}
-                    // contentStyle={{ fontSize:14, lineHeight:20, fontFamily:"Regular", color:'#FFB81A'  }}
-
                 />
 
                 

@@ -18,6 +18,7 @@ import { connect } from "react-redux";
 import { Snackbar } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import AuthContext from "../../../Routes_Navigation/Context";
+import firebase from '../../../firebase';
 var axios = require('axios');
 var FormData = require('form-data');
  
@@ -36,7 +37,8 @@ class Edit_Accounts extends Component {
             Success:false,
             Image_uri:null,
             visible:false,
-
+            faceID:null,
+            emoji:null
         }
     }
 
@@ -45,7 +47,13 @@ class Edit_Accounts extends Component {
         this.requestPermision();
         AsyncStorage.getItem('user' , (err , data)=>{
             const user = JSON.parse(data)
-            this.setState({user_name: user.username , full_name: user.full_name , number: user.phone_number });
+            this.setState({
+                user_name: user.username,
+                full_name: user.full_name,
+                number: user.phone_number,
+                emoji: user.emojiUrl,
+                faceID: user.face_id
+            });
         })
         AsyncStorage.getItem('image',(err,data)=>{
             this.setState({Image_uri:data});
@@ -86,7 +94,8 @@ class Edit_Accounts extends Component {
     }
 
     Update_Profile=()=>{
-       that.setState({Loader:true})
+        that.setState({Loader:true})
+        var emojiToken = that.props._user.emojiToken ? that.props._user.emojiToken : "";
         var data = new FormData();
         data.append('username', that.state.user_name);
         data.append('full_name', that.state.full_name);
@@ -96,6 +105,9 @@ class Edit_Accounts extends Component {
             type: "image/jpeg",
             uri: Platform.OS === "android" ? that.state.Image_uri : that.state.Image_uri.replace("file://", "")
         })
+        data.append('emojiUrl', that.state.emoji);
+        data.append('face_id', that.state.faceID);
+        data.append('emojiToken', emojiToken);
         // console.log(that.state.Image_uri)
 
         var config = {
@@ -106,17 +118,26 @@ class Edit_Accounts extends Component {
             },
             data : data
         };
-        // console.log(data)
         // console.log(that.props._token)
 
         axios(config)
         .then(function (response) {
             if(response.data.success){
                 console.log(JSON.stringify(response.data));
-                AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false );
-                AsyncStorage.setItem('image',response.data.userData.image+"?"+new Date(), (err)=> err? true:false );
-                that.context.updateState();
-                that.setState({Success: true, Loader:false, visible:true})
+                firebase.firestore
+                .collection('users')
+                .doc(that.props._user.firebase_id)
+                .set({
+                    name:that.state.full_name,
+                    phone:that.state.number,
+                    image:response.data.userData.image,
+                },{merge:true})
+                .then(()=>{
+                    AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false );
+                    AsyncStorage.setItem('image',response.data.userData.image+"?"+new Date(), (err)=> err? true:false );
+                    that.setState({Success: true, Loader:false, visible:true})
+                    that.context.updateState();
+                })
             }
             else{
                 console.log(JSON.stringify(response.data));
