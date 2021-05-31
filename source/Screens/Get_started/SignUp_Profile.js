@@ -188,7 +188,12 @@ class SignUp_Profile extends Component {
                             this.props.password !== this.props.C_Password ?
                             <Text style={{color:"yellow"}} > Your Password is not same </Text>
                             :
-                            <Text style={{color:"green"}} >Password Matched!</Text>
+                            (
+                                this.props.password=="" || this.props.C_Password ==""  ?
+                                null
+                                :
+                                <Text style={{color:"green"}} >Password Matched!</Text>
+                            )
                         }
                         <Text style={styles.Txt} >Add number</Text>
                         <View style={{flexDirection:'row' , alignItems:"center"}} >

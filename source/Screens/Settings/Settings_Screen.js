@@ -64,7 +64,7 @@ class Settings_Screen extends Component {
                 <ScrollView>
                     {/* <Setting_Card Txt="Chats" Press={() => this.props.navigation.navigate("ChatSetting")} /> */}
                     <Setting_Card Txt="Account Settings" Press={()=> this.props.navigation.navigate("AccountSetting")} />
-                    <Setting_Card Txt="Notifications" Press={() => alert("Press")} />
+                    <Setting_Card Txt="Notifications" Press={() => alert("Work In Progress")} />
                     {/* <Setting_Card Txt="Storage &amp; Data" Press={() => alert("Press")} /> */}
                     <Setting_Card Txt="Help" Press={() => this.props.navigation.navigate("Help_Page")} />
                     {/* <Setting_Card Txt="Tell a Friend" Press={() => alert("Press")} /> */}

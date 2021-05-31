@@ -37,7 +37,7 @@ export default function App() {
   }
   else{ 
     return (
-         <Provider store={stores} >
+         <Provider store={stores} > 
             <>
             <MenuProvider>
               <AuthRoute />

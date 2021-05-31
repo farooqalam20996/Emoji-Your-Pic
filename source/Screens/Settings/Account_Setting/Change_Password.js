@@ -61,7 +61,7 @@ import { API } from '../../../Routes_Navigation/MainURL';
         method: 'post',
         url: API+'salvador_app/public/api/change-password',
         headers: { 
-            'Authorization': 'Bearer '+that.props._token, 
+            'Authorization': that.props._token, 
             // 'Authorization': that.props._token, 
         },
         data : data
@@ -71,12 +71,12 @@ import { API } from '../../../Routes_Navigation/MainURL';
         .then(function (response) {
             if(response.success){
                 console.log(JSON.stringify(response.data));
-                that.setState({Loader: false, err: response.data.message , Success:true})
+                that.setState({Loader: false, err:response.data.message , Success:true})
                 that.setState({visible:true})
             }
             else{
                 console.log(JSON.stringify(response.data));
-                that.setState({err: response.data.message, Loader:false , Fialed:true })
+                that.setState({err:response.data.message, Loader:false , Fialed:true })
             }
         })
         .catch(function (error) {
