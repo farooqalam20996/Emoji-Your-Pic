@@ -8,10 +8,11 @@ import {
     TextInput,
     FlatList,
     Platform,
+    Keyboard,
  } from 'react-native';
 import { connect } from 'react-redux';
 import firebase from '../../firebase';
-import { Entypo } from '@expo/vector-icons'; 
+import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Message_Header from "../../ScreenComponents/NewMessage_Component/Message_Header";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -19,16 +20,20 @@ import Message from './Message';
 import { Snackbar } from "react-native-paper";
 import { API } from '../../Routes_Navigation/MainURL';
 import ImageModal from '../../ScreenComponents/common/ImageModal';
+import Stickers from '../../ScreenComponents/Chat_Component/Stickers';
+import AsyncStorage from '@react-native-community/async-storage';
+import data from '../../data/stickers.json';
 var axios = require('axios');
 var FormData = require('form-data');
 
 var chatID;
 var that;
-
+var index;
 class Chatting extends Component {
     constructor(props){
         super(props);
         this.state = { 
+            token:'',
             err:false,
             spinner:false,
             isBlocked:this.props.route.params.person.isBlocked,
@@ -38,18 +43,33 @@ class Chatting extends Component {
             image:"",
             visible:false,
             online: false,
+            sticker:false,
+            stickers:[],
+            stickersOpen:false,
+            search:'',
+            // index:0,
         } 
     }
+    stickersHolder = [];
 
-    hrs = new Date().getHours();
-    min = new Date().getMinutes();
-
+    componentWillUnmount() {
+        this._unsubscribe();
+    }
     componentDidMount(){
         chatID = null;
-        that = this
+        index = 0;
+        that = this;
+
         this.checkOnline();
         this.createChat();
-        this.fetchMessages()
+        this.fetchMessages();
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            AsyncStorage.getItem('emojiToken',(err,data)=>{
+                this.setState({token:JSON.parse(data)},()=>{
+                    // this.loadStickers()
+                })
+            })
+        })
     }
     componentWillUnmount(){
         const {firebase_id} = this.props.user;
@@ -65,7 +85,6 @@ class Chatting extends Component {
                 .set(
                     {
                         readBy: [...data.readBy,firebase_id],
-                        read:true
                     },
                     {
                         merge:true
@@ -143,7 +162,7 @@ class Chatting extends Component {
     }
     
     select_image = async () => {
-        // this.setState({visible:true})
+        this.setState({stickersOpen:false})
         let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         // allowsMultipleSelection:true,
@@ -160,14 +179,14 @@ class Chatting extends Component {
     };
     sendImage = (uri) => {
         that.input.clear()
-        this.setState({visible:false})
+        this.setState({visible:false, stickersOpen:false})
         var tempID = new Date().getTime();
         const fromID = this.props.user.firebase_id;
         const toID = this.props.route.params.person.id;
 
         this.setState({msgs:[{id:tempID,data:{
             image: uri,
-            text:this.state.InputTxt,
+            text:this.state.sticker ? "" : this.state.InputTxt,
             createdAt: tempID,
             fromID:fromID,
             toID: toID,
@@ -203,6 +222,7 @@ class Chatting extends Component {
     }
     
     blockUser = () => {
+        this.setState({stickersOpen:false})
         firebase.firestore
         .collection('chats')
         .doc(chatID)
@@ -214,6 +234,7 @@ class Chatting extends Component {
         })
     }
     unblockUser = () => {
+        // this.setState({stickersOpen:false})
         firebase.firestore
         .collection('chats')
         .doc(chatID)
@@ -285,14 +306,34 @@ class Chatting extends Component {
         .onSnapshot((snapshot)=>{
             const data = snapshot.data();
             if(this.state.isBlocked !== data.isBlocked){
-                this.setState({isBlocked: data.isBlocked, blockedBy: data.blockedBy})
+                this.setState({isBlocked: data.isBlocked, blockedBy: data.blockedBy, stickersOpen:false})
             }
         });
+
+        firebase.firestore
+        .collection('chats')
+        .doc(chatID)
+        .onSnapshot((snapshot)=>{
+            const data = snapshot.data()
+            if(data.lastMessageBy !== firebase_id){
+                firebase.firestore.collection('chats')
+                .doc(chatID)
+                .set(
+                    {
+                        read:true
+                    },
+                    {
+                        merge:true
+                    }
+                ).then((res)=>console.log(res)).catch((err)=>console.log(err))
+            }
+        })
+        
     }
     onSend = (image) => {
-        if(this.state.InputTxt !== ""){
+        if(this.state.InputTxt !== "" || image){
 
-            const text = this.state.InputTxt.trim();
+            const text = this.state.sticker ? "" : this.state.InputTxt.trim();
             this.setState({InputTxt:''})
             const fromID = this.props.user.firebase_id;
             const toID = this.props.route.params.person.id;
@@ -330,7 +371,7 @@ class Chatting extends Component {
                 {
                     lastMessage: new Date().getTime(),
                     lastMessageBy: fromID,
-                    lastMessageText: image ? "Image" : this.state.InputTxt.trim(),
+                    lastMessageText: this.state.sticker ? "Sticker" : image ? "Image" : this.state.InputTxt.trim(),
                     deletedBy: [fromID,toID],
                     read: false,
                     readBy: [fromID],
@@ -338,10 +379,79 @@ class Chatting extends Component {
                 {
                     merge:true
                 }
-            ).then((res)=>console.log(res)).catch((err)=>console.log(err))
+            ).then((res)=>{
+                this.setState({sticker:false})
+                console.log(res)
+            }).catch((err)=>console.log(err))
         }
     }
-    
+    onStickerToggle = () => {
+        Keyboard.dismiss()
+        this.setState({stickersOpen:!this.state.stickersOpen})
+    }
+    onKeyBoardFocus = () => {
+        this.setState({stickersOpen:false})
+    }
+    onStickerPress = (url) => {
+        console.log('Sending')
+        this.setState({stickersOpen:false, sticker:true},()=>{
+            this.onSend(url)
+        })
+    }
+    loadStickers = () => {
+        const {face_id} = this.props.user; 
+
+        if(index < data.length && this.state.token && face_id !== null){
+
+            var config = {
+                method: 'get',
+                url: `https://mirror-ai.p.rapidapi.com/sticker?face_id=${face_id}&sticker=${data[index].name}`,
+                headers: {
+                    'x-token': this.state.token,
+                    'x-rapidapi-key': '3ca768db05mshf967ccfe8d3d836p153cabjsnce21c5e3d1cc',
+                    'x-rapidapi-host': 'mirror-ai.p.rapidapi.com',
+                },
+            };
+            console.log(config)
+            axios(config)
+            .then(function (response) {
+                // console.log(JSON.stringify(response.data));
+                if(response.data.ok){
+                    that.stickersHolder.push({id:index+1, name: data[index].name, url: response.data.url})
+                    that.setState({
+                        stickers:[...that.state.stickers,{id:index+1, name: data[index].name, url: response.data.url}],
+                        // index:that.state.index+1
+                    })
+                    index += 1; 
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        }
+    }
+    contains = (name, query) => {
+        // const squery = String(query).toLocaleLowerCase()
+        // const check = name.length > 1 ? String(name[1]).toLocaleLowerCase().includes(squery) : false
+        
+        // if (String(name[0]).toLocaleLowerCase().includes(squery) || check) {
+        //   return true
+        // }
+        // return false
+        const squery = String(query).toLocaleLowerCase()
+        const check = String(name).toLocaleLowerCase().includes(squery)
+        
+        if (check) {
+          return true
+        }
+        return false
+    }
+    search = (text) => {
+        const stickers = this.stickersHolder.filter(sticker => {
+            return this.contains(sticker.name, text)
+        })
+        this.setState({ stickers, search:text})
+    }
     render() {
         const {firebase_id} = this.props.user; 
         const name = this.props.route.params.person.name.charAt(0).toUpperCase()+this.props.route.params.person.name.substr(1).toLowerCase();;
@@ -380,35 +490,37 @@ class Chatting extends Component {
                         blockedBy = {this.state.blockedBy}
                     />
                 </View>
-                    <View style={styles.main} >
-                        <View style={styles.First} >
-                            <FlatList 
-                                inverted
-                                data={this.state.msgs}
-                                renderItem={({item})=>
-                                    <Message 
-                                        data={item.data} 
-                                        side={item.data.fromID == this.props.user.firebase_id ? 'right':'left'}
-                                        // photo={item.data.fromID == this.props.user.firebase_id ? this.props.user.image: this.props.route.params.person.image}
-                                    />
-                                }
-
-                            />
-                        </View>
+                <View style={styles.main} >
+                    <View style={styles.First} >
+                        <FlatList 
+                            inverted
+                            data={this.state.msgs}
+                            renderItem={({item})=>
+                                <Message 
+                                    data={item.data} 
+                                    side={item.data.fromID == this.props.user.firebase_id ? 'right':'left'}
+                                    // photo={item.data.fromID == this.props.user.firebase_id ? this.props.user.image: this.props.route.params.person.image}
+                                />
+                            }
+                        />
+                    </View>
+                    <View>
                         {this.state.isBlocked
                             ?
                             <Text style={{textAlign:'center',color:'#FFB81A',padding:'3%'}}>{blockedText}</Text>
                             :
                             <View style={styles.Outer_Area}>
                         
-                                <TouchableOpacity style={styles.trigger} onPress={()=> this.props.navigation.navigate("Camera_Screen")}>
-                                    <Image source={require("../../Imagess/camera.png")} style={{width:'50%' , height:"50%"}} />
+                                <TouchableOpacity style={styles.trigger} onPress={this.onStickerToggle}>
+                                    {/* <Image source={require("../../Imagess/camera.png")} style={{width:'50%' , height:"50%"}} /> */}
+                                    <MaterialIcons name="tag-faces" size={26} color="#C63520" />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.trigger} onPress={this.select_image}>
                                     <Entypo name="images" size={22} color="#C63520" />
                                 </TouchableOpacity>
 
                                 <TextInput
+                                    onFocus={this.onKeyBoardFocus}
                                     ref={input=> this.input = input}
                                     style={styles.Input_style}
                                     value={this.state.InputTxt}
@@ -428,8 +540,22 @@ class Chatting extends Component {
                                 </TouchableOpacity>
                             </View>
                         }
-                        
+                        {/* {this.state.stickersOpen
+                            && */}
+                            <Stickers
+                                search={this.state.search}
+                                onChange={(text)=>this.search(text)}
+                                navigation={this.props.navigation}
+                                onPress={this.onStickerPress}
+                                stickers={this.state.stickers}
+                                load={this.loadStickers}
+                                faceID={this.props.user.face_id}
+                                visible={this.state.stickersOpen}
+                                modalToggle={()=>this.setState({stickersOpen:false})}
+                            />
+                        {/* } */}
                     </View>    
+                </View>
             </>
         );
     }
@@ -450,6 +576,15 @@ const styles = StyleSheet.create({
         backgroundColor:"#060A16",
         // padding:'5%',
     },
+    // scrollableModal: {
+    //     height: '50%',
+    //     backgroundColor:'white',
+    //     borderTopLeftRadius:8,
+    //     borderTopRightRadius:8,
+    //     paddingLeft:'2%',
+    //     paddingRight:'2%',
+    //     paddingTop:'2%'
+    // },
     Txt:{
         fontSize:14,
         lineHeight:16,
@@ -557,8 +692,8 @@ const styles = StyleSheet.create({
         width:"100%",
         height:"70%",
         marginTop:"20%"
-    }
-   
+    },
+    
 })
 
 

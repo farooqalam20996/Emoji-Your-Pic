@@ -80,10 +80,17 @@ var contactObjects;
     }
     
     contains = (name, phone , query) => {
-        const squery = String(query).toLocaleLowerCase()
-        const check = name.length > 1 ? String(name[1]).toLocaleLowerCase().includes(squery) : false
+        // const squery = String(query).toLocaleLowerCase()
+        // const check = name.length > 1 ? String(name[1]).toLocaleLowerCase().includes(squery) : false
         
-        if (String(name[0]).toLocaleLowerCase().includes(squery) || check || phone.includes(squery)) {
+        // if (String(name[0]).toLocaleLowerCase().includes(squery) || check || phone.includes(squery)) {
+        //   return true
+        // }
+        // return false
+        const squery = String(query).toLocaleLowerCase()
+        const check = String(name).toLocaleLowerCase().includes(squery)
+        
+        if (check || phone.includes(squery)) {
           return true
         }
         return false

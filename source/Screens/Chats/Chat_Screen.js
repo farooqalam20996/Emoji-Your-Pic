@@ -68,10 +68,17 @@ class Chats_Screen extends Component {
         this.setState({name,image:url,isVisible:true})
     }
     contains = (name, query) => {
-        const squery = String(query).toLocaleLowerCase()
-        const check = name.length > 1 ? String(name[1]).toLocaleLowerCase().includes(squery) : false
+        // const squery = String(query).toLocaleLowerCase()
+        // const check = name.length > 1 ? String(name[1]).toLocaleLowerCase().includes(squery) : false
         
-        if (String(name[0]).toLocaleLowerCase().includes(squery) || check) {
+        // if (String(name[0]).toLocaleLowerCase().includes(squery) || check) {
+        //   return true
+        // }
+        // return false
+        const squery = String(query).toLocaleLowerCase()
+        const check = String(name).toLocaleLowerCase().includes(squery)
+        
+        if (check) {
           return true
         }
         return false
@@ -95,9 +102,12 @@ class Chats_Screen extends Component {
         .where('deletedBy','array-contains',id)
         .orderBy('lastMessage',"desc")
         .onSnapshot((querySnapshot)=>{
+            if(querySnapshot.docs.length == 0){
+                this.setState({loading:false})
+            }
             querySnapshot.docs.map((documentSnapshot)=>{
                 const chats = this.state.chats.filter(chat=>chat.id!==documentSnapshot.id)
-                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]},()=>{
+                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}],loading:false},()=>{
                     this.chatsHolder = this.state.chats;
                 })
             })
@@ -108,9 +118,12 @@ class Chats_Screen extends Component {
         .where('deletedBy','array-contains',id)
         .orderBy('lastMessage',"desc")
         .onSnapshot((querySnapshot)=>{
+            if(querySnapshot.docs.length == 0){
+                this.setState({loading:false})
+            }
             querySnapshot.docs.map((documentSnapshot)=>{
                 const chats = this.state.chats.filter(chat=>chat.id!==documentSnapshot.id)
-                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}]},()=>{
+                this.setState({chats:[...chats,{id:documentSnapshot.id,data:documentSnapshot.data()}],loading:false},()=>{
                     this.chatsHolder = this.state.chats;
                 })
             })
@@ -212,19 +225,22 @@ class Chats_Screen extends Component {
                 </View>
                 {
                     
-                    this.state.loading?
-                    <Chat_Placeholder />
-                    :
-                    <Chat_Card 
-                        id={this.state.user.firebase_id}
-                        image={this.state.user.image}
-                        chats={this.state.chats}
-                        navigation={this.props.navigation}
-                        onDeletePress={this.onDeletePress}
-                        onUnreadPress={this.setUnreadChat}
-                        onReadPress={this.setReadChat}
-                        onImagePress={this.showImage}
-                    />
+                    this.state.loading
+                        ?
+                        <Chat_Placeholder />
+                        :
+                        this.state.chats.length > 0
+                            &&
+                            <Chat_Card 
+                                id={this.state.user.firebase_id}
+                                image={this.state.user.image}
+                                chats={this.state.chats}
+                                navigation={this.props.navigation}
+                                onDeletePress={this.onDeletePress}
+                                onUnreadPress={this.setUnreadChat}
+                                onReadPress={this.setReadChat}
+                                onImagePress={this.showImage}
+                            />
                 }
                 
             </View>
@@ -263,3 +279,8 @@ const styles = StyleSheet.create({
         paddingLeft:"2%"
      },
 })
+
+// :
+// <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
+//     <Text style={{fontSize:20, color:'gray'}}> No Chats </Text>
+// </View>

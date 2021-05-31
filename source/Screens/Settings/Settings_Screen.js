@@ -17,6 +17,7 @@ import AuthContext from '../../Routes_Navigation/Context';
  import ImageViewer from "react-native-image-zoom-viewer";
 import { Feather } from '@expo/vector-icons';
 import { titleName } from '../../utils';
+import firebase from '../../firebase';
 
 class Settings_Screen extends Component {
 
@@ -40,8 +41,17 @@ class Settings_Screen extends Component {
         })
     }
     LogOut = async() =>{
+        firebase.firestore
+        .collection('users')
+        .doc(this.props.user_name.firebase_id)
+        .set({
+            online: false,
+        },{merge:true})
+        
         await AsyncStorage.removeItem('user'),
         await AsyncStorage.removeItem('token'),
+        await AsyncStorage.removeItem('emojiToken'),
+        await AsyncStorage.removeItem('image'),
         this.context.updateState()
     }
     
@@ -63,6 +73,7 @@ class Settings_Screen extends Component {
                 <View style={{ width:"100%" ,height:2 , backgroundColor:"#273253", marginBottom:"8%" }} />
                 <ScrollView>
                     {/* <Setting_Card Txt="Chats" Press={() => this.props.navigation.navigate("ChatSetting")} /> */}
+                    <Setting_Card Txt="Emoji Settings" Press={() => this.props.navigation.navigate("EmojiSetting")} />
                     <Setting_Card Txt="Account Settings" Press={()=> this.props.navigation.navigate("AccountSetting")} />
                     <Setting_Card Txt="Notifications" Press={() => alert("Press")} />
                     {/* <Setting_Card Txt="Storage &amp; Data" Press={() => alert("Press")} /> */}

@@ -18,7 +18,7 @@ const ImageModal = (props) => {
             onRequestClose={props.close}
         >
             <View style ={{flex:1,backgroundColor:"#060A16",justifyContent:'space-between'}}>
-                <View style={{flexDirection:'row'}}>
+                <View style={{flexDirection:'row', padding:'4%'}}>
                     <TouchableOpacity style={styles.Back_Btn} onPress={props.close} >
                         <Ionicons name="md-arrow-back" size={18} color="black" />
                     </TouchableOpacity>

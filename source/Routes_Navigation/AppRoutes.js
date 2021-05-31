@@ -23,6 +23,8 @@ import Change_Password from "../Screens/Settings/Account_Setting/Change_Password
 import Edit_Account from "../Screens/Settings/Account_Setting/Edit_Account";
 import Block_List from "../Screens/Settings/Account_Setting/Block_List";
 import Help_Page from "../Screens/Settings/Help";
+import EmojiSettings from '../Screens/Settings/Emoji_Setting/EmojiSettings';
+import CreateEmoji from '../Screens/Settings/Emoji_Setting/CreateEmoji';
 
 
 const Tab = createBottomTabNavigator();
@@ -154,6 +156,8 @@ function ChatScreen(params) {
             <Stack.Screen name="Camera_Screen" component={Camera_Screen} />
             <Stack.Screen name="ChatSetting" component={ChatSetting} />
             <Stack.Screen name="AccountSetting" component={AccountSetting} />
+            <Stack.Screen name="EmojiSetting" component={EmojiSettings} />
+            <Stack.Screen name="CreateEmoji" component={CreateEmoji} />
             <Stack.Screen name="NotificationSetting" component={NotificationSetting} />
             <Stack.Screen name="PrivacySetting" component={PrivacySetting} />
             <Stack.Screen name="Change_Password" component={Change_Password} />

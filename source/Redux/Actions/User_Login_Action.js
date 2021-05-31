@@ -2,12 +2,12 @@ import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "../../firebase";
 import { API } from "../../Routes_Navigation/MainURL";
 import { User_Login, Login_Success, Login_Failed, User_Data, User_Token } from "../Constants";
+var axios = require('axios');
 
 export const ChangeLogin = (email,password,context) =>{
     return(dispatch)=>{
       if(email && password){
         dispatch({ type: User_Login })
-        var axios = require('axios');
         var data = JSON.stringify({
             "email":email,
             "password":password,
@@ -27,15 +27,58 @@ export const ChangeLogin = (email,password,context) =>{
           if(response.data.success){
             // firebase.auth.signInWithEmailAndPassword(email,password)
             // .then(()=>{
-              dispatch({type: Login_Success})
-              console.log(JSON.stringify(response.data));
-              AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false )
-              // AsyncStorage.setItem('password',password, (err)=> err? true:false )
-              AsyncStorage.setItem('image',response.data.userData.image+"?"+ new Date(), (err)=> err? true:false )
-              AsyncStorage.setItem('token',JSON.stringify(response.data.token), (err)=> err? true:false )
-              AsyncStorage.setItem('chats',JSON.stringify([]), (err)=> err? true:false )
-              AsyncStorage.removeItem('fid');
-              context.updateState()
+
+              
+              if(response.data.userData.emojiToken){
+                    console.log('token exists')
+                    dispatch({type: Login_Success})
+                    console.log(JSON.stringify(response.data));
+                    AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false )
+                    // AsyncStorage.setItem('password',password, (err)=> err? true:false )
+                    AsyncStorage.setItem('image',response.data.userData.image+"?"+ new Date(), (err)=> err? true:false )
+                    AsyncStorage.setItem('token',JSON.stringify(response.data.token), (err)=> err? true:false )
+                    AsyncStorage.setItem('chats',JSON.stringify([]), (err)=> err? true:false )
+                    AsyncStorage.setItem('emojiToken',JSON.stringify(response.data.userData.emojiToken), (err)=> err? true:false )
+                    AsyncStorage.removeItem('fid');
+                    context.updateState()
+              }else{
+                console.log('token does not exists')
+
+                var configs = {
+                  method: 'get',
+                  url: 'https://mirror-ai.p.rapidapi.com/token',
+                  headers: { 
+                    'x-rapidapi-key': '3ca768db05mshf967ccfe8d3d836p153cabjsnce21c5e3d1cc', 
+                    'x-rapidapi-host': 'mirror-ai.p.rapidapi.com'
+                  }
+                };
+                  axios(configs)
+                .then(function (res) {
+                  console.log(JSON.stringify(res.data));
+                    if(res.data.token){
+                      dispatch({type: Login_Success})
+                      console.log(JSON.stringify(response.data));
+                      AsyncStorage.setItem('user',JSON.stringify(response.data.userData), (err)=> err? true:false )
+                      // AsyncStorage.setItem('password',password, (err)=> err? true:false )
+                      AsyncStorage.setItem('image',response.data.userData.image+"?"+ new Date(), (err)=> err? true:false )
+                      AsyncStorage.setItem('token',JSON.stringify(response.data.token), (err)=> err? true:false )
+                      AsyncStorage.setItem('chats',JSON.stringify([]), (err)=> err? true:false )
+                      AsyncStorage.setItem('emojiToken',JSON.stringify(res.data.token), (err)=> err? true:false )
+                      AsyncStorage.removeItem('fid');
+                      context.updateState()
+                    }
+                })
+                .catch(function (error) {
+                  return false
+                });
+              }
+          
+              
+              // if(token){
+              //     alert(JSON.stringify(token))
+              // }
+             
+
             // }).catch((err)=>{
             //   dispatch({type: Login_Failed, error:response.data.message})
             //   console.log(err)
