@@ -198,7 +198,7 @@ class Chats_Screen extends Component {
                         enableImageZoom
                         onLongPress={()=>this.setState({isVisible:false})}
                         renderHeader={()=>
-                            <View style={{position: "absolute",top:0, width:'100%',flexDirection:'row',justifyContent:'space-between',alignItems:'center',zIndex: 9999}}>
+                            <View style={{marginBottom:"5%", position: "absolute",top:0, width:'100%',flexDirection:'row',justifyContent:'space-between',alignItems:'center',zIndex: 9999}}>
                                 <Text style={{color:'white',fontFamily:"Regular",fontSize:18,paddingLeft:10}}>{titleName(this.state.name)}</Text>
                                 <TouchableOpacity  onPress={()=>this.setState({isVisible:false})}>
                                     <Feather name="x" size={25} style={{margin:20}} color="white"/>

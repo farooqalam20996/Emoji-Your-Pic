@@ -121,7 +121,7 @@ class SignUp_OTP_Verification extends Component {
                                 onChangeText={(text)=> this.setState({code: text})} 
                                 style={styles.Input_Style} 
                                 maxLength={4}
-                                onSubmitEditing={() => this.onresult()}
+                                onSubmitEditing={() => this.onresult()}  
                             />
                         </View>
                         <Text style={[styles.Paragraph,{marginTop:'5%'}]} >

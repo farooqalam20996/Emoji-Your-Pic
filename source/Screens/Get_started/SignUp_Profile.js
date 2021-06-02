@@ -32,7 +32,7 @@ class SignUp_Profile extends Component {
 
       requestPermision = async () => {
         const {granted} = await ImagePicker.requestCameraPermissionsAsync();
-        // if(!granted) return alert("You need to get permission first");
+        if(!granted) return alert("You need to get permission first");
     }   
 
     componentDidMount(){

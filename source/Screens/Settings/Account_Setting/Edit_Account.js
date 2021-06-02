@@ -69,8 +69,8 @@ class Edit_Accounts extends Component {
     }
 
     requestPermision = async () => {
-        const {granted} = await ImagePicker.getCameraRollPermissionsAsync();
-        // if(!granted) return alert("You need to get permission first");
+        const {granted} = await ImagePicker.requestCameraPermissionsAsync();
+        if(!granted) return alert("You need to get permission first");
     }  
 
     select_image = async () => {
