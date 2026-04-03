@@ -36,32 +36,32 @@ class Chats_Screen extends Component {
         AsyncStorage.getItem('user',(err,data)=>{
             this.setState({user:JSON.parse(data)})
             this.loadChats(this.state.user.firebase_id)
-            this.getOnline(this.state.user.firebase_id)
+            // this.getOnline(this.state.user.firebase_id)
         })
-        AppState.addEventListener("change", this._handleAppStateChange);
+        // AppState.addEventListener("change", this._handleAppStateChange);
 
     }
-    _handleAppStateChange = nextAppState => {
-        // console.log(nextAppState)
-        if(nextAppState == "background"){
-            firebase.firestore
-            .collection('users')
-            .doc(this.state.user.firebase_id)
-            .set({
-                online:false
-            },{merge:true})
-        }else if(nextAppState == "active"){
-            this.getOnline(this.state.user.firebase_id)
-        }
-    };
-    getOnline = (id) => {
-        firebase.firestore
-        .collection('users')
-        .doc(id)
-        .set({
-            online:true
-        },{merge:true})
-    }
+    // _handleAppStateChange = nextAppState => {
+    //     // console.log(nextAppState)
+    //     if(nextAppState == "background"){
+    //         firebase.firestore
+    //         .collection('users')
+    //         .doc(this.state.user.firebase_id)
+    //         .set({
+    //             online:false
+    //         },{merge:true})
+    //     }else if(nextAppState == "active"){
+    //         this.getOnline(this.state.user.firebase_id)
+    //     }
+    // };
+    // getOnline = (id) => {
+    //     firebase.firestore
+    //     .collection('users')
+    //     .doc(id)
+    //     .set({
+    //         online:true
+    //     },{merge:true})
+    // }
     showImage = (image,name) => {
         const url = [{url:image}]
         // alert(image)
