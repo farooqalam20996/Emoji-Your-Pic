@@ -62,7 +62,7 @@ The app showcases a complete mobile development workflow, from frontend interfac
 | ![App](./source/Imagess/AppScreenshots/login.png)       | ![Login](./source/Imagess/AppScreenshots/login1.png)     |
 | ----------------------------------------------- | --------------------------------------------- |
 | ![Register](./source/Imagess/AppScreenshots/registration.png) | ![Chat](./source/Imagess/AppScreenshots/chats.png) |
-
+| ----------------------------------------------- | --------------------------------------------- |
 | ![Calls](./source/Imagess/AppScreenshots/calls.png) | ![Chat](./source/Imagess/AppScreenshots/contacts.png) |
 
 **Emoji Conversion Screens**
